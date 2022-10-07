@@ -25,7 +25,7 @@
     <parent>
         <groupId>org.apache</groupId>
         <artifactId>apache</artifactId>
-        <version>20</version>
+        <version>27</version>
     </parent>
 
     <groupId>org.apache.rampart</groupId>
@@ -129,56 +129,21 @@
         <pluginManagement>
             <plugins>
                 <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <version>3.0.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-release-plugin</artifactId>
-                    <configuration>
+                    <configuration combine.self="append">
                         <autoVersionSubmodules>true</autoVersionSubmodules>
                         <preparationGoals>clean install</preparationGoals>
                         <tagNameFormat>v@{project.version}</tagNameFormat>
                     </configuration>
                 </plugin>
                 <plugin>
-                    <groupId>org.apache.axis2</groupId>
-                    <artifactId>axis2-mar-maven-plugin</artifactId>
-                    <version>${axis2.version}</version>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-surefire-plugin</artifactId>
-                    <version>2.10</version>
-                    <configuration>
-                        <argLine>${jacoco.surefireArgLine}</argLine>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>build-helper-maven-plugin</artifactId>
-                    <version>1.7</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.codehaus.gmavenplus</groupId>
-                    <artifactId>gmavenplus-plugin</artifactId>
-                    <version>1.5</version>
-                    <dependencies>
-                        <dependency>
-                            <groupId>org.codehaus.groovy</groupId>
-                            <artifactId>groovy-all</artifactId>
-                            <version>2.4.4</version>
-                        </dependency>
-                    </dependencies>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-dependency-plugin</artifactId>
-                    <version>3.0.1</version>
-                </plugin>
-                <plugin>
-                    <artifactId>maven-antrun-plugin</artifactId>
-                    <version>1.7</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.axis2</groupId>
-                    <artifactId>axis2-repo-maven-plugin</artifactId>
-                    <version>${axis2.version}</version>
-                </plugin>
-                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-site-plugin</artifactId>
                     <version>3.4</version>
                     <configuration>
@@ -187,24 +152,53 @@
                     </configuration>
                 </plugin>
                 <plugin>
-                    <artifactId>maven-assembly-plugin</artifactId>
-                    <version>2.6</version>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>3.0.0-M7</version>
+                    <configuration>
+                        <argLine>${jacoco.surefireArgLine}</argLine>
+                    </configuration>
                 </plugin>
                 <plugin>
-                    <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>3.0.1</version>
+                    <groupId>org.apache.axis2</groupId>
+                    <artifactId>axis2-mar-maven-plugin</artifactId>
+                    <version>${axis2.version}</version>
+                    <extensions>true</extensions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.axis2</groupId>
+                    <artifactId>axis2-repo-maven-plugin</artifactId>
+                    <version>${axis2.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>build-helper-maven-plugin</artifactId>
+                    <version>3.3.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.gmavenplus</groupId>
+                    <artifactId>gmavenplus-plugin</artifactId>
+                    <version>1.13.1</version>
+                    <dependencies>
+                        <dependency>
+                            <groupId>org.codehaus.groovy</groupId>
+                            <artifactId>groovy-all</artifactId>
+                            <version>3.0.13</version>
+                            <type>pom</type>
+                        </dependency>
+                    </dependencies>
                 </plugin>
                 <plugin>
                     <groupId>com.github.veithen.alta</groupId>
                     <artifactId>alta-maven-plugin</artifactId>
-                    <version>0.6.2</version>
+                    <version>0.7.1</version>
                 </plugin>
             </plugins>
         </pluginManagement>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
-                <version>1.1</version>
                 <executions>
                     <execution>
                         <phase>validate</phase>
@@ -213,6 +207,13 @@
                         </goals>
                         <configuration>
                             <rules>
+                                <requireMavenVersion>
+                                    <version>3.1.0</version>
+                                </requireMavenVersion>
+                                <requireJavaVersion>
+                                    <!-- We require a recent Java version for the build, but we enforce compatibility with older versions using Animal Sniffer -->
+                                    <version>11</version>
+                                </requireJavaVersion>
                                 <requireNoRepositories>
                                     <message>The POM must not include repository definitions since non Apache repositories threaten the build stability.</message>
                                     <banRepositories>true</banRepositories>
@@ -302,6 +303,7 @@
                     <skip>${skipJacoco}</skip>
                 </configuration>
             </plugin>
+            <!--
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
@@ -325,8 +327,10 @@
                     </execution>
                 </executions>
             </plugin>
+            -->
             <plugin>
                 <!-- We need (some of) the source JARs for the code coverage analysis. -->
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
                 <executions>
                     <execution>
@@ -340,20 +344,19 @@
                     <attach>true</attach>
                 </configuration>
             </plugin>
-            
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.6.1</version>
+                <inherited>true</inherited>
                 <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
+                    <source>1.8</source>
+                    <target>1.8</target>
                 </configuration>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>animal-sniffer-maven-plugin</artifactId>
-                <version>1.17</version>
+                <version>1.22</version>
                 <executions>
                     <execution>
                         <id>check</id>
@@ -364,15 +367,15 @@
                         <configuration>
                             <signature>
                                 <groupId>org.codehaus.mojo.signature</groupId>
-                                <artifactId>java16</artifactId>
-                                <version>1.1</version>
+                                <artifactId>java18</artifactId>
+                                <version>1.0</version>
                             </signature>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
-
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
                 <executions>
                     <execution>
@@ -404,7 +407,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-scm-publish-plugin</artifactId>
-                <version>1.0-beta-2</version>
             </plugin>
         </plugins>
     </build>
@@ -412,8 +414,9 @@
     <reporting>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-project-info-reports-plugin</artifactId>
-                <version>2.8.1</version>
+                <version>3.4.1</version>
                 <reportSets>
                     <reportSet>
                         <reports>
@@ -490,7 +493,7 @@
             <dependency>
                 <groupId>xalan</groupId>
                 <artifactId>xalan</artifactId>
-                <version>2.7.1</version>
+                <version>2.7.2</version>
             </dependency>
             <dependency>
                 <groupId>org.opensaml</groupId>
@@ -508,11 +511,10 @@
                     </exclusion>
                     <exclusion>
                         <groupId>org.bouncycastle</groupId>
-                        <artifactId>bcprov-jdk15</artifactId>
+                        <artifactId>bcprov-jdk15on</artifactId>
                     </exclusion>
                 </exclusions>
             </dependency>
-            
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-log4j12</artifactId>
@@ -559,16 +561,15 @@
                 <artifactId>junit</artifactId>
                 <version>4.12</version>
             </dependency>
-
             <dependency>
                 <groupId>org.aspectj</groupId>
                 <artifactId>aspectjrt</artifactId>
-                <version>1.8.2</version>
+                <version>1.9.9.1</version>
             </dependency>
             <dependency>
                 <groupId>org.aspectj</groupId>
                 <artifactId>aspectjweaver</artifactId>
-                <version>1.8.2</version>
+                <version>1.9.9.1</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -579,6 +580,7 @@
             <build>
                 <plugins>
                     <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-assembly-plugin</artifactId>
                         <executions>
                             <execution>
@@ -597,6 +599,7 @@
                         </executions>
                     </plugin>
                     <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-source-plugin</artifactId>
                         <executions>
                             <execution>
@@ -630,17 +633,23 @@
     </modules>
 
     <properties>
-        <axis2.version>1.8.0-SNAPSHOT</axis2.version>
-        <axiom.version>1.3.0-SNAPSHOT</axiom.version>
+        <axis2.version>1.8.3-SNAPSHOT</axis2.version>
+        <axiom.version>1.3.1-SNAPSHOT</axiom.version>
 
         <wss4j.version>1.6.19</wss4j.version>
         <opensaml.version>2.6.4</opensaml.version>
 
-        <bcprov.jdk15.version>1.49</bcprov.jdk15.version>
+        <bcprov.jdk15.version>1.70</bcprov.jdk15.version>
 
         <failIfNoTests>false</failIfNoTests>
 
-        <jacoco.version>0.8.0</jacoco.version>
+        <jacoco.version>0.8.8</jacoco.version>
+        <jacoco.surefireArgLine/>
+
+        <skipJacoco>false</skipJacoco>
+        <skipSiteSite>false</skipSiteSite>
+        <skipSiteStage>false</skipSiteStage>
+
     </properties>
 
     <pluginRepositories>

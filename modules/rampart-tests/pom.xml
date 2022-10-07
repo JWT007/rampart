@@ -48,6 +48,7 @@
         </testResources>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-deploy-plugin</artifactId>
                 <configuration>
                     <skip>true</skip>
@@ -64,17 +65,22 @@
                         <configuration>
                             <name>aspectjweaver</name>
                             <value>%file%</value>
-                            <artifacts>
-                                <artifact>
-                                    <groupId>org.aspectj</groupId>
-                                    <artifactId>aspectjweaver</artifactId>
-                                </artifact>
-                            </artifacts>
+                            <separator>${line.separator}</separator>
+                            <artifactSet>
+                                <artifacts>
+                                    <artifact>
+                                        <groupId>org.aspectj</groupId>
+                                        <artifactId>aspectjweaver</artifactId>
+                                        <version>1.9.9.1</version>
+                                    </artifact>
+                                </artifacts>
+                            </artifactSet>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <argLine>${jacoco.surefireArgLine} -javaagent:${aspectjweaver}</argLine>
