@@ -246,12 +246,12 @@ public class SymmetricBindingBuilder extends BindingBuilder {
             
             RampartUtil.handleEncryptedSignedHeaders(encrParts, sigParts, doc);
             
-            HashMap sigSuppTokMap = null;
-            HashMap endSuppTokMap = null;
-            HashMap sgndEndSuppTokMap = null;
-            HashMap sgndEncSuppTokMap = null;
-            HashMap endEncSuppTokMap = null;
-            HashMap sgndEndEncSuppTokMap = null;
+            Map<Token, Object> sigSuppTokMap = null;
+            Map<Token, Object> endSuppTokMap = null;
+            Map<Token, Object> sgndEndSuppTokMap = null;
+            Map<Token, Object> sgndEncSuppTokMap = null;
+            Map<Token, Object> endEncSuppTokMap = null;
+            Map<Token, Object> sgndEndEncSuppTokMap = null;
             
             
             if(this.timestampElement != null){
@@ -446,14 +446,14 @@ public class SymmetricBindingBuilder extends BindingBuilder {
             //Set the insertion location
             this.setInsertionLocation(sigTokElem);
         }
-        
 
-        HashMap sigSuppTokMap = null;
-        HashMap endSuppTokMap = null;
-        HashMap sgndEndSuppTokMap = null;
-        HashMap sgndEncSuppTokMap = null;
-        HashMap endEncSuppTokMap = null;
-        HashMap sgndEndEncSuppTokMap = null;
+
+        Map<Token, Object> sigSuppTokMap = null;
+        Map<Token, Object> endSuppTokMap = null;
+        Map<Token, Object> sgndEndSuppTokMap = null;
+        Map<Token, Object> sgndEncSuppTokMap = null;
+        Map<Token, Object> endEncSuppTokMap = null;
+        Map<Token, Object> sgndEndEncSuppTokMap = null;
         
         List<WSEncryptionPart> sigParts = RampartUtil.getSignedParts(rmd);
         

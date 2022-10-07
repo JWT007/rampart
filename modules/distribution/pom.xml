@@ -19,7 +19,6 @@
   ~ under the License.
   -->
 
-
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
@@ -95,6 +94,7 @@
                 </executions>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-deploy-plugin</artifactId>
                 <configuration>
                     <skip>true</skip>
@@ -104,6 +104,12 @@
     </build>
 
     <dependencies>
+        <dependency>
+            <groupId>org.apache.rampart</groupId>
+            <artifactId>apidocs</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+        </dependency>
         <dependency>
             <groupId>org.apache.rampart</groupId>
             <artifactId>rampart</artifactId>
@@ -136,14 +142,8 @@
             <artifactId>bcprov-jdk15on</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-jcl</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>apidocs</artifactId>
-            <version>${project.version}</version>
-            <type>zip</type>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j2-impl</artifactId>
         </dependency>
     </dependencies>
 

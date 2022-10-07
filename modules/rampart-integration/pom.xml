@@ -22,614 +22,595 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-    <parent>
-        <groupId>org.apache.rampart</groupId>
-        <artifactId>rampart-project</artifactId>
-        <version>1.8.0-SNAPSHOT</version>
-        <relativePath>../../pom.xml</relativePath>
-    </parent>
+  <parent>
+    <groupId>org.apache.rampart</groupId>
+    <artifactId>rampart-project</artifactId>
+    <version>1.8.0-SNAPSHOT</version>
+    <relativePath>../../pom.xml</relativePath>
+  </parent>
 
-    <modelVersion>4.0.0</modelVersion>
-    <artifactId>rampart-integration</artifactId>
-    <packaging>jar</packaging>
-    <name>Rampart - Integration</name>
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>rampart-integration</artifactId>
+  <packaging>jar</packaging>
+  <name>Rampart - Integration</name>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>copy-endorsed</id>
-                        <phase>process-resources</phase>
-                        <goals>
-                            <goal>copy-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <includeGroupIds>org.apache.xerces,org.apache.xalan</includeGroupIds>
-                            <outputDirectory>${project.build.directory}/endorsed</outputDirectory>
-                            <stripVersion>true</stripVersion>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.axis2</groupId>
-                <artifactId>axis2-repo-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>create-test-repo</id>
-                        <goals>
-                            <goal>create-test-repository</goal>
-                        </goals>
-                        <configuration>
-                            <modules>addressing,rampart</modules>
-                            <outputDirectory>target/test-classes</outputDirectory>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>create-rampart-client-repo</id>
-                        <goals>
-                            <goal>create-test-repository</goal>
-                        </goals>
-                        <configuration>
-                            <modules>addressing,rampart,rahas</modules>
-                            <outputDirectory>target/test-resources/rampart_client_repo</outputDirectory>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>create-rampart-service-repo</id>
-                        <goals>
-                            <goal>create-test-repository</goal>
-                        </goals>
-                        <configuration>
-                            <modules>addressing,rampart,rahas</modules>
-                            <axis2xml>src/test/resources/conf/axis2.xml</axis2xml>
-                            <outputDirectory>target/test-resources/rampart_service_repo</outputDirectory>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>create-rahas-client-repo</id>
-                        <goals>
-                            <goal>create-test-repository</goal>
-                        </goals>
-                        <configuration>
-                            <modules>addressing,rampart</modules>
-                            <outputDirectory>target/test-resources/rahas_client_repo</outputDirectory>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>create-rahas-service-repo-1</id>
-                        <goals>
-                            <goal>create-test-repository</goal>
-                        </goals>
-                        <configuration>
-                            <modules>addressing,rampart,rahas</modules>
-                            <axis2xml>src/test/resources/conf/axis2.xml</axis2xml>
-                            <outputDirectory>target/test-resources/rahas_service_repo_1</outputDirectory>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>create-rahas-service-repo-3</id>
-                        <goals>
-                            <goal>create-test-repository</goal>
-                        </goals>
-                        <configuration>
-                            <modules>addressing,rampart,rahas</modules>
-                            <axis2xml>src/test/resources/conf/axis2.xml</axis2xml>
-                            <outputDirectory>target/test-resources/rahas_service_repo_3</outputDirectory>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>create-default-security-client-repo</id>
-                        <goals>
-                            <goal>create-test-repository</goal>
-                        </goals>
-                        <configuration>
-                            <modules>addressing,rampart</modules>
-                            <axis2xml>src/test/resources/conf/axis2.xml</axis2xml>
-                            <configurationDirectory>conf</configurationDirectory>
-                            <outputDirectory>target/test-resources/default_security_client_repo</outputDirectory>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>create-rahas-service-repo-5</id>
-                        <goals>
-                            <goal>create-test-repository</goal>
-                        </goals>
-                        <configuration>
-                            <modules>addressing,rampart,rahas</modules>
-                            <axis2xml>src/test/resources/conf/axis2.xml</axis2xml>
-                            <outputDirectory>target/test-resources/rahas_service_repo_5</outputDirectory>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <executions>
-                   
-                    <execution>
-                        <id>create-test-resources</id>
-                        <phase>process-test-resources</phase>
-                        <configuration>
-                            <target>
-                                <property name="addressing.mar" value="addressing-${axis2.version}.mar" />
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-endorsed</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <includeGroupIds>org.apache.xerces,org.apache.xalan</includeGroupIds>
+              <outputDirectory>${project.build.directory}/endorsed</outputDirectory>
+              <stripVersion>true</stripVersion>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.axis2</groupId>
+        <artifactId>axis2-repo-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>create-test-repo</id>
+            <goals>
+              <goal>create-test-repository</goal>
+            </goals>
+            <configuration>
+              <modules>addressing,rampart</modules>
+              <outputDirectory>target/test-classes</outputDirectory>
+            </configuration>
+          </execution>
+          <execution>
+            <id>create-rampart-client-repo</id>
+            <goals>
+              <goal>create-test-repository</goal>
+            </goals>
+            <configuration>
+              <modules>addressing,rampart,rahas</modules>
+              <outputDirectory>target/test-resources/rampart_client_repo</outputDirectory>
+            </configuration>
+          </execution>
+          <execution>
+            <id>create-rampart-service-repo</id>
+            <goals>
+              <goal>create-test-repository</goal>
+            </goals>
+            <configuration>
+              <modules>addressing,rampart,rahas</modules>
+              <axis2xml>src/test/resources/conf/axis2.xml</axis2xml>
+              <outputDirectory>target/test-resources/rampart_service_repo</outputDirectory>
+            </configuration>
+          </execution>
+          <execution>
+            <id>create-rahas-client-repo</id>
+            <goals>
+              <goal>create-test-repository</goal>
+            </goals>
+            <configuration>
+              <modules>addressing,rampart</modules>
+              <outputDirectory>target/test-resources/rahas_client_repo</outputDirectory>
+            </configuration>
+          </execution>
+          <execution>
+            <id>create-rahas-service-repo-1</id>
+            <goals>
+              <goal>create-test-repository</goal>
+            </goals>
+            <configuration>
+              <modules>addressing,rampart,rahas</modules>
+              <axis2xml>src/test/resources/conf/axis2.xml</axis2xml>
+              <outputDirectory>target/test-resources/rahas_service_repo_1</outputDirectory>
+            </configuration>
+          </execution>
+          <execution>
+            <id>create-rahas-service-repo-3</id>
+            <goals>
+              <goal>create-test-repository</goal>
+            </goals>
+            <configuration>
+              <modules>addressing,rampart,rahas</modules>
+              <axis2xml>src/test/resources/conf/axis2.xml</axis2xml>
+              <outputDirectory>target/test-resources/rahas_service_repo_3</outputDirectory>
+            </configuration>
+          </execution>
+          <execution>
+            <id>create-default-security-client-repo</id>
+            <goals>
+              <goal>create-test-repository</goal>
+            </goals>
+            <configuration>
+              <modules>addressing,rampart</modules>
+              <axis2xml>src/test/resources/conf/axis2.xml</axis2xml>
+              <configurationDirectory>conf</configurationDirectory>
+              <outputDirectory>target/test-resources/default_security_client_repo</outputDirectory>
+            </configuration>
+          </execution>
+          <execution>
+            <id>create-rahas-service-repo-5</id>
+            <goals>
+              <goal>create-test-repository</goal>
+            </goals>
+            <configuration>
+              <modules>addressing,rampart,rahas</modules>
+              <axis2xml>src/test/resources/conf/axis2.xml</axis2xml>
+              <outputDirectory>target/test-resources/rahas_service_repo_5</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
 
-                                <mkdir dir="target/temp-ramp" />
-                                <mkdir dir="target/temp-ramp/META-INF" />
+          <execution>
+            <id>create-test-resources</id>
+            <phase>process-test-resources</phase>
+            <configuration>
+              <target>
+                <property name="addressing.mar" value="addressing-${axis2.version}.mar" />
 
-                                <copy overwrite="yes" file="src/test/resources/rampart/store.jks" tofile="target/temp-ramp/store.jks" />
-                                <!--path id="ramp.client.props" location="test-resources/rampart"/-->
-                                <!--maven:addPath id="maven.dependency.classpath" refid="ramp.client.props" -->
-                                <mkdir dir="target/test-resources/rampart_client_repo" />
-                                <mkdir dir="target/test-resources/rampart_client_repo/conf" />
-                                <mkdir dir="target/test-resources/rampart_service_repo" />
-                                <mkdir dir="target/test-resources/rampart_service_repo/conf" />
-                                <mkdir dir="target/test-resources/rampart_service_repo/services" />
+                <mkdir dir="target/temp-ramp" />
+                <mkdir dir="target/temp-ramp/META-INF" />
 
-                                <!-- Service 1 -->
-                                <copy overwrite="yes" file="src/test/resources/rampart/services-1.xml" tofile="target/temp-ramp/META-INF/services.xml" />
-                                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureService1.aar" basedir="target/temp-ramp" />
-                                <!-- Service 2 -->
-                                <copy overwrite="yes" file="src/test/resources/rampart/services-2.xml" tofile="target/temp-ramp/META-INF/services.xml" />
-                                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureService2.aar" basedir="target/temp-ramp" />
-                                <!-- Service 3 -->
-                                <copy overwrite="yes" file="src/test/resources/rampart/services-3.xml" tofile="target/temp-ramp/META-INF/services.xml" />
-                                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureService3.aar" basedir="target/temp-ramp" />
-                                <!-- Service 4 -->
-                                <copy overwrite="yes" file="src/test/resources/rampart/services-4.xml" tofile="target/temp-ramp/META-INF/services.xml" />
-                                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureService4.aar" basedir="target/temp-ramp" />
-                                <!-- Service 5 -->
-                                <copy overwrite="yes" file="src/test/resources/rampart/services-5.xml" tofile="target/temp-ramp/META-INF/services.xml" />
-                                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureService5.aar" basedir="target/temp-ramp" />
-                                <!-- Service 6 -->
-                                <copy overwrite="yes" file="src/test/resources/rampart/services-6.xml" tofile="target/temp-ramp/META-INF/services.xml" />
-                                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureService6.aar" basedir="target/temp-ramp" />
-                                <!-- Service 7 -->
-                                <copy overwrite="yes" file="src/test/resources/rampart/services-7.xml" tofile="target/temp-ramp/META-INF/services.xml" />
-                                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureService7.aar" basedir="target/temp-ramp" />
-                                <!-- Service 8 -->
-                                <copy overwrite="yes" file="src/test/resources/rampart/services-8.xml" tofile="target/temp-ramp/META-INF/services.xml" />
-                                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureService8.aar" basedir="target/temp-ramp" />
-                                <!-- Service 9 -->
-                                <copy overwrite="yes" file="src/test/resources/rampart/services-9.xml" tofile="target/temp-ramp/META-INF/services.xml" />
-                                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureService9.aar" basedir="target/temp-ramp" />
-                                <!-- Service 10 -->
-                                <copy overwrite="yes" file="src/test/resources/rampart/services-10.xml" tofile="target/temp-ramp/META-INF/services.xml" />
-                                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureService10.aar" basedir="target/temp-ramp" />
-                                <!-- Service 11 -->
-                                <copy overwrite="yes" file="src/test/resources/rampart/services-11.xml" tofile="target/temp-ramp/META-INF/services.xml" />
-                                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureService11.aar" basedir="target/temp-ramp" />
-                                <!-- Service 12 -->
-                                <copy overwrite="yes" file="src/test/resources/rampart/services-12.xml" tofile="target/temp-ramp/META-INF/services.xml" />
-                                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureService12.aar" basedir="target/temp-ramp" />
-                                <!-- Service 13 -->
-                                <copy overwrite="yes" file="src/test/resources/rampart/services-13.xml" tofile="target/temp-ramp/META-INF/services.xml" />
-                                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureService13.aar" basedir="target/temp-ramp" />
-                                <!-- Service 14 -->
-                                <copy overwrite="yes" file="src/test/resources/rampart/services-14.xml" tofile="target/temp-ramp/META-INF/services.xml" />
-                                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureService14.aar" basedir="target/temp-ramp" />
-                                <!-- Service 15 -->
-                                <copy overwrite="yes" file="src/test/resources/rampart/services-15.xml" tofile="target/temp-ramp/META-INF/services.xml" />
-                                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureService15.aar" basedir="target/temp-ramp" />
-                                <!-- Service 16 -->
-                                <copy overwrite="yes" file="src/test/resources/rampart/services-16.xml" tofile="target/temp-ramp/META-INF/services.xml" />
-                                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureService16.aar" basedir="target/temp-ramp" />
-                                <!-- Service 17 -->
-                                <copy overwrite="yes" file="src/test/resources/rampart/services-17.xml" tofile="target/temp-ramp/META-INF/services.xml" />
-                                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureService17.aar" basedir="target/temp-ramp" />
-                                <!-- Service 18 -->
-                                <copy overwrite="yes" file="src/test/resources/rampart/services-18.xml" tofile="target/temp-ramp/META-INF/services.xml" />
-                                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureService18.aar" basedir="target/temp-ramp" />
-                                <!-- Service 19 -->
-                                <copy overwrite="yes" file="src/test/resources/rampart/services-19.xml" tofile="target/temp-ramp/META-INF/services.xml" />
-                                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureService19.aar" basedir="target/temp-ramp" />
-                                <!-- Service 20 -->
-                                <copy overwrite="yes" file="src/test/resources/rampart/services-20.xml" tofile="target/temp-ramp/META-INF/services.xml" />
-                                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureService20.aar" basedir="target/temp-ramp" />
-                                <!-- Service 21 -->
-                                <copy overwrite="yes" file="src/test/resources/rampart/services-21.xml" tofile="target/temp-ramp/META-INF/services.xml" />
-                                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureService21.aar" basedir="target/temp-ramp" />
-                                <!-- Service 22 -->
-                                <copy overwrite="yes" file="src/test/resources/rampart/services-22.xml" tofile="target/temp-ramp/META-INF/services.xml" />
-                                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureService22.aar" basedir="target/temp-ramp" />
-                                <!-- Service 23 -->
-                                <copy overwrite="yes" file="src/test/resources/rampart/services-23.xml" tofile="target/temp-ramp/META-INF/services.xml" />
-                                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureService23.aar" basedir="target/temp-ramp" />
-                                <!-- Service 24 -->
-                                <copy overwrite="yes" file="src/test/resources/rampart/services-24.xml" tofile="target/temp-ramp/META-INF/services.xml" />
-                                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureService24.aar" basedir="target/temp-ramp" />
-                               <!-- Service 25 -->
-                                <copy overwrite="yes" file="src/test/resources/rampart/services-25.xml" tofile="target/temp-ramp/META-INF/services.xml" />
-                                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureService25.aar" basedir="target/temp-ramp" />
-                                <!-- Service 26 -->
-                                <copy overwrite="yes" file="src/test/resources/rampart/services-26.xml" tofile="target/temp-ramp/META-INF/services.xml" />
-                                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureService26.aar" basedir="target/temp-ramp" />
-                                 <!-- Service 27 -->
-                                <copy overwrite="yes" file="src/test/resources/rampart/services-27.xml" tofile="target/temp-ramp/META-INF/services.xml" />
-                                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureService27.aar" basedir="target/temp-ramp" />
-                                <!-- Service 28 -->
-                                <copy overwrite="yes" file="src/test/resources/rampart/services-28.xml" tofile="target/temp-ramp/META-INF/services.xml" />
-                                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureService28.aar" basedir="target/temp-ramp" />
-                                <!-- Service 29 -->
-                                <copy overwrite="yes" file="src/test/resources/rampart/services-29.xml" tofile="target/temp-ramp/META-INF/services.xml" />
-                                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureService29.aar" basedir="target/temp-ramp" />
-                                <!-- Service 30 -->
-                                <copy overwrite="yes" file="src/test/resources/rampart/services-30.xml" tofile="target/temp-ramp/META-INF/services.xml" />
-                                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureService30.aar" basedir="target/temp-ramp" />
+                <copy overwrite="yes" file="src/test/resources/rampart/store.jks" tofile="target/temp-ramp/store.jks" />
+                <!--path id="ramp.client.props" location="test-resources/rampart"/-->
+                <!--maven:addPath id="maven.dependency.classpath" refid="ramp.client.props" -->
+                <mkdir dir="target/test-resources/rampart_client_repo" />
+                <mkdir dir="target/test-resources/rampart_client_repo/conf" />
+                <mkdir dir="target/test-resources/rampart_service_repo" />
+                <mkdir dir="target/test-resources/rampart_service_repo/conf" />
+                <mkdir dir="target/test-resources/rampart_service_repo/services" />
 
-                                <!-- Service 31 -->
-                                <copy overwrite="yes" file="src/test/resources/rampart/services-31.xml" tofile="target/temp-ramp/META-INF/services.xml" />
-                                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureService31.aar" basedir="target/temp-ramp" />
+                <!-- Service 1 -->
+                <copy overwrite="yes" file="src/test/resources/rampart/services-1.xml" tofile="target/temp-ramp/META-INF/services.xml" />
+                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureService1.aar" basedir="target/temp-ramp" />
+                <!-- Service 2 -->
+                <copy overwrite="yes" file="src/test/resources/rampart/services-2.xml" tofile="target/temp-ramp/META-INF/services.xml" />
+                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureService2.aar" basedir="target/temp-ramp" />
+                <!-- Service 3 -->
+                <copy overwrite="yes" file="src/test/resources/rampart/services-3.xml" tofile="target/temp-ramp/META-INF/services.xml" />
+                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureService3.aar" basedir="target/temp-ramp" />
+                <!-- Service 4 -->
+                <copy overwrite="yes" file="src/test/resources/rampart/services-4.xml" tofile="target/temp-ramp/META-INF/services.xml" />
+                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureService4.aar" basedir="target/temp-ramp" />
+                <!-- Service 5 -->
+                <copy overwrite="yes" file="src/test/resources/rampart/services-5.xml" tofile="target/temp-ramp/META-INF/services.xml" />
+                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureService5.aar" basedir="target/temp-ramp" />
+                <!-- Service 6 -->
+                <copy overwrite="yes" file="src/test/resources/rampart/services-6.xml" tofile="target/temp-ramp/META-INF/services.xml" />
+                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureService6.aar" basedir="target/temp-ramp" />
+                <!-- Service 7 -->
+                <copy overwrite="yes" file="src/test/resources/rampart/services-7.xml" tofile="target/temp-ramp/META-INF/services.xml" />
+                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureService7.aar" basedir="target/temp-ramp" />
+                <!-- Service 8 -->
+                <copy overwrite="yes" file="src/test/resources/rampart/services-8.xml" tofile="target/temp-ramp/META-INF/services.xml" />
+                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureService8.aar" basedir="target/temp-ramp" />
+                <!-- Service 9 -->
+                <copy overwrite="yes" file="src/test/resources/rampart/services-9.xml" tofile="target/temp-ramp/META-INF/services.xml" />
+                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureService9.aar" basedir="target/temp-ramp" />
+                <!-- Service 10 -->
+                <copy overwrite="yes" file="src/test/resources/rampart/services-10.xml" tofile="target/temp-ramp/META-INF/services.xml" />
+                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureService10.aar" basedir="target/temp-ramp" />
+                <!-- Service 11 -->
+                <copy overwrite="yes" file="src/test/resources/rampart/services-11.xml" tofile="target/temp-ramp/META-INF/services.xml" />
+                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureService11.aar" basedir="target/temp-ramp" />
+                <!-- Service 12 -->
+                <copy overwrite="yes" file="src/test/resources/rampart/services-12.xml" tofile="target/temp-ramp/META-INF/services.xml" />
+                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureService12.aar" basedir="target/temp-ramp" />
+                <!-- Service 13 -->
+                <copy overwrite="yes" file="src/test/resources/rampart/services-13.xml" tofile="target/temp-ramp/META-INF/services.xml" />
+                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureService13.aar" basedir="target/temp-ramp" />
+                <!-- Service 14 -->
+                <copy overwrite="yes" file="src/test/resources/rampart/services-14.xml" tofile="target/temp-ramp/META-INF/services.xml" />
+                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureService14.aar" basedir="target/temp-ramp" />
+                <!-- Service 15 -->
+                <copy overwrite="yes" file="src/test/resources/rampart/services-15.xml" tofile="target/temp-ramp/META-INF/services.xml" />
+                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureService15.aar" basedir="target/temp-ramp" />
+                <!-- Service 16 -->
+                <copy overwrite="yes" file="src/test/resources/rampart/services-16.xml" tofile="target/temp-ramp/META-INF/services.xml" />
+                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureService16.aar" basedir="target/temp-ramp" />
+                <!-- Service 17 -->
+                <copy overwrite="yes" file="src/test/resources/rampart/services-17.xml" tofile="target/temp-ramp/META-INF/services.xml" />
+                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureService17.aar" basedir="target/temp-ramp" />
+                <!-- Service 18 -->
+                <copy overwrite="yes" file="src/test/resources/rampart/services-18.xml" tofile="target/temp-ramp/META-INF/services.xml" />
+                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureService18.aar" basedir="target/temp-ramp" />
+                <!-- Service 19 -->
+                <copy overwrite="yes" file="src/test/resources/rampart/services-19.xml" tofile="target/temp-ramp/META-INF/services.xml" />
+                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureService19.aar" basedir="target/temp-ramp" />
+                <!-- Service 20 -->
+                <copy overwrite="yes" file="src/test/resources/rampart/services-20.xml" tofile="target/temp-ramp/META-INF/services.xml" />
+                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureService20.aar" basedir="target/temp-ramp" />
+                <!-- Service 21 -->
+                <copy overwrite="yes" file="src/test/resources/rampart/services-21.xml" tofile="target/temp-ramp/META-INF/services.xml" />
+                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureService21.aar" basedir="target/temp-ramp" />
+                <!-- Service 22 -->
+                <copy overwrite="yes" file="src/test/resources/rampart/services-22.xml" tofile="target/temp-ramp/META-INF/services.xml" />
+                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureService22.aar" basedir="target/temp-ramp" />
+                <!-- Service 23 -->
+                <copy overwrite="yes" file="src/test/resources/rampart/services-23.xml" tofile="target/temp-ramp/META-INF/services.xml" />
+                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureService23.aar" basedir="target/temp-ramp" />
+                <!-- Service 24 -->
+                <copy overwrite="yes" file="src/test/resources/rampart/services-24.xml" tofile="target/temp-ramp/META-INF/services.xml" />
+                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureService24.aar" basedir="target/temp-ramp" />
+                <!-- Service 25 -->
+                <copy overwrite="yes" file="src/test/resources/rampart/services-25.xml" tofile="target/temp-ramp/META-INF/services.xml" />
+                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureService25.aar" basedir="target/temp-ramp" />
+                <!-- Service 26 -->
+                <copy overwrite="yes" file="src/test/resources/rampart/services-26.xml" tofile="target/temp-ramp/META-INF/services.xml" />
+                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureService26.aar" basedir="target/temp-ramp" />
+                <!-- Service 27 -->
+                <copy overwrite="yes" file="src/test/resources/rampart/services-27.xml" tofile="target/temp-ramp/META-INF/services.xml" />
+                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureService27.aar" basedir="target/temp-ramp" />
+                <!-- Service 28 -->
+                <copy overwrite="yes" file="src/test/resources/rampart/services-28.xml" tofile="target/temp-ramp/META-INF/services.xml" />
+                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureService28.aar" basedir="target/temp-ramp" />
+                <!-- Service 29 -->
+                <copy overwrite="yes" file="src/test/resources/rampart/services-29.xml" tofile="target/temp-ramp/META-INF/services.xml" />
+                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureService29.aar" basedir="target/temp-ramp" />
+                <!-- Service 30 -->
+                <copy overwrite="yes" file="src/test/resources/rampart/services-30.xml" tofile="target/temp-ramp/META-INF/services.xml" />
+                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureService30.aar" basedir="target/temp-ramp" />
 
-                                <!-- Service 32 -->
-                                <copy overwrite="yes" file="src/test/resources/rampart/services-32.xml" tofile="target/temp-ramp/META-INF/services.xml" />
-                                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureService32.aar" basedir="target/temp-ramp" />
+                <!-- Service 31 -->
+                <copy overwrite="yes" file="src/test/resources/rampart/services-31.xml" tofile="target/temp-ramp/META-INF/services.xml" />
+                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureService31.aar" basedir="target/temp-ramp" />
 
-                                <!-- Service 33 -->
-                                <copy overwrite="yes" file="src/test/resources/rampart/services-33.xml" tofile="target/temp-ramp/META-INF/services.xml" />
-                                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureService33.aar" basedir="target/temp-ramp" />
+                <!-- Service 32 -->
+                <copy overwrite="yes" file="src/test/resources/rampart/services-32.xml" tofile="target/temp-ramp/META-INF/services.xml" />
+                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureService32.aar" basedir="target/temp-ramp" />
 
-                                <!-- Service 34 -->
-                                <copy overwrite="yes" file="src/test/resources/rampart/services-34.xml" tofile="target/temp-ramp/META-INF/services.xml" />
-                                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureService34.aar" basedir="target/temp-ramp" />
-                                
-                                <!-- Service 35 -->
-                                <copy overwrite="yes" file="src/test/resources/rampart/services-35.xml" tofile="target/temp-ramp/META-INF/services.xml" />
-                                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureService35.aar" basedir="target/temp-ramp" />
+                <!-- Service 33 -->
+                <copy overwrite="yes" file="src/test/resources/rampart/services-33.xml" tofile="target/temp-ramp/META-INF/services.xml" />
+                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureService33.aar" basedir="target/temp-ramp" />
+
+                <!-- Service 34 -->
+                <copy overwrite="yes" file="src/test/resources/rampart/services-34.xml" tofile="target/temp-ramp/META-INF/services.xml" />
+                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureService34.aar" basedir="target/temp-ramp" />
+
+                <!-- Service 35 -->
+                <copy overwrite="yes" file="src/test/resources/rampart/services-35.xml" tofile="target/temp-ramp/META-INF/services.xml" />
+                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureService35.aar" basedir="target/temp-ramp" />
 
 
-                                <!-- Service SC-1 -->
-                                <copy overwrite="yes" file="src/test/resources/rampart/issuer.properties" tofile="target/temp-ramp/issuer.properties" />
-                                <copy overwrite="yes" file="src/test/resources/rampart/services-sc-1.xml" tofile="target/temp-ramp/META-INF/services.xml" />
-                                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureServiceSC1.aar" basedir="target/temp-ramp" />
+                <!-- Service SC-1 -->
+                <copy overwrite="yes" file="src/test/resources/rampart/issuer.properties" tofile="target/temp-ramp/issuer.properties" />
+                <copy overwrite="yes" file="src/test/resources/rampart/services-sc-1.xml" tofile="target/temp-ramp/META-INF/services.xml" />
+                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureServiceSC1.aar" basedir="target/temp-ramp" />
 
-                                <!-- Service SC-2 -->
-                                <copy overwrite="yes" file="src/test/resources/rampart/issuer.properties" tofile="target/temp-ramp/issuer.properties" />
-                                <copy overwrite="yes" file="src/test/resources/rampart/services-sc-2.xml" tofile="target/temp-ramp/META-INF/services.xml" />
-                                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureServiceSC2.aar" basedir="target/temp-ramp" />
+                <!-- Service SC-2 -->
+                <copy overwrite="yes" file="src/test/resources/rampart/issuer.properties" tofile="target/temp-ramp/issuer.properties" />
+                <copy overwrite="yes" file="src/test/resources/rampart/services-sc-2.xml" tofile="target/temp-ramp/META-INF/services.xml" />
+                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureServiceSC2.aar" basedir="target/temp-ramp" />
 
-                                <!-- Service SC-3 -->
-                                <copy overwrite="yes" file="src/test/resources/rampart/issuer.properties" tofile="target/temp-ramp/issuer.properties" />
-                                <copy overwrite="yes" file="src/test/resources/rampart/services-sc-3.xml" tofile="target/temp-ramp/META-INF/services.xml" />
-                                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureServiceSC3.aar" basedir="target/temp-ramp" />
+                <!-- Service SC-3 -->
+                <copy overwrite="yes" file="src/test/resources/rampart/issuer.properties" tofile="target/temp-ramp/issuer.properties" />
+                <copy overwrite="yes" file="src/test/resources/rampart/services-sc-3.xml" tofile="target/temp-ramp/META-INF/services.xml" />
+                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureServiceSC3.aar" basedir="target/temp-ramp" />
 
-                                <!-- Service SC-4 This is with standard secure conversation specification -->
-                                <copy overwrite="yes" file="src/test/resources/rampart/issuer.properties" tofile="target/temp-ramp/issuer.properties" />
-                                <copy overwrite="yes" file="src/test/resources/rampart/services-sc-4.xml" tofile="target/temp-ramp/META-INF/services.xml" />
-                                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureServiceSC4.aar" basedir="target/temp-ramp" />
+                <!-- Service SC-4 This is with standard secure conversation specification -->
+                <copy overwrite="yes" file="src/test/resources/rampart/issuer.properties" tofile="target/temp-ramp/issuer.properties" />
+                <copy overwrite="yes" file="src/test/resources/rampart/services-sc-4.xml" tofile="target/temp-ramp/META-INF/services.xml" />
+                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureServiceSC4.aar" basedir="target/temp-ramp" />
 
-                                <!-- Service SC-5 This is with standard secure conversation specification -->
-                                <copy overwrite="yes" file="src/test/resources/rampart/issuer.properties" tofile="target/temp-ramp/issuer.properties" />
-                                <copy overwrite="yes" file="src/test/resources/rampart/services-sc-5.xml" tofile="target/temp-ramp/META-INF/services.xml" />
-                                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureServiceSC5.aar" basedir="target/temp-ramp" />
+                <!-- Service SC-5 This is with standard secure conversation specification -->
+                <copy overwrite="yes" file="src/test/resources/rampart/issuer.properties" tofile="target/temp-ramp/issuer.properties" />
+                <copy overwrite="yes" file="src/test/resources/rampart/services-sc-5.xml" tofile="target/temp-ramp/META-INF/services.xml" />
+                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureServiceSC5.aar" basedir="target/temp-ramp" />
 
-                                <!-- Service SC-6 This is with standard secure conversation specification -->
-                                <copy overwrite="yes" file="src/test/resources/rampart/issuer.properties" tofile="target/temp-ramp/issuer.properties" />
-                                <copy overwrite="yes" file="src/test/resources/rampart/services-sc-6.xml" tofile="target/temp-ramp/META-INF/services.xml" />
-                                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureServiceSC6.aar" basedir="target/temp-ramp" />
-                                
-                                <!--  Kerberos Services -->
-                                <copy overwrite="yes" file="src/test/resources/rampart/kerberos/KerberosOverTransportKeytab.xml" tofile="target/temp-ramp/META-INF/services.xml" />
-                                <jar jarfile="target/test-resources/rampart_service_repo/services/KerberosOverTransportKeytab.aar" basedir="target/temp-ramp" />
-                                
-                                <copy overwrite="yes" file="src/test/resources/rampart/kerberos/KerberosOverTransportPWCB.xml" tofile="target/temp-ramp/META-INF/services.xml" />
-                                <jar jarfile="target/test-resources/rampart_service_repo/services/KerberosOverTransportPWCB.aar" basedir="target/temp-ramp" />
-                                
-                                <copy overwrite="yes" file="src/test/resources/rampart/kerberos/KerberosDelegation.xml" tofile="target/temp-ramp/META-INF/services.xml" />
-                                <jar jarfile="target/test-resources/rampart_service_repo/services/KerberosDelegation.aar" basedir="target/temp-ramp" />
-                                
+                <!-- Service SC-6 This is with standard secure conversation specification -->
+                <copy overwrite="yes" file="src/test/resources/rampart/issuer.properties" tofile="target/temp-ramp/issuer.properties" />
+                <copy overwrite="yes" file="src/test/resources/rampart/services-sc-6.xml" tofile="target/temp-ramp/META-INF/services.xml" />
+                <jar jarfile="target/test-resources/rampart_service_repo/services/SecureServiceSC6.aar" basedir="target/temp-ramp" />
 
-                                <!--
-                                 Set up the infra for rahas tests and the rahas client repo
-                                -->
-                                <mkdir dir="target/temp-rahas" />
-                                <mkdir dir="target/temp-rahas/META-INF" />
-                                <copy overwrite="yes" todir="target/temp-rahas">
-                                    <fileset dir="src/test/resources/rahas">
-                                        <include name="issuer.properties" />
-                                        <include name="rahas-sts.jks" />
-                                    </fileset>
-                                </copy>
-                                <!--path id="rahas.client.props" location="test-resources/rahas" -->
-                                <!--addPath id="maven.dependency.classpath" refid="rahas.client.props"-->
-                                <mkdir dir="target/test-resources/rahas_client_repo" />
-                                <mkdir dir="target/test-resources/rahas_client_repo/conf" />
-                                <!-- Rahas Test1: SAML Token test -->
-                                <mkdir dir="target/test-resources/rahas_service_repo_1" />
-                                <mkdir dir="target/test-resources/rahas_service_repo_1/conf" />
-                                <mkdir dir="target/test-resources/rahas_service_repo_1/services" />
-                                <!-- copy the services.xml and create the aar -->
-                                <copy overwrite="yes" file="src/test/resources/rahas/s1-services.xml" tofile="target/temp-rahas/META-INF/services.xml" />
-                                <jar jarfile="target/test-resources/rahas_service_repo_1/services/SecureService.aar" basedir="target/temp-rahas" />
-                                <!-- Rahas Test1: SAML Token test : END -->
-                                <!--
-                                 Rahas Test 3 & 4: RahasSAMLTokenUTForHoKTest and RahasSAMLTokenUTForHoKV1205Test
-                                -->
-                                <mkdir dir="target/test-resources/rahas_service_repo_3" />
-                                <mkdir dir="target/test-resources/rahas_service_repo_3/conf" />
-                                <mkdir dir="target/test-resources/rahas_service_repo_3/services" />
-                                <!-- copy the services.xml and create the aar -->
-                                <copy overwrite="yes" file="src/test/resources/rahas/s3-services.xml" tofile="target/temp-rahas/META-INF/services.xml" />
-                                <jar jarfile="target/test-resources/rahas_service_repo_3/services/SecureService.aar" basedir="target/temp-rahas" />
-                                <!--
-                                 Rahas Test 3 & 4: RahasSAMLTokenUTForHoKTest and RahasSAMLTokenUTForHoKV1205Test : END
-                                -->
-                                <!--
-                        RahasSAMLTokenAttributeTest
-                        -->
-                                <mkdir dir="target/test-resources/rahas_service_repo_5" />
-                                <mkdir dir="target/test-resources/rahas_service_repo_5/conf" />
-                                <mkdir dir="target/test-resources/rahas_service_repo_5/services" />
-                                <!-- copy the services.xml and create the aar -->
-                                <copy overwrite="yes" file="src/test/resources/rahas/s5-services.xml" tofile="target/temp-rahas/META-INF/services.xml" />
-                                <jar jarfile="target/test-resources/rahas_service_repo_5/services/SecureService.aar" basedir="target/temp-rahas" />
+                <!--  Kerberos Services -->
+                <copy overwrite="yes" file="src/test/resources/rampart/kerberos/KerberosOverTransportKeytab.xml" tofile="target/temp-ramp/META-INF/services.xml" />
+                <jar jarfile="target/test-resources/rampart_service_repo/services/KerberosOverTransportKeytab.aar" basedir="target/temp-ramp" />
 
-                                <!--RahasAttributeTest END-->
-                            </target>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <!--plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>add-test-source</id>
-                        <phase>process-resources</phase>
-                        <goals>
-                            <goal>add-test-source</goal>
-                        </goals>
-                        <configuration>
-                            <sources>
-				<source>target/generated-code/resources</source>
-			    </sources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin-->
-            <plugin>
-                <groupId>com.github.veithen.alta</groupId>
-                <artifactId>alta-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>generate-properties</goal>
-                        </goals>
-                        <configuration>
-                            <name>aspectjweaver</name>
-                            <value>%file%</value>
-                            <artifactSet>
-                                <artifacts>
-                                    <artifact>
-                                        <groupId>org.aspectj</groupId>
-                                        <artifactId>aspectjweaver</artifactId>
-                                    </artifact>
-                                </artifacts>
-                            </artifactSet>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <!-- Add the Xerces/Xalan versions expected by OpenSAML to the boot classpath so that the build succeeds on older 1.5 JDKs -->
-                    <additionalClasspathElements>
-                        <additionalClasspathElement>${project.build.directory}/endorsed/xml-apis.jar</additionalClasspathElement>
-                        <additionalClasspathElement>${project.build.directory}/endorsed/xercesImpl.jar</additionalClasspathElement>
-                        <additionalClasspathElement>${project.build.directory}/endorsed/resolver.jar</additionalClasspathElement>
-                        <additionalClasspathElement>${project.build.directory}/endorsed/serializer.jar</additionalClasspathElement>
-                        <additionalClasspathElement>${project.build.directory}/endorsed/xalan.jar</additionalClasspathElement>
-                    </additionalClasspathElements>
-                    <argLine>${jacoco.surefireArgLine} -javaagent:${aspectjweaver}</argLine>
-                </configuration>
-            </plugin>
-            <plugin>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <configuration>
-                    <skip>true</skip>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
+                <copy overwrite="yes" file="src/test/resources/rampart/kerberos/KerberosOverTransportPWCB.xml" tofile="target/temp-ramp/META-INF/services.xml" />
+                <jar jarfile="target/test-resources/rampart_service_repo/services/KerberosOverTransportPWCB.aar" basedir="target/temp-ramp" />
 
-    <dependencies>
-        <dependency>
-            <groupId>org.apache.rampart</groupId>
-            <artifactId>rampart-policy</artifactId>
-            <version>${project.version}</version>
-            <!--  Use Jetty's servlet api (2.5) -->
-            <exclusions>
-                <exclusion>
-                    <groupId>javax.servlet</groupId>
-                    <artifactId>servlet-api</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.rampart</groupId>
-            <artifactId>rampart-trust</artifactId>
-            <version>${project.version}</version>
-            <!--  Use Jetty's servlet api (2.5) -->
-            <exclusions>
-                <exclusion>
-                    <groupId>javax.servlet</groupId>
-                    <artifactId>servlet-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.bouncycastle</groupId>
-                    <artifactId>bcprov-jdk15on</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.rampart</groupId>
-            <artifactId>rampart-core</artifactId>
-            <version>${project.version}</version>
-            <!--  Use Jetty's servlet api (2.5) -->
-            <exclusions>
-                <exclusion>
-                    <groupId>javax.servlet</groupId>
-                    <artifactId>servlet-api</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.rampart</groupId>
-            <artifactId>rampart-testutils</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.axis2</groupId>
-            <artifactId>axis2-transport-http</artifactId>
-            <version>${axis2.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.axis2</groupId>
-            <artifactId>axis2-transport-local</artifactId>
-            <version>${axis2.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.axis2</groupId>
-            <artifactId>axis2-adb</artifactId>
-            <version>${axis2.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.rampart</groupId>
-            <artifactId>rampart</artifactId>
-            <version>${project.version}</version>
-            <type>mar</type>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.rampart</groupId>
-            <artifactId>rahas</artifactId>
-            <version>${project.version}</version>
-            <type>mar</type>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.axis2</groupId>
-            <artifactId>addressing</artifactId>
-            <type>mar</type>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.directory.server</groupId>
-            <artifactId>apacheds-core-annotations</artifactId>
-            <version>2.0.0-M24</version>
-            <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.bouncycastle</groupId>
-                    <artifactId>bcprov-jdk15on</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.bouncycastle</groupId>
-            <artifactId>bcprov-jdk15on</artifactId>
-            <version>${bcprov.jdk15.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.bouncycastle</groupId>
-            <artifactId>bcpkix-jdk15on</artifactId>
-            <version>${bcprov.jdk15.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.directory.server</groupId>
-            <artifactId>apacheds-protocol-shared</artifactId>
-            <version>2.0.0-M24</version>
-            <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.bouncycastle</groupId>
-                    <artifactId>bcprov-jdk15on</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.directory.server</groupId>
-            <artifactId>apacheds-protocol-kerberos</artifactId>
-            <version>2.0.0-M24</version>
-            <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.bouncycastle</groupId>
-                    <artifactId>bcprov-jdk15on</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.directory.server</groupId>
-            <artifactId>apacheds-interceptor-kerberos</artifactId>
-            <version>2.0.0-M24</version>
-            <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.bouncycastle</groupId>
-                    <artifactId>bcprov-jdk15on</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.directory.api</groupId>
-            <artifactId>api-ldap-codec-standalone</artifactId>
-            <version>1.0.0-M33</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.directory.api</groupId>
-            <artifactId>api-ldap-extras-codec-api</artifactId>
-            <version>1.0.0-M33</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-            <version>2.4</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>commons-collections</groupId>
-            <artifactId>commons-collections</artifactId>
-            <version>3.2</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.ws.commons.axiom</groupId>
-            <artifactId>axiom-truth</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.axis2</groupId>
-            <artifactId>axis2-testutils</artifactId>
-            <version>${axis2.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.bouncycastle</groupId>
-                    <artifactId>bcpkix-jdk15on</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-    </dependencies>
+                <copy overwrite="yes" file="src/test/resources/rampart/kerberos/KerberosDelegation.xml" tofile="target/temp-ramp/META-INF/services.xml" />
+                <jar jarfile="target/test-resources/rampart_service_repo/services/KerberosDelegation.aar" basedir="target/temp-ramp" />
+
+
+                <!--
+                 Set up the infra for rahas tests and the rahas client repo
+                -->
+                <mkdir dir="target/temp-rahas" />
+                <mkdir dir="target/temp-rahas/META-INF" />
+                <copy overwrite="yes" todir="target/temp-rahas">
+                  <fileset dir="src/test/resources/rahas">
+                    <include name="issuer.properties" />
+                    <include name="rahas-sts.jks" />
+                  </fileset>
+                </copy>
+                <!--path id="rahas.client.props" location="test-resources/rahas" -->
+                <!--addPath id="maven.dependency.classpath" refid="rahas.client.props"-->
+                <mkdir dir="target/test-resources/rahas_client_repo" />
+                <mkdir dir="target/test-resources/rahas_client_repo/conf" />
+                <!-- Rahas Test1: SAML Token test -->
+                <mkdir dir="target/test-resources/rahas_service_repo_1" />
+                <mkdir dir="target/test-resources/rahas_service_repo_1/conf" />
+                <mkdir dir="target/test-resources/rahas_service_repo_1/services" />
+                <!-- copy the services.xml and create the aar -->
+                <copy overwrite="yes" file="src/test/resources/rahas/s1-services.xml" tofile="target/temp-rahas/META-INF/services.xml" />
+                <jar jarfile="target/test-resources/rahas_service_repo_1/services/SecureService.aar" basedir="target/temp-rahas" />
+                <!-- Rahas Test1: SAML Token test : END -->
+                <!--
+                 Rahas Test 3 & 4: RahasSAMLTokenUTForHoKTest and RahasSAMLTokenUTForHoKV1205Test
+                -->
+                <mkdir dir="target/test-resources/rahas_service_repo_3" />
+                <mkdir dir="target/test-resources/rahas_service_repo_3/conf" />
+                <mkdir dir="target/test-resources/rahas_service_repo_3/services" />
+                <!-- copy the services.xml and create the aar -->
+                <copy overwrite="yes" file="src/test/resources/rahas/s3-services.xml" tofile="target/temp-rahas/META-INF/services.xml" />
+                <jar jarfile="target/test-resources/rahas_service_repo_3/services/SecureService.aar" basedir="target/temp-rahas" />
+                <!--
+                 Rahas Test 3 & 4: RahasSAMLTokenUTForHoKTest and RahasSAMLTokenUTForHoKV1205Test : END
+                -->
+                <!--
+        RahasSAMLTokenAttributeTest
+        -->
+                <mkdir dir="target/test-resources/rahas_service_repo_5" />
+                <mkdir dir="target/test-resources/rahas_service_repo_5/conf" />
+                <mkdir dir="target/test-resources/rahas_service_repo_5/services" />
+                <!-- copy the services.xml and create the aar -->
+                <copy overwrite="yes" file="src/test/resources/rahas/s5-services.xml" tofile="target/temp-rahas/META-INF/services.xml" />
+                <jar jarfile="target/test-resources/rahas_service_repo_5/services/SecureService.aar" basedir="target/temp-rahas" />
+
+                <!--RahasAttributeTest END-->
+              </target>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <!--plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>build-helper-maven-plugin</artifactId>
+          <executions>
+              <execution>
+                  <id>add-test-source</id>
+                  <phase>process-resources</phase>
+                  <goals>
+                      <goal>add-test-source</goal>
+                  </goals>
+                  <configuration>
+                      <sources>
+  <source>target/generated-code/resources</source>
+    </sources>
+                  </configuration>
+              </execution>
+          </executions>
+      </plugin-->
+      <plugin>
+        <groupId>com.github.veithen.alta</groupId>
+        <artifactId>alta-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>generate-properties</goal>
+            </goals>
+            <configuration>
+              <name>aspectjweaver</name>
+              <value>%file%</value>
+              <artifactSet>
+                <artifacts>
+                  <artifact>
+                    <groupId>org.aspectj</groupId>
+                    <artifactId>aspectjweaver</artifactId>
+                  </artifact>
+                </artifacts>
+              </artifactSet>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <!-- Add the Xerces/Xalan versions expected by OpenSAML to the boot classpath so that the build succeeds on older 1.5 JDKs -->
+          <additionalClasspathElements>
+            <additionalClasspathElement>${project.build.directory}/endorsed/xml-apis.jar</additionalClasspathElement>
+            <additionalClasspathElement>${project.build.directory}/endorsed/xercesImpl.jar</additionalClasspathElement>
+            <additionalClasspathElement>${project.build.directory}/endorsed/resolver.jar</additionalClasspathElement>
+            <additionalClasspathElement>${project.build.directory}/endorsed/serializer.jar</additionalClasspathElement>
+            <additionalClasspathElement>${project.build.directory}/endorsed/xalan.jar</additionalClasspathElement>
+          </additionalClasspathElements>
+          <argLine>
+            --add-opens java.base/java.lang=ALL-UNNAMED
+            -javaagent:${user.home}/.m2/repository/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar
+            @{argLine}
+          </argLine>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-deploy-plugin</artifactId>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.rampart</groupId>
+      <artifactId>rampart-policy</artifactId>
+      <version>${project.version}</version>
+      <!--  Use Jetty's servlet api (2.5) -->
+      <exclusions>
+        <exclusion>
+          <groupId>javax.servlet</groupId>
+          <artifactId>servlet-api</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.rampart</groupId>
+      <artifactId>rampart-trust</artifactId>
+      <version>${project.version}</version>
+      <!--  Use Jetty's servlet api (2.5) -->
+      <exclusions>
+        <exclusion>
+          <groupId>javax.servlet</groupId>
+          <artifactId>servlet-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.bouncycastle</groupId>
+          <artifactId>bcprov-jdk15on</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.rampart</groupId>
+      <artifactId>rampart-core</artifactId>
+      <version>${project.version}</version>
+      <!--  Use Jetty's servlet api (2.5) -->
+      <exclusions>
+        <exclusion>
+          <groupId>javax.servlet</groupId>
+          <artifactId>servlet-api</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.rampart</groupId>
+      <artifactId>rampart-testutils</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.axis2</groupId>
+      <artifactId>axis2-transport-http</artifactId>
+      <version>${axis2.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.axis2</groupId>
+      <artifactId>axis2-transport-local</artifactId>
+      <version>${axis2.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.axis2</groupId>
+      <artifactId>axis2-adb</artifactId>
+      <version>${axis2.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.rampart</groupId>
+      <artifactId>rampart</artifactId>
+      <version>${project.version}</version>
+      <type>mar</type>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.rampart</groupId>
+      <artifactId>rahas</artifactId>
+      <version>${project.version}</version>
+      <type>mar</type>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.axis2</groupId>
+      <artifactId>addressing</artifactId>
+      <type>mar</type>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.directory.server</groupId>
+      <artifactId>apacheds-core-annotations</artifactId>
+      <version>2.0.0-M24</version>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.bouncycastle</groupId>
+          <artifactId>bcprov-jdk15on</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcprov-jdk15on</artifactId>
+      <version>${bcprov.jdk15.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcpkix-jdk15on</artifactId>
+      <version>${bcprov.jdk15.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-collections4</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.directory.server</groupId>
+      <artifactId>apacheds-protocol-shared</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.directory.server</groupId>
+      <artifactId>apacheds-protocol-kerberos</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.directory.server</groupId>
+      <artifactId>apacheds-interceptor-kerberos</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.directory.api</groupId>
+      <artifactId>api-ldap-codec-standalone</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.directory.api</groupId>
+      <artifactId>api-ldap-extras-codec-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.ws.commons.axiom</groupId>
+      <artifactId>axiom-truth</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-slf4j-impl</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.axis2</groupId>
+      <artifactId>axis2-testutils</artifactId>
+      <version>${axis2.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.bouncycastle</groupId>
+          <artifactId>bcpkix-jdk15on</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+  </dependencies>
+
 </project>
