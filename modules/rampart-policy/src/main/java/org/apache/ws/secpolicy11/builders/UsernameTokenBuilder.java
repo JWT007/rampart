@@ -1,12 +1,12 @@
 /*
  * Copyright 2001-2004 The Apache Software Foundation.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -34,59 +34,63 @@ import org.apache.ws.secpolicy.model.UsernameToken;
 
 public class UsernameTokenBuilder implements AssertionBuilder<OMElement> {
 
-    
-    public Assertion build(OMElement element, AssertionBuilderFactory factory) throws IllegalArgumentException {
-        UsernameToken usernameToken = new UsernameToken(SPConstants.SP_V11);
-        
-        OMAttribute attribute = element.getAttribute(SP11Constants.INCLUDE_TOKEN);
-        
-        if(attribute != null) {
-            int inclusion = SP11Constants.getInclusionFromAttributeValue(attribute.getAttributeValue());
-            usernameToken.setInclusion(inclusion);
-        }
-        
-        OMAttribute isOptional = element.getAttribute(Constants.Q_ELEM_OPTIONAL_ATTR);
-		if (isOptional != null) {
-			usernameToken.setOptional(Boolean.valueOf(isOptional.getAttributeValue())
-					.booleanValue());
-		} 
-        
-        OMElement policyElement = element.getFirstElement();
-        
-        if (policyElement != null && policyElement.getQName().equals(org.apache.neethi.Constants.Q_ELEM_POLICY)) {
-        
-            Policy policy = PolicyEngine.getPolicy(element.getFirstElement());
-            policy = (Policy) policy.normalize(false);
-            
-            for (Iterator<List<Assertion>> iterator = policy.getAlternatives(); iterator.hasNext();) {
-                processAlternative(iterator.next(), usernameToken);
-                
-                /*
-                 * since there should be only one alternative
-                 */
-                break;
-            }            
-        }
-        
-        return usernameToken;
-    }
-        
-    public QName[] getKnownElements() {
-        return new QName[] {SP11Constants.USERNAME_TOKEN};
+  public Assertion build(OMElement element, AssertionBuilderFactory factory) throws IllegalArgumentException {
+
+    final UsernameToken usernameToken = new UsernameToken(SPConstants.SP_V11);
+
+    final OMAttribute attribute = element.getAttribute(SP11Constants.INCLUDE_TOKEN);
+
+    if (attribute != null) {
+      int inclusion = SP11Constants.getInclusionFromAttributeValue(attribute.getAttributeValue());
+      usernameToken.setInclusion(inclusion);
     }
 
-    private void processAlternative(List<Assertion> assertions, UsernameToken parent) {
-                
-        for (Iterator<Assertion> iterator = assertions.iterator(); iterator.hasNext();) {
-            Assertion assertion = iterator.next();
-            QName qname = assertion.getName();
-            
-            if (SP11Constants.WSS_USERNAME_TOKEN10.equals(qname)) {
-                parent.setUseUTProfile10(true);
-                
-            } else if (SP11Constants.WSS_USERNAME_TOKEN11.equals(qname)) {
-                parent.setUseUTProfile11(true);
-            }
-        }
+    final OMAttribute isOptional = element.getAttribute(Constants.Q_ELEM_OPTIONAL_ATTR);
+
+    if (isOptional != null) {
+      usernameToken.setOptional(Boolean.parseBoolean(isOptional.getAttributeValue()));
     }
+
+    final OMElement policyElement = element.getFirstElement();
+
+    if (policyElement != null && policyElement.getQName().equals(org.apache.neethi.Constants.Q_ELEM_POLICY)) {
+
+      final Policy policy = PolicyEngine.getPolicy(element.getFirstElement()).normalize(false);
+
+      final Iterator<List<Assertion>> iterator = policy.getAlternatives();
+
+      if (iterator.hasNext()) { // there should be max one alternative
+        processAlternative(iterator.next(), usernameToken);
+      }
+
+    }
+
+    return usernameToken;
+
+  }
+
+  public QName[] getKnownElements() {
+    return new QName[] { SP11Constants.USERNAME_TOKEN };
+  }
+
+  private void processAlternative(List<Assertion> assertions, UsernameToken parent) {
+
+    if (assertions != null) {
+
+      for (Assertion assertion : assertions) {
+
+        final QName qname = assertion.getName();
+
+        if (SP11Constants.WSS_USERNAME_TOKEN10.equals(qname)) {
+          parent.setUseUTProfile10(true);
+        } else if (SP11Constants.WSS_USERNAME_TOKEN11.equals(qname)) {
+          parent.setUseUTProfile11(true);
+        }
+
+      }
+
+    }
+
+  }
+
 }

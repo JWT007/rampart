@@ -26,111 +26,111 @@ import org.apache.ws.secpolicy.SPConstants;
 import org.apache.ws.secpolicy.SP12Constants;
 
 /**
- * 
+ *
  * @author Ruchith Fernando (ruchith.fernando@gmail.com)
  */
 public class HttpsToken extends Token {
 
-    public HttpsToken(int version){
-        setVersion(version);
-    }
-    
-    private boolean requireClientCertificate = false;
-    private boolean httpBasicAuthentication = false;
-    private boolean httpDigestAuthentication = false;
+  public HttpsToken(int version){
+    setVersion(version);
+  }
 
-    public boolean isRequireClientCertificate() {
-        return requireClientCertificate;
-    }
+  private boolean requireClientCertificate = false;
+  private boolean httpBasicAuthentication = false;
+  private boolean httpDigestAuthentication = false;
 
-    public void setRequireClientCertificate(boolean requireClientCertificate) {
-        this.requireClientCertificate = requireClientCertificate;
-    }
-    
-    /**
-     * @return the httpBasicAuthentication
-     */
-    public boolean isHttpBasicAuthentication()
-    {
-        return httpBasicAuthentication;
-    }
+  public boolean isRequireClientCertificate() {
+    return requireClientCertificate;
+  }
 
-    /**
-     * @param httpBasicAuthentication the httpBasicAuthentication to set
-     */
-    public void setHttpBasicAuthentication(boolean httpBasicAuthentication)
-    {
-        this.httpBasicAuthentication = httpBasicAuthentication;
-    }
+  public void setRequireClientCertificate(boolean requireClientCertificate) {
+    this.requireClientCertificate = requireClientCertificate;
+  }
 
-    /**
-     * @return the httpDigestAuthentication
-     */
-    public boolean isHttpDigestAuthentication()
-    {
-        return httpDigestAuthentication;
-    }
+  /**
+   * @return the httpBasicAuthentication
+   */
+  public boolean isHttpBasicAuthentication()
+  {
+    return httpBasicAuthentication;
+  }
 
-    /**
-     * @param httpDigestAuthentication the httpDigestAuthentication to set
-     */
-    public void setHttpDigestAuthentication(boolean httpDigestAuthentication)
-    {
-        this.httpDigestAuthentication = httpDigestAuthentication;
-    }
+  /**
+   * @param httpBasicAuthentication the httpBasicAuthentication to set
+   */
+  public void setHttpBasicAuthentication(boolean httpBasicAuthentication)
+  {
+    this.httpBasicAuthentication = httpBasicAuthentication;
+  }
 
-    public QName getName() {
-        if (version == SPConstants.SP_V12) {
-            return SP12Constants.HTTPS_TOKEN;
-        } else {
-            return SP11Constants.HTTPS_TOKEN;
+  /**
+   * @return the httpDigestAuthentication
+   */
+  public boolean isHttpDigestAuthentication()
+  {
+    return httpDigestAuthentication;
+  }
+
+  /**
+   * @param httpDigestAuthentication the httpDigestAuthentication to set
+   */
+  public void setHttpDigestAuthentication(boolean httpDigestAuthentication)
+  {
+    this.httpDigestAuthentication = httpDigestAuthentication;
+  }
+
+  public QName getName() {
+    if (version == SPConstants.SP_V12) {
+      return SP12Constants.HTTPS_TOKEN;
+    } else {
+      return SP11Constants.HTTPS_TOKEN;
+    }
+  }
+
+  public PolicyComponent normalize() {
+    throw new UnsupportedOperationException();
+  }
+
+  public void serialize(XMLStreamWriter writer) throws XMLStreamException {
+
+    String prefix = getName().getPrefix();
+    String localname = getName().getLocalPart();
+    String namespaceURI = getName().getNamespaceURI();
+
+    // <sp:HttpsToken
+    writeStartElement(writer, prefix, localname, namespaceURI);
+
+
+    if (version == SPConstants.SP_V12) {
+
+      if (isRequireClientCertificate() ||
+          isHttpBasicAuthentication() ||
+          isHttpDigestAuthentication()) {
+        // <wsp:Policy>
+        writeStartElement(writer, SPConstants.POLICY);
+
+        /*
+         *  The ws policy 1.2 specification states that only one of those should be present, although
+         * a web server (say tomcat) could be normally configured to require both a client certificate and
+         * a http user/pwd authentication. Nevertheless, stick to the specification.
+         */
+        if(isHttpBasicAuthentication()) {
+          writeEmptyElement(writer, prefix, SPConstants.HTTP_BASIC_AUTHENTICATION.getLocalPart(), namespaceURI);
+        } else if(isHttpDigestAuthentication()) {
+          writeEmptyElement(writer, prefix, SPConstants.HTTP_DIGEST_AUTHENTICATION.getLocalPart(), namespaceURI);
+        } else if(isRequireClientCertificate()) {
+          writeEmptyElement(writer, prefix, SPConstants.REQUIRE_CLIENT_CERTIFICATE.getLocalPart(), namespaceURI);
         }
-    }
-
-    public PolicyComponent normalize() {
-        throw new UnsupportedOperationException();
-    }
-
-    public void serialize(XMLStreamWriter writer) throws XMLStreamException {
-
-        String prefix = getName().getPrefix();
-        String localname = getName().getLocalPart();
-        String namespaceURI = getName().getNamespaceURI();
-
-        // <sp:HttpsToken
-        writeStartElement(writer, prefix, localname, namespaceURI);
-
-
-        if (version == SPConstants.SP_V12) {
-            
-            if (isRequireClientCertificate() ||
-                isHttpBasicAuthentication() ||
-                isHttpDigestAuthentication()) {
-                // <wsp:Policy>
-                writeStartElement(writer, SPConstants.POLICY);
-                
-                /*
-                 *  The ws policy 1.2 specification states that only one of those should be present, although
-                 * a web server (say tomcat) could be normally configured to require both a client certificate and 
-                 * a http user/pwd authentication. Nevertheless stick to the specification.
-                 */
-                if(isHttpBasicAuthentication()) {
-                    writeEmptyElement(writer, prefix, SPConstants.HTTP_BASIC_AUTHENTICATION.getLocalPart(), namespaceURI);
-                } else if(isHttpDigestAuthentication()) {
-                    writeEmptyElement(writer, prefix, SPConstants.HTTP_DIGEST_AUTHENTICATION.getLocalPart(), namespaceURI);
-                } else if(isRequireClientCertificate()) {
-                    writeEmptyElement(writer, prefix, SPConstants.REQUIRE_CLIENT_CERTIFICATE.getLocalPart(), namespaceURI);
-                }
-                // </wsp:Policy>
-                writer.writeEndElement();
-            }
-        } else {
-            // RequireClientCertificate=".."
-            writer.writeAttribute(SPConstants.REQUIRE_CLIENT_CERTIFICATE.getLocalPart(), Boolean
-                            .toString(isRequireClientCertificate()));
-        }
-
+        // </wsp:Policy>
         writer.writeEndElement();
-        // </sp:HttpsToken>
+      }
+    } else {
+      // RequireClientCertificate=".."
+      writer.writeAttribute(SPConstants.REQUIRE_CLIENT_CERTIFICATE.getLocalPart(), Boolean
+        .toString(isRequireClientCertificate()));
     }
+
+    writer.writeEndElement();
+    // </sp:HttpsToken>
+  }
 }

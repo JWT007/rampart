@@ -17,6 +17,7 @@
 package org.apache.rampart;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.namespace.QName;
 
@@ -24,31 +25,35 @@ import org.apache.axis2.context.MessageContext;
 import org.apache.neethi.Policy;
 import org.apache.ws.security.WSConstants;
 import org.apache.ws.security.conversation.ConversationConstants;
+import org.junit.jupiter.api.Test;
 
 public class SymmetricBindingBuilderTest extends MessageBuilderTestBase {
-	
-	public void testSymmBinding() throws Exception {
-        MessageContext ctx = getMsgCtx();
-        
-        String policyXml = "test-resources/policy/rampart-symm-binding-1.xml";
 
-        Policy policy = this.loadPolicy(policyXml);
-        
-        ctx.setProperty(RampartMessageData.KEY_RAMPART_POLICY, policy);
-        
-        MessageBuilder builder = new MessageBuilder();
-        builder.build(ctx);
-        
-        ArrayList<QName> list = new ArrayList<QName>();
-        
-        list.add(new QName(WSConstants.WSU_NS, WSConstants.TIMESTAMP_TOKEN_LN));
-        list.add(new QName(WSConstants.ENC_NS, WSConstants.ENC_KEY_LN));
-        list.add(new QName(WSConstants.ENC_NS, WSConstants.REF_LIST_LN));
-        list.add(new QName(WSConstants.SIG_NS, WSConstants.SIG_LN));
-        
-        this.verifySecHeader(list.iterator(), ctx.getEnvelope());
-	}
-	
+  @Test
+  public void testSymmBinding() throws Exception {
+    MessageContext ctx = getMsgCtx();
+
+    String policyXml = "test-resources/policy/rampart-symm-binding-1.xml";
+
+    Policy policy = this.loadPolicy(policyXml);
+
+    ctx.setProperty(RampartMessageData.KEY_RAMPART_POLICY, policy);
+
+    MessageBuilder builder = new MessageBuilder();
+    builder.build(ctx);
+
+    ArrayList<QName> list = new ArrayList<QName>();
+
+    list.add(new QName(WSConstants.WSU_NS, WSConstants.TIMESTAMP_TOKEN_LN));
+    list.add(new QName(WSConstants.ENC_NS, WSConstants.ENC_KEY_LN));
+    list.add(new QName(WSConstants.ENC_NS, WSConstants.REF_LIST_LN));
+    list.add(new QName(WSConstants.SIG_NS, WSConstants.SIG_LN));
+
+    this.verifySecHeader(list.iterator(), ctx.getEnvelope());
+
+  }
+
+//  @Test
 //	public void testSymmBindingServerSide() {
 //		
 //        try {
@@ -75,100 +80,109 @@ public class SymmetricBindingBuilderTest extends MessageBuilderTestBase {
 //            fail(e.getMessage());
 //        }
 //	}
-	
-	public void testSymmBindingWithDK() throws Exception {
-        MessageContext ctx = getMsgCtx();
-        
-        String policyXml = "test-resources/policy/rampart-symm-binding-2-dk.xml";
 
-        Policy policy = this.loadPolicy(policyXml);
-        
-        ctx.setProperty(RampartMessageData.KEY_RAMPART_POLICY, policy);
-        
-        MessageBuilder builder = new MessageBuilder();
-        builder.build(ctx);
-        
-        ArrayList<QName> list = new ArrayList<QName>();
-        
-        list.add(new QName(WSConstants.WSU_NS, WSConstants.TIMESTAMP_TOKEN_LN));
-        list.add(new QName(WSConstants.ENC_NS, WSConstants.ENC_KEY_LN));
-        list.add(new QName(ConversationConstants.WSC_NS_05_02, ConversationConstants.DERIVED_KEY_TOKEN_LN));
-        list.add(new QName(WSConstants.ENC_NS, WSConstants.REF_LIST_LN));
-        list.add(new QName(ConversationConstants.WSC_NS_05_02, ConversationConstants.DERIVED_KEY_TOKEN_LN));
-        list.add(new QName(WSConstants.SIG_NS, WSConstants.SIG_LN));
-        
-        this.verifySecHeader(list.iterator(), ctx.getEnvelope());
-	}
-	
-	public void testSymmBindingWithDKEncrSig() throws Exception {
-        MessageContext ctx = getMsgCtx();
-        
-        String policyXml = "test-resources/policy/rampart-symm-binding-3-dk-es.xml";
+  @Test
+  public void testSymmBindingWithDK() throws Exception {
+    MessageContext ctx = getMsgCtx();
 
-        Policy policy = this.loadPolicy(policyXml);
-        
-        ctx.setProperty(RampartMessageData.KEY_RAMPART_POLICY, policy);
-        
-        MessageBuilder builder = new MessageBuilder();
-        builder.build(ctx);
-        
-        ArrayList<QName> list = new ArrayList<QName>();
-        
-        list.add(new QName(WSConstants.WSU_NS, WSConstants.TIMESTAMP_TOKEN_LN));
-        list.add(new QName(WSConstants.ENC_NS, WSConstants.ENC_KEY_LN));
-        list.add(new QName(ConversationConstants.WSC_NS_05_02, ConversationConstants.DERIVED_KEY_TOKEN_LN));
-        list.add(new QName(WSConstants.ENC_NS, WSConstants.REF_LIST_LN));
-        list.add(new QName(ConversationConstants.WSC_NS_05_02, ConversationConstants.DERIVED_KEY_TOKEN_LN));
-        list.add(new QName(WSConstants.ENC_NS, WSConstants.ENC_DATA_LN));
-        
-        this.verifySecHeader(list.iterator(), ctx.getEnvelope());
-	}
-	
-	public void testSymmBindingEncrBeforeSig() throws Exception {
-        MessageContext ctx = getMsgCtx();
-        
-        String policyXml = "test-resources/policy/rampart-symm-binding-4-ebs.xml";
+    String policyXml = "test-resources/policy/rampart-symm-binding-2-dk.xml";
 
-        Policy policy = this.loadPolicy(policyXml);
-        
-        ctx.setProperty(RampartMessageData.KEY_RAMPART_POLICY, policy);
-        
-        MessageBuilder builder = new MessageBuilder();
-        builder.build(ctx);
-        
-        ArrayList<QName> list = new ArrayList<QName>();
-        
-        list.add(new QName(WSConstants.WSU_NS, WSConstants.TIMESTAMP_TOKEN_LN));
-        list.add(new QName(WSConstants.ENC_NS, WSConstants.ENC_KEY_LN));
-        list.add(new QName(WSConstants.SIG_NS, WSConstants.SIG_LN));
-        list.add(new QName(WSConstants.ENC_NS, WSConstants.REF_LIST_LN));
-        
-        this.verifySecHeader(list.iterator(), ctx.getEnvelope());
-	}
-	
-	public void testSymmBindingWithDKEncrBeforeSig() throws Exception {
-        MessageContext ctx = getMsgCtx();
-        
-        String policyXml = "test-resources/policy/rampart-symm-binding-5-dk-ebs.xml";
+    Policy policy = this.loadPolicy(policyXml);
 
-        Policy policy = this.loadPolicy(policyXml);
-        
-        ctx.setProperty(RampartMessageData.KEY_RAMPART_POLICY, policy);
-        
-        MessageBuilder builder = new MessageBuilder();
-        builder.build(ctx);
-        
-        ArrayList<QName> list = new ArrayList<QName>();
-        
-        list.add(new QName(WSConstants.WSU_NS, WSConstants.TIMESTAMP_TOKEN_LN));
-        list.add(new QName(WSConstants.ENC_NS, WSConstants.ENC_KEY_LN));
-        list.add(new QName(ConversationConstants.WSC_NS_05_02, ConversationConstants.DERIVED_KEY_TOKEN_LN));
-        list.add(new QName(WSConstants.SIG_NS, WSConstants.SIG_LN));
-        list.add(new QName(ConversationConstants.WSC_NS_05_02, ConversationConstants.DERIVED_KEY_TOKEN_LN));
-        list.add(new QName(WSConstants.ENC_NS, WSConstants.REF_LIST_LN));
+    ctx.setProperty(RampartMessageData.KEY_RAMPART_POLICY, policy);
 
-        
-        this.verifySecHeader(list.iterator(), ctx.getEnvelope());
-	}
+    MessageBuilder builder = new MessageBuilder();
+    builder.build(ctx);
+
+    ArrayList<QName> list = new ArrayList<QName>();
+
+    list.add(new QName(WSConstants.WSU_NS, WSConstants.TIMESTAMP_TOKEN_LN));
+    list.add(new QName(WSConstants.ENC_NS, WSConstants.ENC_KEY_LN));
+    list.add(new QName(ConversationConstants.WSC_NS_05_02, ConversationConstants.DERIVED_KEY_TOKEN_LN));
+    list.add(new QName(WSConstants.ENC_NS, WSConstants.REF_LIST_LN));
+    list.add(new QName(ConversationConstants.WSC_NS_05_02, ConversationConstants.DERIVED_KEY_TOKEN_LN));
+    list.add(new QName(WSConstants.SIG_NS, WSConstants.SIG_LN));
+
+    this.verifySecHeader(list.iterator(), ctx.getEnvelope());
+
+  }
+
+  @Test
+  public void testSymmBindingWithDKEncrSig() throws Exception {
+    MessageContext ctx = getMsgCtx();
+
+    String policyXml = "test-resources/policy/rampart-symm-binding-3-dk-es.xml";
+
+    Policy policy = this.loadPolicy(policyXml);
+
+    ctx.setProperty(RampartMessageData.KEY_RAMPART_POLICY, policy);
+
+    MessageBuilder builder = new MessageBuilder();
+    builder.build(ctx);
+
+    List<QName> list = new ArrayList<>();
+
+    list.add(new QName(WSConstants.WSU_NS, WSConstants.TIMESTAMP_TOKEN_LN));
+    list.add(new QName(WSConstants.ENC_NS, WSConstants.ENC_KEY_LN));
+    list.add(new QName(ConversationConstants.WSC_NS_05_02, ConversationConstants.DERIVED_KEY_TOKEN_LN));
+    list.add(new QName(WSConstants.ENC_NS, WSConstants.REF_LIST_LN));
+    list.add(new QName(ConversationConstants.WSC_NS_05_02, ConversationConstants.DERIVED_KEY_TOKEN_LN));
+    list.add(new QName(WSConstants.ENC_NS, WSConstants.ENC_DATA_LN));
+
+    this.verifySecHeader(list.iterator(), ctx.getEnvelope());
+
+  }
+
+  @Test
+  public void testSymmBindingEncrBeforeSig() throws Exception {
+    MessageContext ctx = getMsgCtx();
+
+    String policyXml = "test-resources/policy/rampart-symm-binding-4-ebs.xml";
+
+    Policy policy = this.loadPolicy(policyXml);
+
+    ctx.setProperty(RampartMessageData.KEY_RAMPART_POLICY, policy);
+
+    MessageBuilder builder = new MessageBuilder();
+    builder.build(ctx);
+
+    List<QName> list = new ArrayList<>();
+
+    list.add(new QName(WSConstants.WSU_NS, WSConstants.TIMESTAMP_TOKEN_LN));
+    list.add(new QName(WSConstants.ENC_NS, WSConstants.ENC_KEY_LN));
+    list.add(new QName(WSConstants.SIG_NS, WSConstants.SIG_LN));
+    list.add(new QName(WSConstants.ENC_NS, WSConstants.REF_LIST_LN));
+
+    this.verifySecHeader(list.iterator(), ctx.getEnvelope());
+
+  }
+
+  @Test
+  public void testSymmBindingWithDKEncrBeforeSig() throws Exception {
+
+    MessageContext ctx = getMsgCtx();
+
+    String policyXml = "test-resources/policy/rampart-symm-binding-5-dk-ebs.xml";
+
+    Policy policy = this.loadPolicy(policyXml);
+
+    ctx.setProperty(RampartMessageData.KEY_RAMPART_POLICY, policy);
+
+    MessageBuilder builder = new MessageBuilder();
+    builder.build(ctx);
+
+    List<QName> list = new ArrayList<>();
+
+    list.add(new QName(WSConstants.WSU_NS, WSConstants.TIMESTAMP_TOKEN_LN));
+    list.add(new QName(WSConstants.ENC_NS, WSConstants.ENC_KEY_LN));
+    list.add(new QName(ConversationConstants.WSC_NS_05_02, ConversationConstants.DERIVED_KEY_TOKEN_LN));
+    list.add(new QName(WSConstants.SIG_NS, WSConstants.SIG_LN));
+    list.add(new QName(ConversationConstants.WSC_NS_05_02, ConversationConstants.DERIVED_KEY_TOKEN_LN));
+    list.add(new QName(WSConstants.ENC_NS, WSConstants.REF_LIST_LN));
+
+
+    this.verifySecHeader(list.iterator(), ctx.getEnvelope());
+
+  }
 
 }

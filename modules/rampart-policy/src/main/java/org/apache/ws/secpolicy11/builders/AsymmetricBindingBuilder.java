@@ -1,12 +1,12 @@
 /*
  * Copyright 2001-2004 The Apache Software Foundation.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -36,71 +36,65 @@ import org.apache.ws.secpolicy.model.RecipientToken;
 
 public class AsymmetricBindingBuilder implements AssertionBuilder<OMElement> {
 
-    public Assertion build(OMElement element, AssertionBuilderFactory factory) throws IllegalArgumentException {
-        
-        AsymmetricBinding asymmetricBinding =  new AsymmetricBinding(SPConstants.SP_V11);
-        
-        Policy policy = PolicyEngine.getPolicy(element.getFirstElement());
-        policy = (Policy) policy.normalize(false);
-        
-        for (Iterator<List<Assertion>> iterator = policy.getAlternatives(); iterator.hasNext();) {
-            processAlternative(iterator.next(), asymmetricBinding);
-            
-            /*
-             * since there should be only one alternative
-             */
-            break;
-        }
-        
-        return asymmetricBinding;
-    }
-    
-    private void processAlternative(List<Assertion> assertions, AsymmetricBinding asymmetricBinding) {
-               
-        Assertion assertion;
-        QName name;
-        
-        for (Iterator<Assertion> iterator = assertions.iterator(); iterator.hasNext();) {
-            assertion = iterator.next();
-            name = assertion.getName();
-            
-            if (SP11Constants.INITIATOR_TOKEN.equals(name)) {
-                asymmetricBinding.setInitiatorToken((InitiatorToken) assertion);
-                
-            } else if (SP11Constants.RECIPIENT_TOKEN.equals(name)){
-                asymmetricBinding.setRecipientToken((RecipientToken) assertion);
-                
-            } else if (SP11Constants.ALGORITHM_SUITE.equals(name)) {
-                asymmetricBinding.setAlgorithmSuite((AlgorithmSuite) assertion);
-            
-            } else if (SP11Constants.LAYOUT.equals(name)) {
-                asymmetricBinding.setLayout((Layout) assertion);
-                
-            } else if (SP11Constants.INCLUDE_TIMESTAMP.equals(name)) {
-                asymmetricBinding.setIncludeTimestamp(true);
-                asymmetricBinding.setIncludeTimestampOptional(assertion.isOptional());
+  public Assertion build(OMElement element, AssertionBuilderFactory factory) throws IllegalArgumentException {
 
-            } else if (SPConstants.ENCRYPT_BEFORE_SIGNING.equals(name.getLocalPart())) {
-                asymmetricBinding.setProtectionOrder(SPConstants.ENCRYPT_BEFORE_SIGNING);
-                
-            } else if (SPConstants.SIGN_BEFORE_ENCRYPTING.equals(name.getLocalPart())) {
-                asymmetricBinding.setProtectionOrder(SPConstants.SIGN_BEFORE_ENCRYPTING);
-                
-            } else if (SPConstants.ENCRYPT_SIGNATURE.equals(name.getLocalPart())) {
-                asymmetricBinding.setSignatureProtection(true);
-                
-            } else if (SPConstants.PROTECT_TOKENS.equals(name.getLocalPart())) {
-                asymmetricBinding.setTokenProtection(true);
-                
-            } else if (SPConstants.ONLY_SIGN_ENTIRE_HEADERS_AND_BODY.equals(name.getLocalPart())) {
-                asymmetricBinding.setEntireHeadersAndBodySignatures(true);
-            }
-        }
+    AsymmetricBinding asymmetricBinding =  new AsymmetricBinding(SPConstants.SP_V11);
+
+    Policy policy = PolicyEngine.getPolicy(element.getFirstElement());
+    policy = policy.normalize(false);
+
+    final Iterator<List<Assertion>> alternatives = policy.getAlternatives();
+    if (alternatives.hasNext()) { // there should be only one
+      processAlternative(alternatives.next(), asymmetricBinding);
     }
-    
-    public QName[] getKnownElements() {
-        return new QName[]{SP11Constants.ASYMMETRIC_BINDING};
+
+    return asymmetricBinding;
+  }
+
+  private void processAlternative(List<Assertion> assertions, AsymmetricBinding asymmetricBinding) {
+
+
+    for (Assertion assertion : assertions) {
+
+      final QName name = assertion.getName();
+
+      if (SP11Constants.INITIATOR_TOKEN.equals(name)) {
+        asymmetricBinding.setInitiatorToken((InitiatorToken) assertion);
+
+      } else if (SP11Constants.RECIPIENT_TOKEN.equals(name)) {
+        asymmetricBinding.setRecipientToken((RecipientToken) assertion);
+
+      } else if (SP11Constants.ALGORITHM_SUITE.equals(name)) {
+        asymmetricBinding.setAlgorithmSuite((AlgorithmSuite) assertion);
+
+      } else if (SP11Constants.LAYOUT.equals(name)) {
+        asymmetricBinding.setLayout((Layout) assertion);
+
+      } else if (SP11Constants.INCLUDE_TIMESTAMP.equals(name)) {
+        asymmetricBinding.setIncludeTimestamp(true);
+        asymmetricBinding.setIncludeTimestampOptional(assertion.isOptional());
+
+      } else if (SPConstants.ENCRYPT_BEFORE_SIGNING.equals(name.getLocalPart())) {
+        asymmetricBinding.setProtectionOrder(SPConstants.ENCRYPT_BEFORE_SIGNING);
+
+      } else if (SPConstants.SIGN_BEFORE_ENCRYPTING.equals(name.getLocalPart())) {
+        asymmetricBinding.setProtectionOrder(SPConstants.SIGN_BEFORE_ENCRYPTING);
+
+      } else if (SPConstants.ENCRYPT_SIGNATURE.equals(name.getLocalPart())) {
+        asymmetricBinding.setSignatureProtection(true);
+
+      } else if (SPConstants.PROTECT_TOKENS.equals(name.getLocalPart())) {
+        asymmetricBinding.setTokenProtection(true);
+
+      } else if (SPConstants.ONLY_SIGN_ENTIRE_HEADERS_AND_BODY.equals(name.getLocalPart())) {
+        asymmetricBinding.setEntireHeadersAndBodySignatures(true);
+      }
     }
-    
+  }
+
+  public QName[] getKnownElements() {
+    return new QName[]{SP11Constants.ASYMMETRIC_BINDING};
+  }
+
 }
  

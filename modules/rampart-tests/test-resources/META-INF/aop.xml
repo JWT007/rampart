@@ -1,0 +1,3 @@
+<aspectj>
+  <weaver options="-Xset:weaveJavaxPackages=true"/>
+</aspectj>

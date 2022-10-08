@@ -531,7 +531,7 @@ public class RampartPolicyData {
     return declaredNamespaces;
   }
 
-  public void addDeclaredNamespaces(HashMap<String, String> namespaces) {
+  public void addDeclaredNamespaces(Map<String, String> namespaces) {
     declaredNamespaces.putAll(namespaces);
   }
 

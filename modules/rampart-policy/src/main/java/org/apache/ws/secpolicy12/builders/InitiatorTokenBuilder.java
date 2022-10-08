@@ -1,12 +1,12 @@
 /*
  * Copyright 2001-2004 The Apache Software Foundation.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,36 +33,36 @@ import org.apache.ws.secpolicy.model.Token;
 
 public class InitiatorTokenBuilder implements AssertionBuilder<OMElement> {
 
-    public Assertion build(OMElement element, AssertionBuilderFactory factory)
-            throws IllegalArgumentException {
-        InitiatorToken initiatorToken = new InitiatorToken(SPConstants.SP_V12);
-        
-        Policy policy = PolicyEngine.getPolicy(element.getFirstElement());
-        policy = (Policy) policy.normalize(false); 
-        
-        for (Iterator<List<Assertion>> iterator = policy.getAlternatives(); iterator.hasNext();) {
-            processAlternative(iterator.next(), initiatorToken);
-            break; // TODO process all the token that must be set ..
-        }
-        
-        return initiatorToken;
-    }
-    
-    private void processAlternative(List<Assertion> assertions, InitiatorToken parent) {
-        
-        Object token;
-        
-        for (Iterator<Assertion> iterator = assertions.iterator(); iterator.hasNext();) {
-            token = iterator.next();
-            
-            if (token instanceof Token) {
-                parent.setInitiatorToken((Token) token);
-            }
-        }
+  public Assertion build(OMElement element, AssertionBuilderFactory factory) throws IllegalArgumentException {
+
+    final InitiatorToken initiatorToken = new InitiatorToken(SPConstants.SP_V12);
+
+    final Policy policy = PolicyEngine.getPolicy(element.getFirstElement()).normalize(false);
+
+    final Iterator<List<Assertion>> alternatives = policy.getAlternatives();
+
+    if (alternatives.hasNext()) { // there should be max one alternative
+      processAlternative(alternatives.next(), initiatorToken);
     }
 
-    public QName[] getKnownElements() {
-        return new QName[] {SP12Constants.INITIATOR_TOKEN};
+    return initiatorToken;
+
+  }
+
+  private void processAlternative(List<Assertion> assertions, InitiatorToken parent) {
+
+    for (Assertion assertion : assertions) {
+      if (assertion instanceof Token) {
+        parent.setInitiatorToken((Token) assertion);
+      }
     }
+
+  }
+
+  public QName[] getKnownElements() {
+
+    return new QName[] { SP12Constants.INITIATOR_TOKEN };
+
+  }
 
 }

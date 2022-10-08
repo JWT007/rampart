@@ -17,7 +17,7 @@
 package org.apache.ws.secpolicy.model;
 
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.List;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
@@ -28,61 +28,59 @@ import org.apache.ws.secpolicy.SP12Constants;
 import org.apache.ws.secpolicy.SPConstants;
 
 public class RequiredParts extends AbstractSecurityAssertion {
-    
-    private ArrayList<Header> headers = new ArrayList<Header>();
-    
-    public RequiredParts(int version) {
-        setVersion(version);
+
+  private final List<Header> headers = new ArrayList<>();
+
+  public RequiredParts(int version) {
+    setVersion(version);
+  }
+
+  /**
+   * @return Returns the headers.
+   */
+  public List<Header> getHeaders() {
+    return this.headers;
+  }
+
+  /**
+   * @param header The header to set.
+   */
+  public void addHeader(Header header) {
+    this.headers.add(header);
+  }
+
+
+  public QName getName() {
+    return SP12Constants.REQUIRED_PARTS;
+  }
+
+  public PolicyComponent normalize() {
+    return this;
+  }
+
+  public void serialize(XMLStreamWriter writer) throws XMLStreamException {
+    String prefix = getName().getPrefix();
+    String localName = getName().getLocalPart();
+    String namespaceURI = getName().getNamespaceURI();
+
+    // <sp:RequiredParts>
+    writeStartElement(writer, prefix, localName, namespaceURI);
+
+    for (Header header : headers) {
+      // <sp:Header Name=".." Namespace=".." />
+      writeStartElement(writer, prefix, SPConstants.HEADER, namespaceURI);
+      // Name attribute is optional
+      if (header.getName() != null) {
+        writer.writeAttribute("Name", header.getName());
+      }
+      writer.writeAttribute("Namespace", header.getNamespace());
+
+      writer.writeEndElement();
     }
 
-    /**
-     * @return Returns the headers.
-     */
-    public ArrayList<Header> getHeaders() {
-        return this.headers;
-    }
-
-    /**
-     * @param header The header to set.
-     */
-    public void addHeader(Header header) {
-        this.headers.add(header);
-    }
+    // </sp:RequiredParts>
+    writer.writeEndElement();
+  }
 
 
-    public QName getName() {
-         return SP12Constants.REQUIRED_PARTS;         
-    }
-
-    public PolicyComponent normalize() {
-        return this;
-    }
-
-    public void serialize(XMLStreamWriter writer) throws XMLStreamException {
-        String prefix = getName().getPrefix();
-        String localName = getName().getLocalPart();
-        String namespaceURI = getName().getNamespaceURI();
-
-        // <sp:RequiredParts> 
-        writeStartElement(writer, prefix, localName, namespaceURI);
-        
-        Header header;        
-        for (Iterator<Header> iterator = headers.iterator(); iterator.hasNext();) {
-            header = iterator.next();
-            // <sp:Header Name=".." Namespace=".." />
-            writeStartElement(writer, prefix, SPConstants.HEADER, namespaceURI);
-            // Name attribute is optional
-            if (header.getName() != null) {
-                writer.writeAttribute("Name", header.getName());
-            }
-            writer.writeAttribute("Namespace", header.getNamespace());
-            
-            writer.writeEndElement();
-        }
-        
-        // </sp:RequiredParts>
-        writer.writeEndElement();
-    }    
-    
-    
 }

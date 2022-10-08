@@ -38,47 +38,66 @@ import org.apache.ws.secpolicy.model.KerberosToken;
  * Builder for {@link KerberosToken} assertion (WS Security Policy version 1.2)
  */
 public class KerberosTokenBuilder implements AssertionBuilder<OMElement> {
-    public Assertion build(OMElement element, AssertionBuilderFactory arg1) 
-            throws IllegalArgumentException {
-        KerberosToken kerberosToken = new KerberosToken(SPConstants.SP_V12);
 
-        OMElement policyElement = element.getFirstElement();
+  public Assertion build(OMElement element, AssertionBuilderFactory arg1) throws IllegalArgumentException {
 
-        // Process token inclusion
-        OMAttribute includeAttr = element.getAttribute(SP12Constants.INCLUDE_TOKEN);
+    final KerberosToken kerberosToken = new KerberosToken(SPConstants.SP_V12);
 
-        if (includeAttr != null) {
-            int inclusion = SP12Constants.getInclusionFromAttributeValue(
-                                  includeAttr.getAttributeValue());
-            kerberosToken.setInclusion(inclusion);
-        }
+    final OMElement policyElement = element.getFirstElement();
 
-        if (policyElement != null) {
-            Policy policy = PolicyEngine.getPolicy(element.getFirstElement());
-            policy = policy.normalize(false);
-            for (Iterator<List<Assertion>> iterator = policy.getAlternatives(); iterator.hasNext();) {
-                processAlternative(iterator.next(), kerberosToken);
-                 // there should be only one alternative
-                break;
-            }
-        }
-        return kerberosToken;
+    // Process token inclusion
+    final OMAttribute includeAttr = element.getAttribute(SP12Constants.INCLUDE_TOKEN);
+
+    if (includeAttr != null) {
+
+      final int inclusion = SP12Constants.getInclusionFromAttributeValue(includeAttr.getAttributeValue());
+
+      kerberosToken.setInclusion(inclusion);
+
     }
 
-    private void processAlternative(List<Assertion> assertions, KerberosToken parent) {
-        for (Assertion assertion : assertions) {
-            QName name = assertion.getName();
-            if (SP12Constants.REQUIRE_KERBEROS_V5_TOKEN_11.equals(name)) {
-                parent.setRequiresKerberosV5Token(true);
-            } else if (SP12Constants.REQUIRE_KERBEROS_GSS_V5_TOKEN_11.equals(name)) {
-                parent.setRequiresGssKerberosV5Token(true);
-            } else if (SP12Constants.REQUIRE_KEY_IDENTIFIRE_REFERENCE.equals(name)) {
-                parent.setRequiresKeyIdentifierReference(true);
-            }
-        }
+    if (policyElement != null) {
+
+      final Policy policy = PolicyEngine.getPolicy(element.getFirstElement()).normalize(false);
+
+      final Iterator<List<Assertion>> alternatives = policy.getAlternatives();
+
+      if (alternatives.hasNext()) {  // there should be max one alternative
+        processAlternative(alternatives.next(), kerberosToken);
+      }
+
     }
 
-    public QName[] getKnownElements() {
-        return new QName[] { SP12Constants.KERBEROS_TOKEN };
+    return kerberosToken;
+
+  }
+
+  private void processAlternative(List<Assertion> assertions, KerberosToken parent) {
+
+    if (assertions != null) {
+
+      for (Assertion assertion : assertions) {
+
+        final QName name = assertion.getName();
+
+        if (SP12Constants.REQUIRE_KERBEROS_V5_TOKEN_11.equals(name)) {
+          parent.setRequiresKerberosV5Token(true);
+        } else if (SP12Constants.REQUIRE_KERBEROS_GSS_V5_TOKEN_11.equals(name)) {
+          parent.setRequiresGssKerberosV5Token(true);
+        } else if (SP12Constants.REQUIRE_KEY_IDENTIFIRE_REFERENCE.equals(name)) {
+          parent.setRequiresKeyIdentifierReference(true);
+        }
+
+      }
+
     }
+
+  }
+
+  public QName[] getKnownElements() {
+
+    return new QName[] { SP12Constants.KERBEROS_TOKEN };
+
+  }
+
 }

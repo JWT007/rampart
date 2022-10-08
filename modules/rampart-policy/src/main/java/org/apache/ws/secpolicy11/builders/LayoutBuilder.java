@@ -1,12 +1,12 @@
 /*
  * Copyright 2001-2004 The Apache Software Foundation.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -31,43 +31,46 @@ import org.apache.ws.secpolicy.SPConstants;
 import org.apache.ws.secpolicy.model.Layout;
 
 public class LayoutBuilder implements AssertionBuilder<OMElement> {
-    
-    
 
-    public Assertion build(OMElement element, AssertionBuilderFactory factory) throws IllegalArgumentException {
-        Layout layout = new Layout(SPConstants.SP_V11);
-        
-        Policy policy = PolicyEngine.getPolicy(element.getFirstElement());
-        policy = (Policy) policy.normalize(false);
-        
-        for (Iterator<List<Assertion>> iterator = policy.getAlternatives(); iterator.hasNext(); ) {
-            processAlternative(iterator.next(), layout);         
-            break; // there should be only one alternative
-        }
-                        
-        return layout;
-    }
-    
-    public QName[] getKnownElements() {
-        return new QName[] {SP11Constants.LAYOUT};
+  public Assertion build(OMElement element, AssertionBuilderFactory factory) throws IllegalArgumentException {
+    Layout layout = new Layout(SPConstants.SP_V11);
+
+    Policy policy = PolicyEngine.getPolicy(element.getFirstElement()).normalize(false);
+
+    final Iterator<List<Assertion>> iterator = policy.getAlternatives();
+    if (iterator.hasNext()) { // there should be at most one
+      processAlternative(iterator.next(), layout);
     }
 
-    public void processAlternative(List<Assertion> assertions, Layout parent) {
-        
-        for (Iterator<Assertion> iterator = assertions.iterator(); iterator.hasNext();) {
-            Assertion assertion = iterator.next();
-            QName qname = assertion.getName();
-            
-            if (SP11Constants.STRICT.equals(qname)) {
-                parent.setValue(SPConstants.LAYOUT_STRICT);
-            } else if (SP11Constants.LAX.equals(qname)) {
-                parent.setValue(SPConstants.LAYOUT_LAX);
-            } else if (SP11Constants.LAXTSFIRST.equals(qname)) {
-                parent.setValue(SPConstants.LAYOUT_LAX_TIMESTAMP_FIRST);
-            } else if (SP11Constants.LAXTSLAST.equals(qname)) {
-                parent.setValue(SPConstants.LAYOUT_LAX_TIMESTAMP_LAST);
-            }
-            
+    return layout;
+  }
+
+  public QName[] getKnownElements() {
+    return new QName[] {SP11Constants.LAYOUT};
+  }
+
+  public void processAlternative(List<Assertion> assertions, Layout parent) {
+
+    if (assertions != null) {
+
+      for (Assertion assertion : assertions) {
+
+        final QName qname = assertion.getName();
+
+        if (SP11Constants.STRICT.equals(qname)) {
+          parent.setValue(SPConstants.LAYOUT_STRICT);
+        } else if (SP11Constants.LAX.equals(qname)) {
+          parent.setValue(SPConstants.LAYOUT_LAX);
+        } else if (SP11Constants.LAXTSFIRST.equals(qname)) {
+          parent.setValue(SPConstants.LAYOUT_LAX_TIMESTAMP_FIRST);
+        } else if (SP11Constants.LAXTSLAST.equals(qname)) {
+          parent.setValue(SPConstants.LAYOUT_LAX_TIMESTAMP_LAST);
         }
+
+      }
+
     }
+
+  }
+
 }

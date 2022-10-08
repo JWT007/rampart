@@ -17,8 +17,9 @@
 package org.apache.ws.secpolicy.model;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
@@ -30,83 +31,79 @@ import org.apache.ws.secpolicy.SPConstants;
 
 public class ContentEncryptedElements extends AbstractSecurityAssertion {
 
-    private ArrayList<String> xPathExpressions = new ArrayList<String>();
-    
-    private HashMap<String, String> declaredNamespaces = new HashMap<String, String>();
+  private final List<String> xPathExpressions = new ArrayList<>();
 
-    private String xPathVersion;
+  private final Map<String, String> declaredNamespaces = new HashMap<>();
 
-    public ContentEncryptedElements(int version) {
-        setVersion(version);
+  private String xPathVersion;
+
+  public ContentEncryptedElements(int version) {
+    setVersion(version);
+  }
+
+  /**
+   * @return Returns the xPathExpressions.
+   */
+  public List<String> getXPathExpressions() {
+    return xPathExpressions;
+  }
+
+  public void addXPathExpression(String expr) {
+    this.xPathExpressions.add(expr);
+  }
+
+  /**
+   * @return Returns the xPathVersion.
+   */
+  public String getXPathVersion() {
+    return xPathVersion;
+  }
+
+  /**
+   * @param pathVersion
+   *            The xPathVersion to set.
+   */
+  public void setXPathVersion(String pathVersion) {
+    xPathVersion = pathVersion;
+  }
+
+  public Map<String, String> getDeclaredNamespaces () {
+    return declaredNamespaces;
+  }
+
+  public void addDeclaredNamespaces(String uri, String prefix ) {
+    declaredNamespaces.put(prefix, uri);
+  }
+
+  public void serialize(XMLStreamWriter writer) throws XMLStreamException {
+
+    String prefix = getName().getPrefix();
+    String localName = getName().getLocalPart();
+    String namespaceURI = getName().getNamespaceURI();
+
+    //  <sp:ContentEncryptedElements>
+    writeStartElement(writer, prefix, localName, namespaceURI);
+
+    if (xPathVersion != null) {
+      writeAttribute(writer, prefix, namespaceURI, SPConstants.XPATH_VERSION, xPathVersion);
     }
 
-    /**
-     * @return Returns the xPathExpressions.
-     */
-    public ArrayList<String> getXPathExpressions() {
-        return xPathExpressions;
+    for (String xPathExpression : xPathExpressions) {
+      // <sp:XPath ..>
+      writeStartElement(writer, prefix, SPConstants.XPATH_EXPR, namespaceURI);
+      writer.writeCharacters(xPathExpression);
+      writer.writeEndElement();
     }
 
-    public void addXPathExpression(String expr) {
-        this.xPathExpressions.add(expr);
-    }
+    //</sp:ContentEncryptedElements>
+    writer.writeEndElement();
+  }
 
-    /**
-     * @return Returns the xPathVersion.
-     */
-    public String getXPathVersion() {
-        return xPathVersion;
-    }
+  public QName getName() {
+    return SP12Constants.CONTENT_ENCRYPTED_ELEMENTS;
+  }
 
-    /**
-     * @param pathVersion
-     *            The xPathVersion to set.
-     */
-    public void setXPathVersion(String pathVersion) {
-        xPathVersion = pathVersion;
-    }
-    
-    public HashMap<String, String> getDeclaredNamespaces () {
-        return declaredNamespaces;
-    }
-    
-    public void addDeclaredNamespaces(String uri, String prefix ) {
-        declaredNamespaces.put(prefix, uri);
-    }
-        
-    public void serialize(XMLStreamWriter writer) throws XMLStreamException {
-
-        String prefix = getName().getPrefix();
-        String localName = getName().getLocalPart();
-        String namespaceURI = getName().getNamespaceURI();
-
-        //  <sp:ContentEncryptedElements>
-        writeStartElement(writer, prefix, localName, namespaceURI);
-        
-        if (xPathVersion != null) {
-            writeAttribute(writer, prefix, namespaceURI, SPConstants.XPATH_VERSION, xPathVersion);
-        }
-
-        String xpathExpression;
-
-        for (Iterator<String> iterator = xPathExpressions.iterator(); iterator
-                .hasNext();) {
-            xpathExpression = iterator.next();
-            // <sp:XPath ..>
-            writeStartElement(writer, prefix, SPConstants.XPATH_EXPR, namespaceURI);
-            writer.writeCharacters(xpathExpression);
-            writer.writeEndElement();
-        }
-
-        //</sp:ContentEncryptedElements>
-        writer.writeEndElement();
-    }
-
-    public QName getName() {
-        return SP12Constants.CONTENT_ENCRYPTED_ELEMENTS;
-    }
-
-    public PolicyComponent normalize() {
-        return this;
-    }
+  public PolicyComponent normalize() {
+    return this;
+  }
 }

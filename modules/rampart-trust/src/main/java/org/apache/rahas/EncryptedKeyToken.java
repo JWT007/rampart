@@ -26,11 +26,11 @@ import org.apache.axiom.om.OMElement;
 /**
  * This token is used store Encrypted Key Tokens. This token contains the
  * SHA1 value of the Encrypted Key.
+ * <p>
+ * These tokens are stored using the storage mechanism provided via the <code>TokenStorage</code> interface.
+ * </p>
  *
- * These tokens are stored using the storage mechanism provided via the 
- * <code>TokenStorage</code> interface.
  * @see org.apache.rahas.TokenStorage
- *
  */
 public class EncryptedKeyToken extends Token {
 

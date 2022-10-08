@@ -26,63 +26,63 @@ import org.apache.ws.secpolicy.SP12Constants;
 import org.apache.ws.secpolicy.SPConstants;
 
 public class RecipientToken extends AbstractSecurityAssertion implements TokenWrapper {
-    
-    private Token receipientToken;
-    
-    public RecipientToken(int version) {
-        setVersion(version);
-    }
-   
-    /**
-     * @return Returns the receipientToken.
-     */
-    public Token getReceipientToken() {
-        return receipientToken;
-    }
 
-    /**
-     * @param receipientToken The receipientToken to set.
-     */
-    public void setReceipientToken(Token receipientToken) {
-        this.receipientToken = receipientToken;
+  private Token recipientToken;
+
+  public RecipientToken(int version) {
+    setVersion(version);
+  }
+
+  /**
+   * @return Returns the recipientToken.
+   */
+  public Token getRecipientToken() {
+    return recipientToken;
+  }
+
+  /**
+   * @param recipientToken The recipientToken to set.
+   */
+  public void setRecipientToken(Token recipientToken) {
+    this.recipientToken = recipientToken;
+  }
+
+  /* (non-Javadoc)
+   * @see org.apache.ws.security.policy.TokenWrapper#setToken(org.apache.ws.security.policy.Token)
+   */
+  public void setToken(Token tok) {
+    this.setRecipientToken(tok);
+  }
+
+  public QName getName() {
+    if ( version == SPConstants.SP_V12) {
+      return SP12Constants.RECIPIENT_TOKEN;
+    } else {
+      return SP11Constants.RECIPIENT_TOKEN;
     }
+  }
 
-    /* (non-Javadoc)
-     * @see org.apache.ws.security.policy.TokenWrapper#setToken(org.apache.ws.security.policy.Token)
-     */
-    public void setToken(Token tok) {
-        this.setReceipientToken(tok);
+  public PolicyComponent normalize() {
+    throw new UnsupportedOperationException();
+  }
+
+  public void serialize(XMLStreamWriter writer) throws XMLStreamException {
+    // <sp:RecipientToken>
+    writeStartElement(writer, getName());
+
+    // <wsp:Policy>
+    writeStartElement(writer, SPConstants.POLICY);
+
+    Token token = getRecipientToken();
+    if (token == null) {
+      throw new RuntimeException("RecipientToken doesn't contain any token assertions");
     }
+    token.serialize(writer);
 
-    public QName getName() {
-        if ( version == SPConstants.SP_V12) {
-            return SP12Constants.RECIPIENT_TOKEN;
-        } else {
-            return SP11Constants.RECIPIENT_TOKEN;
-        }     
-    }
+    // </wsp:Policy>
+    writer.writeEndElement();
 
-    public PolicyComponent normalize() {
-        throw new UnsupportedOperationException();
-    }
-
-    public void serialize(XMLStreamWriter writer) throws XMLStreamException {
-        // <sp:RecipientToken>
-        writeStartElement(writer, getName());
-        
-        // <wsp:Policy>
-        writeStartElement(writer, SPConstants.POLICY);
-
-        Token token = getReceipientToken();
-        if (token == null) {
-            throw new RuntimeException("RecipientToken doesn't contain any token assertions");
-        }
-        token.serialize(writer);
-        
-        // </wsp:Policy>
-        writer.writeEndElement();
-        
-        // </sp:RecipientToken>
-        writer.writeEndElement();
-    }    
+    // </sp:RecipientToken>
+    writer.writeEndElement();
+  }
 }

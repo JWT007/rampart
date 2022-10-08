@@ -30,67 +30,67 @@ import javax.xml.stream.XMLStreamWriter;
  */
 public class SecurityContextToken extends Token {
 
-    boolean requireExternalUriRef;
-    
-    boolean sc10SecurityContextToken;
-    
-    public SecurityContextToken(int version) {
-        setVersion(version);
-    }
-    
-    /**
-     * @return Returns the requireExternalUriRef.
-     */
-    public boolean isRequireExternalUriRef() {
-        return requireExternalUriRef;
-    }
+  boolean requireExternalUriRef;
 
-    /**
-     * @param requireExternalUriRef The requireExternalUriRef to set.
-     */
-    public void setRequireExternalUriRef(boolean requireExternalUriRef) {
-        this.requireExternalUriRef = requireExternalUriRef;
-    }
+  boolean sc10SecurityContextToken;
 
-    /**
-     * @return Returns the sc10SecurityContextToken.
-     */
-    public boolean isSc10SecurityContextToken() {
-        return sc10SecurityContextToken;
-    }
+  public SecurityContextToken(int version) {
+    setVersion(version);
+  }
 
-    /**
-     * @param sc10SecurityContextToken The sc10SecurityContextToken to set.
-     */
-    public void setSc10SecurityContextToken(boolean sc10SecurityContextToken) {
-        this.sc10SecurityContextToken = sc10SecurityContextToken;
-    }
+  /**
+   * @return Returns the requireExternalUriRef.
+   */
+  public boolean isRequireExternalUriRef() {
+    return requireExternalUriRef;
+  }
 
-    /* (non-Javadoc)
-     * @see org.apache.neethi.Assertion#getName()
-     */
-    public QName getName() {
-        if ( version == SPConstants.SP_V12) {
-            return SP12Constants.SECURITY_CONTEXT_TOKEN;
-        } else {
-            return SP11Constants.SECURITY_CONTEXT_TOKEN;
-        }   
-    }
+  /**
+   * @param requireExternalUriRef The requireExternalUriRef to set.
+   */
+  public void setRequireExternalUriRef(boolean requireExternalUriRef) {
+    this.requireExternalUriRef = requireExternalUriRef;
+  }
 
-    /* (non-Javadoc)
-     * @see org.apache.neethi.Assertion#normalize()
-     */
-    public PolicyComponent normalize() {
-        // TODO TODO Sanka
-        throw new UnsupportedOperationException("TODO Sanka");
-    }
+  /**
+   * @return Returns the sc10SecurityContextToken.
+   */
+  public boolean isSc10SecurityContextToken() {
+    return sc10SecurityContextToken;
+  }
 
-    /* (non-Javadoc)
-     * @see org.apache.neethi.PolicyComponent#serialize(javax.xml.stream.XMLStreamWriter)
-     */
-    public void serialize(XMLStreamWriter writer) throws XMLStreamException {
-        // TODO TODO Sanka
-        throw new UnsupportedOperationException("TODO Sanka");
+  /**
+   * @param sc10SecurityContextToken The sc10SecurityContextToken to set.
+   */
+  public void setSc10SecurityContextToken(boolean sc10SecurityContextToken) {
+    this.sc10SecurityContextToken = sc10SecurityContextToken;
+  }
+
+  /* (non-Javadoc)
+   * @see org.apache.neethi.Assertion#getName()
+   */
+  public QName getName() {
+    if ( version == SPConstants.SP_V12) {
+      return SP12Constants.SECURITY_CONTEXT_TOKEN;
+    } else {
+      return SP11Constants.SECURITY_CONTEXT_TOKEN;
     }
+  }
+
+  /* (non-Javadoc)
+   * @see org.apache.neethi.Assertion#normalize()
+   */
+  public PolicyComponent normalize() {
+    // TODO TODO Sanka
+    throw new UnsupportedOperationException("TODO Sanka");
+  }
+
+  /* (non-Javadoc)
+   * @see org.apache.neethi.PolicyComponent#serialize(javax.xml.stream.XMLStreamWriter)
+   */
+  public void serialize(XMLStreamWriter writer) throws XMLStreamException {
+    // TODO TODO Sanka
+    throw new UnsupportedOperationException("TODO Sanka");
+  }
 
 }

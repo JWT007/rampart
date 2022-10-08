@@ -25,68 +25,67 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-
 public class TransportToken extends AbstractSecurityAssertion implements TokenWrapper {
 
-    private Token transportToken;
-    
-    public TransportToken(int version){
-        setVersion(version);
+  private Token transportToken;
+
+  public TransportToken(int version){
+    setVersion(version);
+  }
+
+  /**
+   * @return Returns the transportToken.
+   */
+  public Token getTransportToken() {
+    return transportToken;
+  }
+
+  public QName getName() {
+    if ( version == SPConstants.SP_V12) {
+      return SP12Constants.TRANSPORT_TOKEN;
+    } else {
+      return SP11Constants.TRANSPORT_TOKEN;
     }
-    
-    /**
-     * @return Returns the transportToken.
-     */
-    public Token getTransportToken() {
-        return transportToken;
-    }
-    
-    public QName getName() {
-        if ( version == SPConstants.SP_V12) {
-            return SP12Constants.TRANSPORT_TOKEN;
-        } else {
-            return SP11Constants.TRANSPORT_TOKEN;
-        }
+  }
+
+  public boolean isOptional() {
+    throw new UnsupportedOperationException();
+  }
+
+  public PolicyComponent normalize() {
+    throw new UnsupportedOperationException();
+  }
+
+  public short getType() {
+    return org.apache.neethi.Constants.TYPE_ASSERTION;
+  }
+
+  public void serialize(XMLStreamWriter writer) throws XMLStreamException {
+    // <sp:TransportToken>
+    writeStartElement(writer, getName());
+
+    // <wsp:Policy>
+    writeStartElement(writer, SPConstants.POLICY);
+
+    // serialization of the token.
+    if (transportToken != null) {
+      transportToken.serialize(writer);
     }
 
-    public boolean isOptional() {
-        throw new UnsupportedOperationException();
-    }
+    // </wsp:Policy>
+    writer.writeEndElement();
 
-    public PolicyComponent normalize() {
-        throw new UnsupportedOperationException();
-    }
 
-    public short getType() {
-        return org.apache.neethi.Constants.TYPE_ASSERTION;
-    }
+    writer.writeEndElement();
+    // </sp:TransportToken>
+  }
 
-    public void serialize(XMLStreamWriter writer) throws XMLStreamException {
-        // <sp:TransportToken>
-        writeStartElement(writer, getName());
-        
-        // <wsp:Policy>
-        writeStartElement(writer, SPConstants.POLICY);
-        
-        // serialization of the token ..
-        if (transportToken != null) {
-            transportToken.serialize(writer);
-        }
-        
-        // </wsp:Policy>
-        writer.writeEndElement();
-        
-        
-        writer.writeEndElement();
-        // </sp:TransportToken>
-    }
+  /* (non-Javadoc)
+   * @see org.apache.ws.secpolicy.model.TokenWrapper#setToken(org.apache.ws.secpolicy.model.Token)
+   */
+  public void setToken(Token tok) {
+    this.transportToken = tok;
+  }
 
-    /* (non-Javadoc)
-     * @see org.apache.ws.secpolicy.model.TokenWrapper#setToken(org.apache.ws.secpolicy.model.Token)
-     */
-    public void setToken(Token tok) {
-        this.transportToken = tok;
-    }
-    
-    
+
 }

@@ -29,197 +29,197 @@ import org.apache.ws.secpolicy.SP12Constants;
  */
 public class Trust13 extends AbstractSecurityAssertion {
 
-    private boolean mustSupportClientChallenge;
-    private boolean mustSupportServerChallenge;
-    private boolean requireClientEntropy;
-    private boolean requireServerEntropy;
-    private boolean mustSupportIssuedTokens;
-    private boolean requireRequestSecurityTokenCollection;
-    private boolean requireAppliesTo;
-    
-    public Trust13(int version){
-        setVersion(version);
-    }
-    
-    /**
-     * @return Returns the mustSupportClientChallenge.
-     */
-    public boolean isMustSupportClientChallenge() {
-        return mustSupportClientChallenge;
+  private boolean mustSupportClientChallenge;
+  private boolean mustSupportServerChallenge;
+  private boolean requireClientEntropy;
+  private boolean requireServerEntropy;
+  private boolean mustSupportIssuedTokens;
+  private boolean requireRequestSecurityTokenCollection;
+  private boolean requireAppliesTo;
+
+  public Trust13(int version){
+    setVersion(version);
+  }
+
+  /**
+   * @return Returns the mustSupportClientChallenge.
+   */
+  public boolean isMustSupportClientChallenge() {
+    return mustSupportClientChallenge;
+  }
+
+  /**
+   * @param mustSupportClientChallenge The mustSupportClientChallenge to set.
+   */
+  public void setMustSupportClientChallenge(boolean mustSupportClientChallenge) {
+    this.mustSupportClientChallenge = mustSupportClientChallenge;
+  }
+
+  /**
+   * @return Returns the mustSupportIssuedTokens.
+   */
+  public boolean isMustSupportIssuedTokens() {
+    return mustSupportIssuedTokens;
+  }
+
+  /**
+   * @param mustSupportIssuedTokens The mustSupportIssuedTokens to set.
+   */
+  public void setMustSupportIssuedTokens(boolean mustSupportIssuedTokens) {
+    this.mustSupportIssuedTokens = mustSupportIssuedTokens;
+  }
+
+  /**
+   * @return Returns the mustSupportServerChallenge.
+   */
+  public boolean isMustSupportServerChallenge() {
+    return mustSupportServerChallenge;
+  }
+
+  /**
+   * @param mustSupportServerChallenge The mustSupportServerChallenge to set.
+   */
+  public void setMustSupportServerChallenge(boolean mustSupportServerChallenge) {
+    this.mustSupportServerChallenge = mustSupportServerChallenge;
+  }
+
+  /**
+   * @return Returns the requireClientEntropy.
+   */
+  public boolean isRequireClientEntropy() {
+    return requireClientEntropy;
+  }
+
+  /**
+   * @param requireClientEntropy The requireClientEntropy to set.
+   */
+  public void setRequireClientEntropy(boolean requireClientEntropy) {
+    this.requireClientEntropy = requireClientEntropy;
+  }
+
+  /**
+   * @return Returns the requireServerEntropy.
+   */
+  public boolean isRequireServerEntropy() {
+    return requireServerEntropy;
+  }
+
+  /**
+   * @param requireServerEntropy The requireServerEntropy to set.
+   */
+  public void setRequireServerEntropy(boolean requireServerEntropy) {
+    this.requireServerEntropy = requireServerEntropy;
+  }
+
+  /**
+   * @return Returns the requireRequestSecurityTokenCollection.
+   */
+  public boolean isRequireRequestSecurityTokenCollection() {
+    return requireRequestSecurityTokenCollection;
+  }
+
+  /**
+   * @param requireRequestSecurityTokenCollection The requireRequestSecurityTokenCollection to set.
+   */
+  public void setRequireRequestSecurityTokenCollection(boolean requireRequestSecurityTokenCollection) {
+    this.requireRequestSecurityTokenCollection = requireRequestSecurityTokenCollection;
+  }
+
+  /**
+   * @return Returns the requireAppliesTo.
+   */
+  public boolean isRequireAppliesTo() {
+    return requireAppliesTo;
+  }
+
+  /**
+   * @param requireAppliesTo The requireAppliesTo to set.
+   */
+  public void setRequireAppliesTo(boolean requireAppliesTo) {
+    this.requireAppliesTo = requireAppliesTo;
+  }
+
+  /* (non-Javadoc)
+   * @see org.apache.neethi.Assertion#getName()
+   */
+  public QName getName() {
+    return SP12Constants.TRUST_13;
+  }
+
+  /* (non-Javadoc)
+   * @see org.apache.neethi.Assertion#isOptional()
+   */
+  public boolean isOptional() {
+    // TODO TODO Sanka
+    throw new UnsupportedOperationException("TODO Sanka");
+  }
+
+  public PolicyComponent normalize() {
+    return this;
+  }
+
+  public void serialize(XMLStreamWriter writer) throws XMLStreamException {
+
+    String prefix = getName().getPrefix();
+    String localname = getName().getLocalPart();
+    String namespaceURI = getName().getNamespaceURI();
+
+    // <sp:Trust13>
+    writeStartElement(writer, prefix, localname, namespaceURI);
+
+    // <wsp:Policy>
+    writeStartElement(writer, SPConstants.POLICY);
+
+    if (isMustSupportClientChallenge()) {
+      // <sp:MustSupportClientChallenge />
+      writeEmptyElement(writer, prefix, SPConstants.MUST_SUPPORT_CLIENT_CHALLENGE, namespaceURI);
     }
 
-    /**
-     * @param mustSupportClientChallenge The mustSupportClientChallenge to set.
-     */
-    public void setMustSupportClientChallenge(boolean mustSupportClientChallenge) {
-        this.mustSupportClientChallenge = mustSupportClientChallenge;
+    if (isMustSupportServerChallenge()) {
+      // <sp:MustSupportServerChallenge />
+      writeEmptyElement(writer, prefix, SPConstants.MUST_SUPPORT_SERVER_CHALLENGE, namespaceURI);
     }
 
-    /**
-     * @return Returns the mustSupportIssuedTokens.
-     */
-    public boolean isMustSupportIssuedTokens() {
-        return mustSupportIssuedTokens;
+    if (isRequireClientEntropy()) {
+      // <sp:RequireClientEntropy />
+      writeEmptyElement(writer, prefix, SPConstants.REQUIRE_CLIENT_ENTROPY, namespaceURI);
     }
 
-    /**
-     * @param mustSupportIssuedTokens The mustSupportIssuedTokens to set.
-     */
-    public void setMustSupportIssuedTokens(boolean mustSupportIssuedTokens) {
-        this.mustSupportIssuedTokens = mustSupportIssuedTokens;
+
+    if (isRequireServerEntropy()) {
+      // <sp:RequireServerEntropy />
+      writeEmptyElement(writer, prefix, SPConstants.REQUIRE_SERVER_ENTROPY, namespaceURI);
     }
 
-    /**
-     * @return Returns the mustSupportServerChallenge.
-     */
-    public boolean isMustSupportServerChallenge() {
-        return mustSupportServerChallenge;
+    if (isMustSupportIssuedTokens()) {
+      // <sp:MustSupportIssuedTokens />
+      writeEmptyElement(writer, prefix, SPConstants.MUST_SUPPORT_ISSUED_TOKENS, namespaceURI);
     }
 
-    /**
-     * @param mustSupportServerChallenge The mustSupportServerChallenge to set.
-     */
-    public void setMustSupportServerChallenge(boolean mustSupportServerChallenge) {
-        this.mustSupportServerChallenge = mustSupportServerChallenge;
+    if (isRequireRequestSecurityTokenCollection()) {
+      // <sp:RequireRequestSecurityTokenCollection />
+      writeEmptyElement(writer, prefix, SPConstants.REQUIRE_REQUEST_SECURITY_TOKEN_COLLECTION, namespaceURI);
     }
 
-    /**
-     * @return Returns the requireClientEntropy.
-     */
-    public boolean isRequireClientEntropy() {
-        return requireClientEntropy;
+    if (isRequireAppliesTo()) {
+      // <sp:RequireAppliesTo />
+      writeEmptyElement(writer, prefix, SPConstants.REQUIRE_APPLIES_TO, namespaceURI);
     }
 
-    /**
-     * @param requireClientEntropy The requireClientEntropy to set.
-     */
-    public void setRequireClientEntropy(boolean requireClientEntropy) {
-        this.requireClientEntropy = requireClientEntropy;
-    }
+    // </wsp:Policy>
+    writer.writeEndElement();
 
-    /**
-     * @return Returns the requireServerEntropy.
-     */
-    public boolean isRequireServerEntropy() {
-        return requireServerEntropy;
-    }
 
-    /**
-     * @param requireServerEntropy The requireServerEntropy to set.
-     */
-    public void setRequireServerEntropy(boolean requireServerEntropy) {
-        this.requireServerEntropy = requireServerEntropy;
-    }
-    
-    /**
-     * @return Returns the requireRequestSecurityTokenCollection.
-     */
-    public boolean isRequireRequestSecurityTokenCollection() {
-        return requireRequestSecurityTokenCollection;
-    }
+    // </sp:Trust13>
+    writer.writeEndElement();
 
-    /**
-     * @param requireRequestSecurityTokenCollection The requireRequestSecurityTokenCollection to set.
-     */
-    public void setRequireRequestSecurityTokenCollection(boolean requireRequestSecurityTokenCollection) {
-        this.requireRequestSecurityTokenCollection = requireRequestSecurityTokenCollection;
-    }
-    
-    /**
-     * @return Returns the requireAppliesTo.
-     */
-    public boolean isRequireAppliesTo() {
-        return requireAppliesTo;
-    }
 
-    /**
-     * @param requireAppliesTo The requireAppliesTo to set.
-     */
-    public void setRequireAppliesTo(boolean requireAppliesTo) {
-        this.requireAppliesTo = requireAppliesTo;
-    }
 
-    /* (non-Javadoc)
-     * @see org.apache.neethi.Assertion#getName()
-     */
-    public QName getName() {
-            return SP12Constants.TRUST_13;
-    }
 
-    /* (non-Javadoc)
-     * @see org.apache.neethi.Assertion#isOptional()
-     */
-    public boolean isOptional() {
-        // TODO TODO Sanka
-        throw new UnsupportedOperationException("TODO Sanka");
-    }
+  }
 
-    public PolicyComponent normalize() {
-        return this;
-    }
-
-    public void serialize(XMLStreamWriter writer) throws XMLStreamException {
-        
-        String prefix = getName().getPrefix();
-        String localname = getName().getLocalPart();
-        String namespaceURI = getName().getNamespaceURI();
-        
-        // <sp:Trust13>
-        writeStartElement(writer, prefix, localname, namespaceURI);
-        
-        // <wsp:Policy>
-        writeStartElement(writer, SPConstants.POLICY);
-        
-        if (isMustSupportClientChallenge()) {
-            // <sp:MustSupportClientChallenge />
-            writeEmptyElement(writer, prefix, SPConstants.MUST_SUPPORT_CLIENT_CHALLENGE, namespaceURI);
-        }
-        
-        if (isMustSupportServerChallenge()) {
-            // <sp:MustSupportServerChallenge />
-            writeEmptyElement(writer, prefix, SPConstants.MUST_SUPPORT_SERVER_CHALLENGE, namespaceURI);
-        }
-        
-        if (isRequireClientEntropy()) {
-            // <sp:RequireClientEntropy />
-            writeEmptyElement(writer, prefix, SPConstants.REQUIRE_CLIENT_ENTROPY, namespaceURI);
-        }
-        
-        
-        if (isRequireServerEntropy()) {
-            // <sp:RequireServerEntropy />
-            writeEmptyElement(writer, prefix, SPConstants.REQUIRE_SERVER_ENTROPY, namespaceURI);
-        }
-        
-        if (isMustSupportIssuedTokens()) {
-            // <sp:MustSupportIssuedTokens />
-            writeEmptyElement(writer, prefix, SPConstants.MUST_SUPPORT_ISSUED_TOKENS, namespaceURI);
-        }
-        
-        if (isRequireRequestSecurityTokenCollection()) {
-            // <sp:RequireRequestSecurityTokenCollection />
-            writeEmptyElement(writer, prefix, SPConstants.REQUIRE_REQUEST_SECURITY_TOKEN_COLLECTION, namespaceURI);
-        }
-        
-        if (isRequireAppliesTo()) {
-            // <sp:RequireAppliesTo />
-            writeEmptyElement(writer, prefix, SPConstants.REQUIRE_APPLIES_TO, namespaceURI);
-        }
-        
-        // </wsp:Policy>
-        writer.writeEndElement();
-        
-        
-        // </sp:Trust13>
-        writer.writeEndElement();
-        
-        
-        
-        
-    }
-
-    public short getType() {
-        return org.apache.neethi.Constants.TYPE_ASSERTION;
-    }
+  public short getType() {
+    return org.apache.neethi.Constants.TYPE_ASSERTION;
+  }
 
 }

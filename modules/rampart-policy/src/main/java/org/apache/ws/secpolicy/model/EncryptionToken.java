@@ -26,56 +26,56 @@ import org.apache.ws.secpolicy.SPConstants;
 
 public class EncryptionToken extends AbstractSecurityAssertion implements TokenWrapper {
 
-    private Token encryptionToken;
-    
-    public EncryptionToken(int version) {
-        setVersion(version);
+  private Token encryptionToken;
+
+  public EncryptionToken(int version) {
+    setVersion(version);
+  }
+
+  /**
+   * @return Returns the encryptionToken.
+   */
+  public Token getEncryptionToken() {
+    return encryptionToken;
+  }
+
+  /**
+   * @param encryptionToken The encryptionToken to set.
+   */
+  public void setEncryptionToken(Token encryptionToken) {
+    this.encryptionToken = encryptionToken;
+  }
+
+  public void setToken(Token tok)  {
+    this.setEncryptionToken(tok);
+  }
+
+  public QName getName() {
+    if (version == SPConstants.SP_V12) {
+      return SP12Constants.ENCRYPTION_TOKEN;
+    } else {
+      return SP11Constants.ENCRYPTION_TOKEN;
     }
 
-    /**
-     * @return Returns the encryptionToken.
-     */
-    public Token getEncryptionToken() {
-        return encryptionToken;
+  }
+
+  public void serialize(XMLStreamWriter writer) throws XMLStreamException {
+    // <sp:EncryptionToken>
+    writeStartElement(writer, getName());
+
+    // <wsp:Policy>
+    writeStartElement(writer, SPConstants.POLICY);
+
+    if (encryptionToken == null) {
+      throw new RuntimeException("EncryptionToken is not set");
     }
 
-    /**
-     * @param encryptionToken The encryptionToken to set.
-     */
-    public void setEncryptionToken(Token encryptionToken) {
-        this.encryptionToken = encryptionToken;
-    }
+    encryptionToken.serialize(writer);
 
-    public void setToken(Token tok)  {
-        this.setEncryptionToken(tok);
-    }
+    // </wsp:Policy>
+    writer.writeEndElement();
 
-    public QName getName() {
-        if (version == SPConstants.SP_V12) {
-            return SP12Constants.ENCRYPTION_TOKEN;
-        } else {
-            return SP11Constants.ENCRYPTION_TOKEN;
-        }
-        
-    }
-
-    public void serialize(XMLStreamWriter writer) throws XMLStreamException {
-        // <sp:EncryptionToken>
-        writeStartElement(writer, getName());
-        
-        // <wsp:Policy>
-        writeStartElement(writer, SPConstants.POLICY);
-        
-        if (encryptionToken == null) {
-            throw new RuntimeException("EncryptionToken is not set");
-        }
-        
-        encryptionToken.serialize(writer);
-        
-        // </wsp:Policy>
-        writer.writeEndElement();
-        
-        // </sp:EncryptionToken>
-        writer.writeEndElement();
-    }
+    // </sp:EncryptionToken>
+    writer.writeEndElement();
+  }
 }

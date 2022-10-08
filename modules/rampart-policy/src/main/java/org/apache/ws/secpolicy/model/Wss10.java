@@ -26,113 +26,113 @@ import org.apache.ws.secpolicy.SP12Constants;
 import org.apache.ws.secpolicy.SPConstants;
 
 public class Wss10 extends AbstractSecurityAssertion {
-    
-    private boolean mustSupportRefKeyIdentifier;
-    private boolean MustSupportRefIssuerSerial;
-    private boolean MustSupportRefExternalURI;
-    private boolean MustSupportRefEmbeddedToken;
-    
-    public Wss10(int version) {
-        setVersion(version);
-    }
-    
-    /**
-     * @return Returns the mustSupportRefEmbeddedToken.
-     */
-    public boolean isMustSupportRefEmbeddedToken() {
-        return MustSupportRefEmbeddedToken;
-    }
-    /**
-     * @param mustSupportRefEmbeddedToken The mustSupportRefEmbeddedToken to set.
-     */
-    public void setMustSupportRefEmbeddedToken(boolean mustSupportRefEmbeddedToken) {
-        MustSupportRefEmbeddedToken = mustSupportRefEmbeddedToken;
-    }
-    /**
-     * @return Returns the mustSupportRefExternalURI.
-     */
-    public boolean isMustSupportRefExternalURI() {
-        return MustSupportRefExternalURI;
-    }
-    /**
-     * @param mustSupportRefExternalURI The mustSupportRefExternalURI to set.
-     */
-    public void setMustSupportRefExternalURI(boolean mustSupportRefExternalURI) {
-        MustSupportRefExternalURI = mustSupportRefExternalURI;
-    }
-    /**
-     * @return Returns the mustSupportRefIssuerSerial.
-     */
-    public boolean isMustSupportRefIssuerSerial() {
-        return MustSupportRefIssuerSerial;
-    }
-    /**
-     * @param mustSupportRefIssuerSerial The mustSupportRefIssuerSerial to set.
-     */
-    public void setMustSupportRefIssuerSerial(boolean mustSupportRefIssuerSerial) {
-        MustSupportRefIssuerSerial = mustSupportRefIssuerSerial;
-    }
-    /**
-     * @return Returns the mustSupportRefKeyIdentifier.
-     */
-    public boolean isMustSupportRefKeyIdentifier() {
-        return mustSupportRefKeyIdentifier;
-    }
-    /**
-     * @param mustSupportRefKeyIdentifier The mustSupportRefKeyIdentifier to set.
-     */
-    public void setMustSupportRefKeyIdentifier(boolean mustSupportRefKeyIdentifier) {
-        this.mustSupportRefKeyIdentifier = mustSupportRefKeyIdentifier;
-    }
-    
-    public QName getName() {
-        if ( version == SPConstants.SP_V12 ) {
-            return SP12Constants.WSS10;
-        } else {
-            return SP11Constants.WSS10;
-        }  
-    }
-    
-    public PolicyComponent normalize() {
-        return this;
-    }
-    
-    public void serialize(XMLStreamWriter writer) throws XMLStreamException {
-        String prefix = getName().getPrefix();
-        String localname = getName().getLocalPart();
-        String namespaceURI = getName().getNamespaceURI();
 
-        // <sp:Wss10>
-        writeStartElement(writer, prefix, localname, namespaceURI);
-        
-        // <wsp:Policy>
-        writeStartElement(writer, SPConstants.POLICY);
-        
-        if (isMustSupportRefKeyIdentifier()) {
-            // <sp:MustSupportRefKeyIdentifier />
-            writeEmptyElement(writer, prefix, SPConstants.MUST_SUPPORT_REF_KEY_IDENTIFIER, namespaceURI);
-        }
-        
-        if (isMustSupportRefIssuerSerial()) {
-            // <sp:MustSupportRefIssuerSerial />
-            writeEmptyElement(writer, prefix, SPConstants.MUST_SUPPORT_REF_ISSUER_SERIAL, namespaceURI);
-        }
-        
-        if (isMustSupportRefExternalURI()) {
-            // <sp:MustSupportRefExternalURI />
-            writeEmptyElement(writer, prefix, SPConstants.MUST_SUPPORT_REF_EXTERNAL_URI, namespaceURI);
-        }
-        
-        if (isMustSupportRefEmbeddedToken()) {
-            // <sp:MustSupportRefEmbeddedToken />
-            writeEmptyElement(writer, prefix, SPConstants.MUST_SUPPORT_REF_EMBEDDED_TOKEN, namespaceURI);
-        }
-        
-        // </wsp:Policy>
-        writer.writeEndElement();
-        
-        // </sp:Wss10>
-        writer.writeEndElement();
+  private boolean mustSupportRefKeyIdentifier;
+  private boolean MustSupportRefIssuerSerial;
+  private boolean MustSupportRefExternalURI;
+  private boolean MustSupportRefEmbeddedToken;
 
+  public Wss10(int version) {
+    setVersion(version);
+  }
+
+  /**
+   * @return Returns the mustSupportRefEmbeddedToken.
+   */
+  public boolean isMustSupportRefEmbeddedToken() {
+    return MustSupportRefEmbeddedToken;
+  }
+  /**
+   * @param mustSupportRefEmbeddedToken The mustSupportRefEmbeddedToken to set.
+   */
+  public void setMustSupportRefEmbeddedToken(boolean mustSupportRefEmbeddedToken) {
+    MustSupportRefEmbeddedToken = mustSupportRefEmbeddedToken;
+  }
+  /**
+   * @return Returns the mustSupportRefExternalURI.
+   */
+  public boolean isMustSupportRefExternalURI() {
+    return MustSupportRefExternalURI;
+  }
+  /**
+   * @param mustSupportRefExternalURI The mustSupportRefExternalURI to set.
+   */
+  public void setMustSupportRefExternalURI(boolean mustSupportRefExternalURI) {
+    MustSupportRefExternalURI = mustSupportRefExternalURI;
+  }
+  /**
+   * @return Returns the mustSupportRefIssuerSerial.
+   */
+  public boolean isMustSupportRefIssuerSerial() {
+    return MustSupportRefIssuerSerial;
+  }
+  /**
+   * @param mustSupportRefIssuerSerial The mustSupportRefIssuerSerial to set.
+   */
+  public void setMustSupportRefIssuerSerial(boolean mustSupportRefIssuerSerial) {
+    MustSupportRefIssuerSerial = mustSupportRefIssuerSerial;
+  }
+  /**
+   * @return Returns the mustSupportRefKeyIdentifier.
+   */
+  public boolean isMustSupportRefKeyIdentifier() {
+    return mustSupportRefKeyIdentifier;
+  }
+  /**
+   * @param mustSupportRefKeyIdentifier The mustSupportRefKeyIdentifier to set.
+   */
+  public void setMustSupportRefKeyIdentifier(boolean mustSupportRefKeyIdentifier) {
+    this.mustSupportRefKeyIdentifier = mustSupportRefKeyIdentifier;
+  }
+
+  public QName getName() {
+    if ( version == SPConstants.SP_V12 ) {
+      return SP12Constants.WSS10;
+    } else {
+      return SP11Constants.WSS10;
     }
+  }
+
+  public PolicyComponent normalize() {
+    return this;
+  }
+
+  public void serialize(XMLStreamWriter writer) throws XMLStreamException {
+    String prefix = getName().getPrefix();
+    String localname = getName().getLocalPart();
+    String namespaceURI = getName().getNamespaceURI();
+
+    // <sp:Wss10>
+    writeStartElement(writer, prefix, localname, namespaceURI);
+
+    // <wsp:Policy>
+    writeStartElement(writer, SPConstants.POLICY);
+
+    if (isMustSupportRefKeyIdentifier()) {
+      // <sp:MustSupportRefKeyIdentifier />
+      writeEmptyElement(writer, prefix, SPConstants.MUST_SUPPORT_REF_KEY_IDENTIFIER, namespaceURI);
+    }
+
+    if (isMustSupportRefIssuerSerial()) {
+      // <sp:MustSupportRefIssuerSerial />
+      writeEmptyElement(writer, prefix, SPConstants.MUST_SUPPORT_REF_ISSUER_SERIAL, namespaceURI);
+    }
+
+    if (isMustSupportRefExternalURI()) {
+      // <sp:MustSupportRefExternalURI />
+      writeEmptyElement(writer, prefix, SPConstants.MUST_SUPPORT_REF_EXTERNAL_URI, namespaceURI);
+    }
+
+    if (isMustSupportRefEmbeddedToken()) {
+      // <sp:MustSupportRefEmbeddedToken />
+      writeEmptyElement(writer, prefix, SPConstants.MUST_SUPPORT_REF_EMBEDDED_TOKEN, namespaceURI);
+    }
+
+    // </wsp:Policy>
+    writer.writeEndElement();
+
+    // </sp:Wss10>
+    writer.writeEndElement();
+
+  }
 }

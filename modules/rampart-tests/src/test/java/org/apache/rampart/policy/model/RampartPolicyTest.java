@@ -22,61 +22,78 @@ import org.apache.axiom.om.OMXMLParserWrapper;
 import org.apache.neethi.Assertion;
 import org.apache.neethi.Policy;
 import org.apache.neethi.PolicyEngine;
+import org.junit.jupiter.api.Test;
 
 import javax.xml.namespace.QName;
 
-import java.io.FileInputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Properties;
 
-import junit.framework.TestCase;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class RampartPolicyTest extends TestCase {
-    
-    public final static QName RAMPART_CONFIG_NAME = new QName(RampartConfig.NS,RampartConfig.RAMPART_CONFIG_LN);
-    public final static QName CRYPTO_CONFIG_NAME = new QName(RampartConfig.NS,CryptoConfig.CRYPTO_LN);
-    
-    public void testLoadPolicy() throws Exception {
-        String xmlPath = "test-resources/policy/rampart-policy-1.xml";
-        OMXMLParserWrapper builder = OMXMLBuilderFactory.createOMBuilder(new FileInputStream(xmlPath));
-        
-        OMElement elem = builder.getDocumentElement();
-        
-        Policy policy = PolicyEngine.getPolicy(elem);
-        
-        Assertion assertion = (Assertion)policy.getAssertions().get(0);
-        
-        assertEquals("Incorrect namespace in RampartConfig",
-                RAMPART_CONFIG_NAME.getNamespaceURI(), assertion.getName()
-                        .getNamespaceURI());
-        assertEquals("Incorrect localname in RampartConfig",
-                RAMPART_CONFIG_NAME.getLocalPart(), assertion.getName()
-                        .getLocalPart());
+public class RampartPolicyTest {
 
-        RampartConfig config = (RampartConfig) assertion;
-        CryptoConfig sigCryptoConfig = config.getSigCryptoConfig();
+  public final static QName RAMPART_CONFIG_NAME = new QName(RampartConfig.NS,RampartConfig.RAMPART_CONFIG_LN);
+  public final static QName CRYPTO_CONFIG_NAME = new QName(RampartConfig.NS,CryptoConfig.CRYPTO_LN);
 
-        assertNotNull("Signature Crypto missing", sigCryptoConfig);
-        
-        assertEquals("Incorrect namespace in SignatureCrypto",
-                CRYPTO_CONFIG_NAME.getNamespaceURI(), sigCryptoConfig
-                        .getName().getNamespaceURI());
-        assertEquals("Incorrect localname in SignatureCrypto",
-                CRYPTO_CONFIG_NAME.getLocalPart(), sigCryptoConfig.getName()
-                        .getLocalPart());
-        
-        assertEquals("Incorrect provider value",
-                "org.apache.ws.security.components.crypto.Merlin",
-                sigCryptoConfig.getProvider());
-        
-        Properties prop = sigCryptoConfig.getProp();
-        assertEquals("Incorrect number of properties", 3, prop.size());
-        
-        assertEquals("Incorrect property value", "JKS", prop
-                .getProperty("keystoreType"));
-        assertEquals("Incorrect property value", "/path/to/file.jks", prop
-                .getProperty("keystoreFile"));
-        assertEquals("Incorrect property value", "password", prop
-                .getProperty("keystorePassword"));
-    }
-    
+  @Test
+  public void testLoadPolicy() throws Exception {
+
+    String xmlPath = "test-resources/policy/rampart-policy-1.xml";
+
+    OMXMLParserWrapper builder = OMXMLBuilderFactory.createOMBuilder(Files.newInputStream(Paths.get(xmlPath)));
+
+    OMElement elem = builder.getDocumentElement();
+
+    Policy policy = PolicyEngine.getPolicy(elem);
+
+    Assertion assertion = (Assertion)policy.getAssertions().get(0);
+
+    assertEquals(RAMPART_CONFIG_NAME.getNamespaceURI(),
+                 assertion.getName().getNamespaceURI(),
+                 "Incorrect namespace in RampartConfig");
+
+    assertEquals(RAMPART_CONFIG_NAME.getLocalPart(),
+                 assertion.getName().getLocalPart(),
+                 "Incorrect localname in RampartConfig");
+
+    RampartConfig config = (RampartConfig) assertion;
+
+    CryptoConfig sigCryptoConfig = config.getSigCryptoConfig();
+
+    assertNotNull(sigCryptoConfig, "Signature Crypto missing");
+
+    assertEquals(CRYPTO_CONFIG_NAME.getNamespaceURI(),
+                 sigCryptoConfig.getName().getNamespaceURI(),
+                 "Incorrect namespace in SignatureCrypto");
+
+    assertEquals(CRYPTO_CONFIG_NAME.getLocalPart(),
+                 sigCryptoConfig.getName().getLocalPart(),
+                 "Incorrect localname in SignatureCrypto");
+
+    assertEquals("org.apache.ws.security.components.crypto.Merlin",
+                 sigCryptoConfig.getProvider(),
+                 "Incorrect provider value");
+
+    Properties prop = sigCryptoConfig.getProp();
+    assertEquals(3,
+                 prop.size(),
+                 "Incorrect number of properties");
+
+    assertEquals("JKS",
+                 prop.getProperty("keystoreType"),
+                 "Incorrect property value");
+
+    assertEquals("/path/to/file.jks",
+                 prop.getProperty("keystoreFile"),
+                 "Incorrect property value");
+
+    assertEquals("password",
+                 prop.getProperty("keystorePassword"),
+                 "Incorrect property value");
+
+  }
+
 }

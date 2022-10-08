@@ -26,61 +26,61 @@ import org.apache.ws.secpolicy.SPConstants;
 import org.apache.ws.secpolicy.SP12Constants;
 
 public class InitiatorToken extends AbstractSecurityAssertion implements TokenWrapper {
-    
-    private Token initiatorToken;
-    
-    public InitiatorToken(int version) {
-        setVersion(version);
+
+  private Token initiatorToken;
+
+  public InitiatorToken(int version) {
+    setVersion(version);
+  }
+
+  /**
+   * @return Returns the initiatorToken.
+   */
+  public Token getInitiatorToken() {
+    return initiatorToken;
+  }
+
+  /**
+   * @param initiatorToken The initiatorToken to set.
+   */
+  public void setInitiatorToken(Token initiatorToken) {
+    this.initiatorToken = initiatorToken;
+  }
+
+  public void setToken(Token tok) {
+    this.setInitiatorToken(tok);
+  }
+
+  public QName getName() {
+    if (version == SPConstants.SP_V12) {
+      return SP12Constants.INITIATOR_TOKEN;
+    } else {
+      return SP11Constants.INITIATOR_TOKEN;
     }
 
-    /**
-     * @return Returns the initiatorToken.
-     */
-    public Token getInitiatorToken() {
-        return initiatorToken;
-    }
+  }
 
-    /**
-     * @param initiatorToken The initiatorToken to set.
-     */
-    public void setInitiatorToken(Token initiatorToken) {
-        this.initiatorToken = initiatorToken;
-    }
+  public PolicyComponent normalize() {
+    throw new UnsupportedOperationException();
+  }
 
-    public void setToken(Token tok) {
-        this.setInitiatorToken(tok);
-    }
-    
-    public QName getName() {
-        if (version == SPConstants.SP_V12) {
-            return SP12Constants.INITIATOR_TOKEN;
-        } else {
-            return SP11Constants.INITIATOR_TOKEN;
-        }
-        
-    }
+  public void serialize(XMLStreamWriter writer) throws XMLStreamException {
+    // <sp:InitiatorToken>
+    writeStartElement(writer, getName());
 
-    public PolicyComponent normalize() {
-        throw new UnsupportedOperationException();
-    }
+    // <wsp:Policy>
+    writeStartElement(writer, SPConstants.POLICY);
 
-    public void serialize(XMLStreamWriter writer) throws XMLStreamException {
-        // <sp:InitiatorToken>
-        writeStartElement(writer, getName());
-        
-        // <wsp:Policy>
-        writeStartElement(writer, SPConstants.POLICY);
-
-        Token token = getInitiatorToken();
-        if (token == null) {
-            throw new RuntimeException("InitiatorToken doesn't contain any token assertions");
-        }
-        token.serialize(writer);
-        
-        // </wsp:Policy>
-        writer.writeEndElement();
-        
-        // </sp:InitiatorToken>
-        writer.writeEndElement();
+    Token token = getInitiatorToken();
+    if (token == null) {
+      throw new RuntimeException("InitiatorToken doesn't contain any token assertions");
     }
+    token.serialize(writer);
+
+    // </wsp:Policy>
+    writer.writeEndElement();
+
+    // </sp:InitiatorToken>
+    writer.writeEndElement();
+  }
 }

@@ -1,12 +1,12 @@
 /*
  * Copyright 2001-2004 The Apache Software Foundation.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -35,57 +35,57 @@ import org.apache.ws.secpolicy.model.TransportBinding;
 import org.apache.ws.secpolicy.model.TransportToken;
 
 public class TransportBindingBuilder implements AssertionBuilder<OMElement> {
- 
-    public Assertion build(OMElement element, AssertionBuilderFactory factory) throws IllegalArgumentException {
-        TransportBinding transportBinding = new TransportBinding(SPConstants.SP_V12);
-       
-        Policy policy = PolicyEngine.getPolicy(element.getFirstElement());
-        policy = (Policy) policy.normalize(false);
-        
-        for (Iterator<List<Assertion>> iterator = policy.getAlternatives(); iterator.hasNext();) {
-            processAlternative(iterator.next(), transportBinding, factory);
-            
-            /*
-             * since there should be only one alternative
-             */
-            break; 
-        }
-        
-        return transportBinding;
-    }
-    
-    public QName[] getKnownElements() {
-        return new QName[] {SP12Constants.TRANSPORT_BINDING};
+
+  public Assertion build(OMElement element, AssertionBuilderFactory factory) throws IllegalArgumentException {
+
+    final TransportBinding transportBinding = new TransportBinding(SPConstants.SP_V12);
+
+    final Policy policy = PolicyEngine.getPolicy(element.getFirstElement()).normalize(false);
+
+    final Iterator<List<Assertion>> alternatives = policy.getAlternatives();
+
+    if (alternatives.hasNext()) { // there should be max one alternative
+      processAlternative(alternatives.next(), transportBinding, factory);
     }
 
-    private void processAlternative(List<Assertion> assertionList, TransportBinding parent, AssertionBuilderFactory factory) {
-        
-        for (Iterator<Assertion> iterator = assertionList.iterator(); iterator.hasNext(); ) {
-            
-            Assertion primitive = iterator.next();
-            QName name = primitive.getName();
-            
-            if (name.equals(SP12Constants.ALGORITHM_SUITE)) {
-                parent.setAlgorithmSuite((AlgorithmSuite) primitive);
-                
-            } else if (name.equals(SP12Constants.TRANSPORT_TOKEN)) {
-                parent.setTransportToken(((TransportToken) primitive));
-                
-            } else if (name.equals(SP12Constants.INCLUDE_TIMESTAMP)) {
-                parent.setIncludeTimestamp(true);
-                
-            } else if (name.equals(SP12Constants.LAYOUT)) {
-                parent.setLayout((Layout) primitive);
-                 
-            } else if (name.equals(SP12Constants.PROTECT_TOKENS)) {
-                parent.setTokenProtection(true);
-                 
-            } else if (name.equals(SP12Constants.SIGNED_SUPPORTING_TOKENS)) {
-                parent.setSignedSupportingToken((SupportingToken) primitive);
-                
-            } else if (name.equals(SP12Constants.SIGNED_ENDORSING_SUPPORTING_TOKENS)) {
-                parent.setSignedEndorsingSupportingTokens((SupportingToken) primitive);
-            }
+    return transportBinding;
+
+  }
+
+  public QName[] getKnownElements() {
+
+    return new QName[] { SP12Constants.TRANSPORT_BINDING };
+
+  }
+
+  private void processAlternative(List<Assertion> assertions, TransportBinding parent, AssertionBuilderFactory factory) {
+
+    if (assertions != null) {
+
+      for (Assertion assertion : assertions) {
+
+        final QName name = assertion.getName();
+
+        if (name.equals(SP12Constants.ALGORITHM_SUITE)) {
+          parent.setAlgorithmSuite((AlgorithmSuite) assertion);
+        } else if (name.equals(SP12Constants.TRANSPORT_TOKEN)) {
+          parent.setTransportToken(((TransportToken) assertion));
+        } else if (name.equals(SP12Constants.INCLUDE_TIMESTAMP)) {
+          parent.setIncludeTimestamp(true);
+        } else if (name.equals(SP12Constants.LAYOUT)) {
+          parent.setLayout((Layout) assertion);
+        } else if (name.equals(SP12Constants.PROTECT_TOKENS)) {
+          parent.setTokenProtection(true);
+        } else if (name.equals(SP12Constants.SIGNED_SUPPORTING_TOKENS)) {
+          parent.setSignedSupportingToken((SupportingToken) assertion);
+        } else if (name.equals(SP12Constants.SIGNED_ENDORSING_SUPPORTING_TOKENS)) {
+          parent.setSignedEndorsingSupportingTokens((SupportingToken) assertion);
         }
+
+      }
+
     }
+
+  }
+
 }

@@ -223,14 +223,13 @@ public class RampartPolicyBuilder {
    */
   private static void processSignedEncryptedElements(
     SignedEncryptedElements see, RampartPolicyData rpd) {
-    Iterator<String> it = see.getXPathExpressions().iterator();
     if (see.isSignedElemets()) {
-      while (it.hasNext()) {
-        rpd.setSignedElements(it.next());
+      for (String xPathExpression : see.getXPathExpressions()) {
+        rpd.setSignedElements(xPathExpression);
       }
     } else {
-      while (it.hasNext()) {
-        rpd.setEncryptedElements(it.next());
+      for (String xPathExpression : see.getXPathExpressions()) {
+        rpd.setEncryptedElements(xPathExpression);
       }
     }
     rpd.addDeclaredNamespaces(see.getDeclaredNamespaces());
@@ -359,7 +358,7 @@ public class RampartPolicyBuilder {
       throw new WSSPolicyException("Asymmetric binding should have both Initiator and " +
                                    "Recipient tokens defined");
     }
-    rpd.setRecipientToken(rt.getReceipientToken());
+    rpd.setRecipientToken(rt.getRecipientToken());
     rpd.setInitiatorToken(it.getInitiatorToken());
   }
 

@@ -18,32 +18,32 @@ package org.apache.ws.secpolicy.model;
 
 public class Header {
 
-    private String name;
-    private String namespace;
-    
-    /**
-     * @return Returns the name.
-     */
-    public String getName() {
-        return name;
-    }
-    /**
-     * @param name The name to set.
-     */
-    public void setName(String name) {
-        this.name = name;
-    }
-    /**
-     * @return Returns the namespace.
-     */
-    public String getNamespace() {
-        return namespace;
-    }
-    /**
-     * @param namespace The namespace to set.
-     */
-    public void setNamespace(String namespace) {
-        this.namespace = namespace;
-    }
-    
+  private String name;
+  private String namespace;
+
+  /**
+   * @return Returns the name.
+   */
+  public String getName() {
+    return name;
+  }
+  /**
+   * @param name The name to set.
+   */
+  public void setName(String name) {
+    this.name = name;
+  }
+  /**
+   * @return Returns the namespace.
+   */
+  public String getNamespace() {
+    return namespace;
+  }
+  /**
+   * @param namespace The namespace to set.
+   */
+  public void setNamespace(String namespace) {
+    this.namespace = namespace;
+  }
+
 }

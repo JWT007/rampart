@@ -1,12 +1,12 @@
 /*
  * Copyright 2001-2004 The Apache Software Foundation.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -38,81 +38,69 @@ import org.apache.ws.secpolicy.model.Token;
 
 public class SupportingTokensBuilder implements AssertionBuilder<OMElement> {
 
-    public Assertion build(OMElement element, AssertionBuilderFactory factory)
-            throws IllegalArgumentException {
-        QName name = element.getQName();
-        SupportingToken supportingToken = null;
+  public Assertion build(OMElement element, AssertionBuilderFactory factory)
+    throws IllegalArgumentException {
+    QName name = element.getQName();
+    SupportingToken supportingToken = null;
 
-        if (SP11Constants.SUPPORTING_TOKENS.equals(name)) {
-            supportingToken = new SupportingToken(SPConstants.SUPPORTING_TOKEN_SUPPORTING, SPConstants.SP_V11);
-        } else if (SP11Constants.SIGNED_SUPPORTING_TOKENS.equals(name)) {
-            supportingToken = new SupportingToken(SPConstants.SUPPORTING_TOKEN_SIGNED, SPConstants.SP_V11);
-        } else if (SP11Constants.ENDORSING_SUPPORTING_TOKENS.equals(name)) {
-            supportingToken = new SupportingToken(SPConstants.SUPPORTING_TOKEN_ENDORSING, SPConstants.SP_V11);
-        } else if (SP11Constants.SIGNED_ENDORSING_SUPPORTING_TOKENS.equals(name)) {
-            supportingToken = new SupportingToken(SPConstants.SUPPORTING_TOKEN_SIGNED_ENDORSING, SPConstants.SP_V11);
-        }
-        
-        OMAttribute isOptional = element.getAttribute(Constants.Q_ELEM_OPTIONAL_ATTR);
-		if (isOptional != null) {
-			supportingToken.setOptional(Boolean.valueOf(isOptional.getAttributeValue())
-					.booleanValue());
-		}
-   
-        Policy policy = PolicyEngine.getPolicy(element.getFirstElement());
-        policy = (Policy) policy.normalize(false);
+    if (SP11Constants.SUPPORTING_TOKENS.equals(name)) {
+      supportingToken = new SupportingToken(SPConstants.SUPPORTING_TOKEN_SUPPORTING, SPConstants.SP_V11);
+    } else if (SP11Constants.SIGNED_SUPPORTING_TOKENS.equals(name)) {
+      supportingToken = new SupportingToken(SPConstants.SUPPORTING_TOKEN_SIGNED, SPConstants.SP_V11);
+    } else if (SP11Constants.ENDORSING_SUPPORTING_TOKENS.equals(name)) {
+      supportingToken = new SupportingToken(SPConstants.SUPPORTING_TOKEN_ENDORSING, SPConstants.SP_V11);
+    } else if (SP11Constants.SIGNED_ENDORSING_SUPPORTING_TOKENS.equals(name)) {
+      supportingToken = new SupportingToken(SPConstants.SUPPORTING_TOKEN_SIGNED_ENDORSING, SPConstants.SP_V11);
+    }
+    // TODO: handle case where not matched
 
-        for (Iterator<List<Assertion>> iterator = policy.getAlternatives(); iterator.hasNext();) {
-            processAlternative(iterator.next(), supportingToken);
-            /*
-             * for the moment we will say there should be only one alternative 
-             */
-            break;            
-        }
-
-        return supportingToken;
+    OMAttribute isOptional = element.getAttribute(Constants.Q_ELEM_OPTIONAL_ATTR);
+    if (isOptional != null) {
+      supportingToken.setOptional(Boolean.parseBoolean(isOptional.getAttributeValue()));
     }
 
-    public QName[] getKnownElements() {
-        return new QName[] {  SP11Constants.SUPPORTING_TOKENS,
-                SP11Constants.SIGNED_SUPPORTING_TOKENS,
-                SP11Constants.ENDORSING_SUPPORTING_TOKENS,
-                SP11Constants.SIGNED_ENDORSING_SUPPORTING_TOKENS};
+    Policy policy = PolicyEngine.getPolicy(element.getFirstElement()).normalize(false);
+    final Iterator<List<Assertion>> iterator = policy.getAlternatives();
+    if (iterator.hasNext()) { // there should be max one alternative
+      processAlternative(iterator.next(), supportingToken);
     }
 
-    private void processAlternative(List<Assertion> assertions, SupportingToken supportingToken) {
-        
-        for (Iterator<Assertion> iterator = assertions.iterator(); iterator.hasNext();) {
+    return supportingToken;
+  }
 
-            Assertion primitive = iterator.next();
-            QName qname = primitive.getName();
+  public QName[] getKnownElements() {
+    return new QName[] {  SP11Constants.SUPPORTING_TOKENS,
+                          SP11Constants.SIGNED_SUPPORTING_TOKENS,
+                          SP11Constants.ENDORSING_SUPPORTING_TOKENS,
+                          SP11Constants.SIGNED_ENDORSING_SUPPORTING_TOKENS};
+  }
 
-            if (SP11Constants.ALGORITHM_SUITE.equals(qname)) {
-                supportingToken.setAlgorithmSuite((AlgorithmSuite) primitive);
+  private void processAlternative(List<Assertion> assertions, SupportingToken supportingToken) {
 
-            } else if (SP11Constants.SIGNED_PARTS.equals(qname)) {
-                supportingToken
-                        .setSignedParts((SignedEncryptedParts) primitive);
-                supportingToken.setSignedPartsOptional(primitive.isOptional());
+    for (Assertion primitive : assertions) {
 
-            } else if (SP11Constants.SIGNED_ELEMENTS.equals(qname)) {
-                supportingToken
-                        .setSignedElements((SignedEncryptedElements) primitive);
-                supportingToken.setSignedElementsOptional(primitive.isOptional());
+      QName qname = primitive.getName();
 
-            } else if (SP11Constants.ENCRYPTED_PARTS.equals(qname)) {
-                supportingToken
-                        .setEncryptedParts((SignedEncryptedParts) primitive);
-                supportingToken.setEncryptedPartsOptional(primitive.isOptional());
+      if (SP11Constants.ALGORITHM_SUITE.equals(qname)) {
+        supportingToken.setAlgorithmSuite((AlgorithmSuite) primitive);
+      } else if (SP11Constants.SIGNED_PARTS.equals(qname)) {
+        supportingToken.setSignedParts((SignedEncryptedParts) primitive);
+        supportingToken.setSignedPartsOptional(primitive.isOptional());
+      } else if (SP11Constants.SIGNED_ELEMENTS.equals(qname)) {
+        supportingToken.setSignedElements((SignedEncryptedElements) primitive);
+        supportingToken.setSignedElementsOptional(primitive.isOptional());
+      } else if (SP11Constants.ENCRYPTED_PARTS.equals(qname)) {
+        supportingToken.setEncryptedParts((SignedEncryptedParts) primitive);
+        supportingToken.setEncryptedPartsOptional(primitive.isOptional());
+      } else if (SP11Constants.ENCRYPTED_ELEMENTS.equals(qname)) {
+        supportingToken.setEncryptedElements((SignedEncryptedElements) primitive);
+        supportingToken.setEncryptedElementsOptional(primitive.isOptional());
+      } else if (primitive instanceof Token) {
+        supportingToken.addToken((Token) primitive);
+      }
 
-            } else if (SP11Constants.ENCRYPTED_ELEMENTS.equals(qname)) {
-                supportingToken
-                        .setEncryptedElements((SignedEncryptedElements) primitive);
-                supportingToken.setEncryptedElementsOptional(primitive.isOptional());
-
-            } else if (primitive instanceof Token) {
-                supportingToken.addToken((Token) primitive);
-            }
-        }
     }
+
+  }
+
 }

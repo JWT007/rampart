@@ -18,5 +18,5 @@ package org.apache.ws.secpolicy.model;
 
 public interface TokenWrapper {
 
-    public void setToken(Token tok);
+  void setToken(Token tok);
 }

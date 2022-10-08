@@ -1,12 +1,12 @@
 /*
  * Copyright 2001-2004 The Apache Software Foundation.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -28,42 +28,41 @@ import javax.xml.namespace.QName;
 
 public class SecurityContextTokenBuilder implements AssertionBuilder<OMElement> {
 
-    public Assertion build(OMElement element, AssertionBuilderFactory factory)
-            throws IllegalArgumentException {
+  public Assertion build(OMElement element, AssertionBuilderFactory factory) throws IllegalArgumentException {
 
-        SecurityContextToken contextToken = new SecurityContextToken(SPConstants.SP_V11);
+    SecurityContextToken contextToken = new SecurityContextToken(SPConstants.SP_V11);
 
-        OMAttribute  includeAttr = element.getAttribute(SP11Constants.INCLUDE_TOKEN);
-        
-        if(includeAttr != null) {
-            int inclusion = SP11Constants.getInclusionFromAttributeValue(includeAttr.getAttributeValue());
-            contextToken.setInclusion(inclusion);
-        }
+    OMAttribute  includeAttr = element.getAttribute(SP11Constants.INCLUDE_TOKEN);
 
-        element = element.getFirstChildWithName(SPConstants.POLICY);
-
-        if (element != null) {
-
-            if (element.getFirstChildWithName(SP11Constants.REQUIRE_DERIVED_KEYS) != null) {
-                contextToken.setDerivedKeys(true);
-            }
-
-            if (element
-                    .getFirstChildWithName(SP11Constants.REQUIRE_EXTERNAL_URI_REFERNCE) != null) {
-                contextToken.setRequireExternalUriRef(true);
-            }
-
-            if (element
-                    .getFirstChildWithName(SP11Constants.SC10_SECURITY_CONTEXT_TOKEN) != null) {
-                contextToken.setSc10SecurityContextToken(true);
-            }
-        }
-
-        return contextToken;
+    if(includeAttr != null) {
+      int inclusion = SP11Constants.getInclusionFromAttributeValue(includeAttr.getAttributeValue());
+      contextToken.setInclusion(inclusion);
     }
 
-    public QName[] getKnownElements() {
-        return new QName[] {SP11Constants.SECURITY_CONTEXT_TOKEN};
+    element = element.getFirstChildWithName(SPConstants.POLICY);
+
+    if (element != null) {
+
+      if (element.getFirstChildWithName(SP11Constants.REQUIRE_DERIVED_KEYS) != null) {
+        contextToken.setDerivedKeys(true);
+      }
+
+      if (element
+            .getFirstChildWithName(SP11Constants.REQUIRE_EXTERNAL_URI_REFERNCE) != null) {
+        contextToken.setRequireExternalUriRef(true);
+      }
+
+      if (element
+            .getFirstChildWithName(SP11Constants.SC10_SECURITY_CONTEXT_TOKEN) != null) {
+        contextToken.setSc10SecurityContextToken(true);
+      }
     }
+
+    return contextToken;
+  }
+
+  public QName[] getKnownElements() {
+    return new QName[] {SP11Constants.SECURITY_CONTEXT_TOKEN};
+  }
 
 }

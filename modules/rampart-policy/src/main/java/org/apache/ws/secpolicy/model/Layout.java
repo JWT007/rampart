@@ -27,77 +27,74 @@ import org.apache.ws.secpolicy.SPConstants;
 
 public class Layout extends AbstractSecurityAssertion {
 
-    private String value = SPConstants.LAYOUT_LAX;
-    
-    public Layout(int version) {
-        setVersion(version);
+  private String value = SPConstants.LAYOUT_LAX;
+
+  public Layout(int version) {
+    setVersion(version);
+  }
+
+  /**
+   * @return Returns the value.
+   */
+  public String getValue() {
+    return value;
+  }
+
+  /**
+   * @param value
+   *            The value to set.
+   */
+  public void setValue(String value) {
+    if (SPConstants.LAYOUT_LAX.equals(value)
+        || SPConstants.LAYOUT_STRICT.equals(value)
+        || SPConstants.LAYOUT_LAX_TIMESTAMP_FIRST.equals(value)
+        || SPConstants.LAYOUT_LAX_TIMESTAMP_LAST.equals(value)) {
+      this.value = value;
+    }
+  }
+
+  public QName getName() {
+    if ( version == SPConstants.SP_V12 ) {
+      return SP12Constants.LAYOUT;
+    } else {
+      return SP11Constants.LAYOUT;
+    }
+  }
+
+  public PolicyComponent normalize() {
+    throw new UnsupportedOperationException();
+  }
+
+  public void serialize(XMLStreamWriter writer) throws XMLStreamException {
+
+    String prefix = getName().getPrefix();
+    String localName = getName().getLocalPart();
+    String namespaceURI = getName().getNamespaceURI();
+
+    // <sp:Layout>
+    writeStartElement(writer, prefix, localName, namespaceURI);
+
+    // <wsp:Policy>
+    writeStartElement(writer, SPConstants.POLICY);
+
+    // .. <sp:Strict /> | <sp:Lax /> | <sp:LaxTsFirst /> | <sp:LaxTsLast /> ..
+    if (SPConstants.LAYOUT_STRICT.equals(value)) {
+      writeEmptyElement(writer, prefix, SPConstants.LAYOUT_STRICT, namespaceURI);
+
+    } else if (SPConstants.LAYOUT_LAX.equals(value)) {
+      writeEmptyElement(writer, prefix, SPConstants.LAYOUT_LAX, namespaceURI);
+
+    } else if (SPConstants.LAYOUT_LAX_TIMESTAMP_FIRST.equals(value)) {
+      writeEmptyElement(writer, prefix, SPConstants.LAYOUT_LAX_TIMESTAMP_FIRST, namespaceURI);
+
+    } else if (SPConstants.LAYOUT_LAX_TIMESTAMP_LAST.equals(value)) {
+      writeEmptyElement(writer, prefix, SPConstants.LAYOUT_LAX_TIMESTAMP_LAST, namespaceURI);
     }
 
-    /**
-     * @return Returns the value.
-     */
-    public String getValue() {
-        return value;
-    }
+    // </wsp:Policy>
+    writer.writeEndElement();
 
-    /**
-     * @param value
-     *            The value to set.
-     */
-    public void setValue(String value) {
-        if (SPConstants.LAYOUT_LAX.equals(value)
-                || SPConstants.LAYOUT_STRICT.equals(value)
-                || SPConstants.LAYOUT_LAX_TIMESTAMP_FIRST.equals(value)
-                || SPConstants.LAYOUT_LAX_TIMESTAMP_LAST.equals(value)) {
-            this.value = value;
-        } else {
-            // throw new WSSPolicyException("Incorrect layout value : " +
-            // value);
-        }
-    }
-
-    public QName getName() {
-        if ( version == SPConstants.SP_V12 ) {
-            return SP12Constants.LAYOUT;
-        } else {
-            return SP11Constants.LAYOUT; 
-        }  
-    }
-
-    public PolicyComponent normalize() {
-        throw new UnsupportedOperationException();
-    }
-
-    public void serialize(XMLStreamWriter writer) throws XMLStreamException {
-
-        String prefix = getName().getPrefix();
-        String localName = getName().getLocalPart();
-        String namespaceURI = getName().getNamespaceURI();
-
-        // <sp:Layout>
-        writeStartElement(writer, prefix, localName, namespaceURI);
-
-        // <wsp:Policy>
-        writeStartElement(writer, SPConstants.POLICY);
-
-        // .. <sp:Strict /> | <sp:Lax /> | <sp:LaxTsFirst /> | <sp:LaxTsLast /> ..
-        if (SPConstants.LAYOUT_STRICT.equals(value)) {
-            writeEmptyElement(writer, prefix, SPConstants.LAYOUT_STRICT, namespaceURI);
-            
-        } else if (SPConstants.LAYOUT_LAX.equals(value)) {
-            writeEmptyElement(writer, prefix, SPConstants.LAYOUT_LAX, namespaceURI);
-            
-        } else if (SPConstants.LAYOUT_LAX_TIMESTAMP_FIRST.equals(value)) {
-            writeEmptyElement(writer, prefix, SPConstants.LAYOUT_LAX_TIMESTAMP_FIRST, namespaceURI);
-            
-        } else if (SPConstants.LAYOUT_LAX_TIMESTAMP_LAST.equals(value)) {
-            writeEmptyElement(writer, prefix, SPConstants.LAYOUT_LAX_TIMESTAMP_LAST, namespaceURI);
-        }
-        
-        // </wsp:Policy>
-        writer.writeEndElement();
-        
-        // </sp:Layout>
-        writer.writeEndElement();
-    }
+    // </sp:Layout>
+    writer.writeEndElement();
+  }
 }

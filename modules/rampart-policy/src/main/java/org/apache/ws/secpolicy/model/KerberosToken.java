@@ -29,124 +29,124 @@ import org.apache.ws.secpolicy.SPConstants;
 
 public class KerberosToken extends Token {
 
-    private boolean requiresKerberosV5Token;
+  private boolean requiresKerberosV5Token;
 
-    private boolean requiresGssKerberosV5Token;
+  private boolean requiresGssKerberosV5Token;
 
-    private boolean requiresKeyIdentifierReference;
+  private boolean requiresKeyIdentifierReference;
 
-    private String tokenVersionAndType = Constants.WSS_KERBEROS_TOKEN11;
+  private String tokenVersionAndType = Constants.WSS_KERBEROS_TOKEN11;
 
-    public String getTokenVersionAndType() {
-        return tokenVersionAndType;
+  public String getTokenVersionAndType() {
+    return tokenVersionAndType;
+  }
+
+  public void setTokenVersionAndType(String tokenVersionAndType) {
+    this.tokenVersionAndType = tokenVersionAndType;
+  }
+
+  public boolean isRequiresKerberosV5Token() {
+    return requiresKerberosV5Token;
+  }
+
+  public void setRequiresKerberosV5Token(boolean requiresKerberosV5Token) {
+    this.requiresKerberosV5Token = requiresKerberosV5Token;
+  }
+
+  public boolean isRequiresGssKerberosV5Token() {
+    return requiresGssKerberosV5Token;
+  }
+
+  public void setRequiresGssKerberosV5Token(boolean requiresGssKerberosV5Token) {
+    this.requiresGssKerberosV5Token = requiresGssKerberosV5Token;
+  }
+
+  public boolean isRequiresKeyIdentifierReference() {
+    return requiresKeyIdentifierReference;
+  }
+
+  public void setRequiresKeyIdentifierReference(boolean
+                                                  requiresKeyIdentifierReference) {
+    this.requiresKeyIdentifierReference = requiresKeyIdentifierReference;
+  }
+
+  public KerberosToken(int version) {
+    setVersion(version);
+  }
+
+  public QName getName() {
+    if (version == SPConstants.SP_V12) {
+      return SP12Constants.KERBEROS_TOKEN;
+    }
+    else {
+      return SP11Constants.KERBEROS_TOKEN;
+    }
+  }
+
+  public void serialize(XMLStreamWriter writer) throws XMLStreamException {
+    String localName = getName().getLocalPart();
+    String namespaceURI = getName().getNamespaceURI();
+
+    String prefix = writer.getPrefix(namespaceURI);
+
+    if (prefix == null) {
+      prefix = getName().getPrefix();
+      writer.setPrefix(prefix, namespaceURI);
     }
 
-    public void setTokenVersionAndType(String tokenVersionAndType) {
-        this.tokenVersionAndType = tokenVersionAndType;
+    // <sp:KerberosToken>
+    writer.writeStartElement(prefix, localName, namespaceURI);
+
+    String inclusion;
+
+    if (version == SPConstants.SP_V12) {
+      inclusion = SP12Constants.getAttributeValueFromInclusion(getInclusion());
+    } else {
+      inclusion = SP11Constants.getAttributeValueFromInclusion(getInclusion());
     }
 
-    public boolean isRequiresKerberosV5Token() {
-        return requiresKerberosV5Token;
+    if (inclusion != null) {
+      writer.writeAttribute(prefix, namespaceURI,
+                            SPConstants.ATTR_INCLUDE_TOKEN, inclusion);
     }
 
-    public void setRequiresKerberosV5Token(boolean requiresKerberosV5Token) {
-        this.requiresKerberosV5Token = requiresKerberosV5Token;
+    String pPrefix = writer.getPrefix(SPConstants.POLICY.getNamespaceURI());
+    if (pPrefix == null) {
+      pPrefix = SPConstants.POLICY.getPrefix();
+      writer.setPrefix(pPrefix, SPConstants.POLICY.getNamespaceURI());
     }
 
-    public boolean isRequiresGssKerberosV5Token() {
-        return requiresGssKerberosV5Token;
+    // <wsp:Policy>
+    writer.writeStartElement(pPrefix, SPConstants.POLICY.getLocalPart(),
+                             SPConstants.POLICY.getNamespaceURI());
+
+    if (isRequiresKerberosV5Token()) {
+      // <sp:WssKerberosV5ApReqToken11 />
+      writer.writeStartElement(prefix,SPConstants.REQUIRE_KERBEROS_V5_TOKEN_11,
+                               namespaceURI);
+      writer.writeEndElement();
     }
 
-    public void setRequiresGssKerberosV5Token(boolean requiresGssKerberosV5Token) {
-        this.requiresGssKerberosV5Token = requiresGssKerberosV5Token;
+    if (isRequiresGssKerberosV5Token()) {
+      // <sp:WssGssKerberosV5ApReqToken11 ... />
+      writer.writeStartElement(prefix,
+                               SPConstants.REQUIRE_KERBEROS_GSS_V5_TOKEN_11,
+                               namespaceURI);
+      writer.writeEndElement();
     }
 
-    public boolean isRequiresKeyIdentifierReference() {
-        return requiresKeyIdentifierReference;
+    if (isRequiresKeyIdentifierReference()) {
+      // <sp:RequireKeyIdentifierReference />
+      writer.writeStartElement(prefix,
+                               SPConstants.REQUIRE_KEY_IDENTIFIRE_REFERENCE,
+                               namespaceURI);
+      writer.writeEndElement();
     }
 
-    public void setRequiresKeyIdentifierReference(boolean
-        requiresKeyIdentifierReference) {
-        this.requiresKeyIdentifierReference = requiresKeyIdentifierReference;
-    }
+    // </wsp:Policy>
+    writer.writeEndElement();
 
-    public KerberosToken(int version) {
-        setVersion(version);
-    }
-
-    public QName getName() {
-        if (version == SPConstants.SP_V12) {
-            return SP12Constants.KERBEROS_TOKEN;
-        } 
-        else {
-            return SP11Constants.KERBEROS_TOKEN;
-        }
-    }
-
-    public void serialize(XMLStreamWriter writer) throws XMLStreamException {
-        String localName = getName().getLocalPart();
-        String namespaceURI = getName().getNamespaceURI();
-
-        String prefix = writer.getPrefix(namespaceURI);
-
-        if (prefix == null) {
-            prefix = getName().getPrefix();
-            writer.setPrefix(prefix, namespaceURI);
-        }
-
-        // <sp:KerberosToken>
-        writer.writeStartElement(prefix, localName, namespaceURI);
-
-        String inclusion;
-
-        if (version == SPConstants.SP_V12) {
-            inclusion = SP12Constants.getAttributeValueFromInclusion(getInclusion());
-        } else {
-            inclusion = SP11Constants.getAttributeValueFromInclusion(getInclusion());
-        }
-
-        if (inclusion != null) {
-            writer.writeAttribute(prefix, namespaceURI,
-                                  SPConstants.ATTR_INCLUDE_TOKEN, inclusion);
-        }
-
-        String pPrefix = writer.getPrefix(SPConstants.POLICY.getNamespaceURI());
-        if (pPrefix == null) {
-            pPrefix = SPConstants.POLICY.getPrefix();
-            writer.setPrefix(pPrefix, SPConstants.POLICY.getNamespaceURI());
-        }
-
-        // <wsp:Policy>
-        writer.writeStartElement(pPrefix, SPConstants.POLICY.getLocalPart(),
-                                 SPConstants.POLICY.getNamespaceURI());
-
-        if (isRequiresKerberosV5Token()) {
-            // <sp:WssKerberosV5ApReqToken11 />
-            writer.writeStartElement(prefix,SPConstants.REQUIRE_KERBEROS_V5_TOKEN_11,
-                                     namespaceURI);
-            writer.writeEndElement();
-        }
-
-        if (isRequiresGssKerberosV5Token()) {
-            // <sp:WssGssKerberosV5ApReqToken11 ... />
-            writer.writeStartElement(prefix,
-                                     SPConstants.REQUIRE_KERBEROS_GSS_V5_TOKEN_11,
-                                     namespaceURI);
-            writer.writeEndElement();
-        }
-
-        if (isRequiresKeyIdentifierReference()) {
-            // <sp:RequireKeyIdentifierReference />
-            writer.writeStartElement(prefix,
-                                     SPConstants.REQUIRE_KEY_IDENTIFIRE_REFERENCE,
-                                     namespaceURI);
-            writer.writeEndElement();
-        }
-
-        // </wsp:Policy>
-        writer.writeEndElement();
-
-        // </sp:KerberosToken>
-        writer.writeEndElement();
-    }
+    // </sp:KerberosToken>
+    writer.writeEndElement();
+  }
 }

@@ -47,7 +47,7 @@ import org.apache.ws.security.util.XmlSchemaDateFormat;
 
 /**
  * This represents a security token which can have either one of 4 states. <ul> <li>ISSUED</li> <li>EXPIRED</li>
- * <li>CACELLED</li> <li>RENEWED</li> </ul> Also this holds the <code>OMElement</code>s representing the token in its
+ * <li>CANCELLED</li> <li>RENEWED</li> </ul> Also this holds the <code>OMElement</code>s representing the token in its
  * present state and the previous state.
  * <p>
  * These tokens are stored using the storage mechanism provided via the <code>TokenStorage</code> interface.
@@ -88,14 +88,14 @@ public class Token implements Externalizable {
 
     /**
      * The RequestedAttachedReference element NOTE : The oasis-200401-wss-soap-message-security-1.0 spec allows an
-     * extensibility mechanism for wsse:SecurityTokenReference and wsse:Reference. Hence we cannot limit to the
+     * extensibility mechanism for wsse:SecurityTokenReference and wsse:Reference. Hence, we cannot limit to the
      * wsse:SecurityTokenReference\wsse:Reference case and only hold the URI and the ValueType values.
      */
     private OMElement attachedReference;
 
     /**
      * The RequestedUnattachedReference element NOTE : The oasis-200401-wss-soap-message-security-1.0 spec allows an
-     * extensibility mechanism for wsse:SecurityTokenRefence and wsse:Reference. Hence we cannot limit to the
+     * extensibility mechanism for wsse:SecurityTokenRefence and wsse:Reference. Hence, we cannot limit to the
      * wsse:SecurityTokenReference\wsse:Reference case and only hold the URI and the ValueType values.
      */
     private OMElement unattachedReference;
@@ -192,10 +192,10 @@ public class Token implements Externalizable {
     }
 
     /**
-     * @param chnaged The changed to set.
+     * @param changed The changed to set.
      */
-    public void setChanged(boolean chnaged) {
-        this.changed = chnaged;
+    public void setChanged(boolean changed) {
+        this.changed = changed;
     }
 
     /**
@@ -248,19 +248,19 @@ public class Token implements Externalizable {
     }
 
     /**
-     * @return Returns the presivousToken.
+     * @return Returns the previousToken.
      */
     public OMElement getPreviousToken() {
         return previousToken;
     }
 
     /**
-     * @param presivousToken The presivousToken to set.
+     * @param previousToken The previousToken to set.
      */
-    public void setPreviousToken(OMElement presivousToken) {
+    public void setPreviousToken(OMElement previousToken) {
     	OMMetaFactory metaFactory = OMAbstractFactory.getMetaFactory(OMAbstractFactory.FEATURE_DOM);
         this.previousToken = OMXMLBuilderFactory.createStAXOMBuilder(metaFactory.getOMFactory(),
-                presivousToken.getXMLStreamReader()).getDocumentElement();
+                previousToken.getXMLStreamReader()).getDocumentElement();
     }
 
     /**
@@ -346,8 +346,8 @@ public class Token implements Externalizable {
 
     /**
      * Implementing serialize logic according to our own protocol. We had to follow this, because
-     * OMElement class is not serializable. Making OMElement serializable will have an huge impact
-     * on other components. Therefore implementing serialization logic according to a manual
+     * OMElement class is not serializable. Making OMElement serializable will have a huge impact
+     * on other components. Therefore, implementing serialization logic according to a manual
      * protocol.
      * @param out Stream which writes serialized bytes.
      * @throws IOException If unable to serialize particular member.

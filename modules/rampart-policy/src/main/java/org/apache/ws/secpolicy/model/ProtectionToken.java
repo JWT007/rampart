@@ -26,64 +26,64 @@ import org.apache.ws.secpolicy.SP12Constants;
 import org.apache.ws.secpolicy.SPConstants;
 
 public class ProtectionToken extends AbstractSecurityAssertion implements TokenWrapper {
-    
-    private Token protectionToken;
-    
-    public ProtectionToken(int version) {
-        setVersion(version);
-    }
 
-    /**
-     * @return Returns the protectionToken.
+  private Token protectionToken;
+
+  public ProtectionToken(int version) {
+    setVersion(version);
+  }
+
+  /**
+   * @return Returns the protectionToken.
+   */
+  public Token getProtectionToken() {
+    return protectionToken;
+  }
+
+  /**
+   * @param protectionToken The protectionToken to set.
+   */
+  public void setProtectionToken(Token protectionToken) {
+    this.protectionToken = protectionToken;
+  }
+
+  public void setToken(Token tok) {
+    this.setProtectionToken(tok);
+  }
+
+  public QName getName() {
+    if ( version == SPConstants.SP_V12) {
+      return SP12Constants.PROTECTION_TOKEN;
+    } else {
+      return SP11Constants.PROTECTION_TOKEN;
+    }
+  }
+
+  public PolicyComponent normalize() {
+    /*
+     *  ProtectionToken can not contain multiple values. Hence we consider it
+     *  to always be in the normalized format.
      */
-    public Token getProtectionToken() {
-        return protectionToken;
+    return this;
+  }
+
+  public void serialize(XMLStreamWriter writer) throws XMLStreamException {
+    // <sp:ProtectionToken>
+    writeStartElement(writer, getName());
+
+    // <wsp:Policy>
+    writeStartElement(writer, SPConstants.POLICY);
+
+    if (protectionToken == null) {
+      throw new RuntimeException("ProtectionToken is not set");
     }
 
-    /**
-     * @param protectionToken The protectionToken to set.
-     */
-    public void setProtectionToken(Token protectionToken) {
-        this.protectionToken = protectionToken;
-    }
+    protectionToken.serialize(writer);
 
-    public void setToken(Token tok) {
-        this.setProtectionToken(tok);
-    }
-    
-    public QName getName() {
-        if ( version == SPConstants.SP_V12) {
-            return SP12Constants.PROTECTION_TOKEN;
-        } else {
-            return SP11Constants.PROTECTION_TOKEN;
-        }     
-    }
+    // </wsp:Policy>
+    writer.writeEndElement();
 
-    public PolicyComponent normalize() {
-        /*
-         *  ProtectionToken can not contain multiple values. Hence we consider it
-         *  to always be in the normalized format.
-         */
-        return this;
-    }
-
-    public void serialize(XMLStreamWriter writer) throws XMLStreamException {
-        // <sp:ProtectionToken>
-        writeStartElement(writer, getName());
-        
-        // <wsp:Policy>
-        writeStartElement(writer, SPConstants.POLICY);
-        
-        if (protectionToken == null) {
-            throw new RuntimeException("ProtectionToken is not set");
-        }
-        
-        protectionToken.serialize(writer);
-        
-        // </wsp:Policy>
-        writer.writeEndElement();
-
-        // </sp:ProtectionToken>
-        writer.writeEndElement();
-    }    
+    // </sp:ProtectionToken>
+    writer.writeEndElement();
+  }
 }

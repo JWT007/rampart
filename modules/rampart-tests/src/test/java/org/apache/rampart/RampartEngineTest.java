@@ -26,18 +26,15 @@ import org.apache.axis2.context.MessageContext;
 import org.apache.neethi.Policy;
 import org.apache.ws.security.WSConstants;
 import org.apache.ws.security.WSSecurityEngineResult;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
+import org.junit.jupiter.api.Test;
 
-@RunWith(JUnit4.class)
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 public class RampartEngineTest extends MessageBuilderTestBase {
-    /**
-     * Tests that Rampart complains about missing security header in request.
-     * 
-     * @throws Exception
-     */
-    @Test(expected=RampartException.class)
+
+    /**  Tests that Rampart complains about missing security header in request. */
+    @Test
     public void testEmptySOAPMessage() throws Exception {
         MessageContext ctx = getMsgCtx();
 
@@ -47,7 +44,10 @@ public class RampartEngineTest extends MessageBuilderTestBase {
         ctx.setProperty(RampartMessageData.KEY_RAMPART_POLICY, policy);
 
         RampartEngine engine = new RampartEngine();
-        engine.process(ctx);
+
+        assertThrows(RampartException.class,
+                     () -> engine.process(ctx));
+
     }
 
     @Test
@@ -75,11 +75,12 @@ public class RampartEngineTest extends MessageBuilderTestBase {
         List<org.apache.ws.security.WSSecurityEngineResult> results = engine.process(ctx);
 
         /*
-        The principle purpose of the test case is to verify that the above processes
+        The principal purpose of the test case is to verify that the above processes
         without throwing an exception. However, perform a minimal amount of validation on the
         results.
         */
-        assertNotNull("RampartEngine returned null result", results);
+        assertNotNull(results, "RampartEngine returned null result");
+
         //verify cert was stored
         X509Certificate usedCert = null;
         for (WSSecurityEngineResult result : results) {
@@ -90,7 +91,9 @@ public class RampartEngineTest extends MessageBuilderTestBase {
                 break;
             }
         }
-        assertNotNull("Result of processing did not include a certificate", usedCert);
+
+        assertNotNull(usedCert, "Result of processing did not include a certificate");
+
     }
 
     private void buildSOAPEnvelope(MessageContext ctx) throws Exception {
@@ -100,4 +103,5 @@ public class RampartEngineTest extends MessageBuilderTestBase {
         env = (SOAPEnvelope) soapBuilder.processDocument(inStream, env.getVersion().getMediaType().toString(), ctx);
         ctx.setEnvelope(env);
     }
+
 }

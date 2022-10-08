@@ -31,121 +31,121 @@ import javax.xml.stream.XMLStreamWriter;
  */
 public class SecureConversationToken extends SecurityContextToken {
 
-    private Policy bootstrapPolicy;
+  private Policy bootstrapPolicy;
 
-    private OMElement issuerEpr;
-    
-    public SecureConversationToken(int version) {
-        super(version);
+  private OMElement issuerEpr;
+
+  public SecureConversationToken(int version) {
+    super(version);
+  }
+
+  /**
+   * @return Returns the bootstrapPolicy.
+   */
+  public Policy getBootstrapPolicy() {
+    return bootstrapPolicy;
+  }
+
+  /**
+   * @param bootstrapPolicy
+   *            The bootstrapPolicy to set.
+   */
+  public void setBootstrapPolicy(Policy bootstrapPolicy) {
+    this.bootstrapPolicy = bootstrapPolicy;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.apache.neethi.Assertion#getName()
+   */
+  public QName getName() {
+    if ( version == SPConstants.SP_V12) {
+      return SP12Constants.SECURE_CONVERSATION_TOKEN;
+    } else {
+      return SP11Constants.SECURE_CONVERSATION_TOKEN;
+    }
+  }
+
+  public void serialize(XMLStreamWriter writer) throws XMLStreamException {
+
+    String prefix = getName().getPrefix();
+    String localname = getName().getLocalPart();
+    String namespaceURI = getName().getNamespaceURI();
+
+    // <sp:SecureConversationToken>
+    writeStartElement(writer, prefix, localname, namespaceURI);
+
+    String inclusion;
+
+    if (version == SPConstants.SP_V12) {
+      inclusion = SP12Constants.getAttributeValueFromInclusion(getInclusion());
+    } else {
+      inclusion = SP11Constants.getAttributeValueFromInclusion(getInclusion());
     }
 
-    /**
-     * @return Returns the bootstrapPolicy.
-     */
-    public Policy getBootstrapPolicy() {
-        return bootstrapPolicy;
+    if (inclusion != null) {
+      writeAttribute(writer, prefix, namespaceURI, SPConstants.ATTR_INCLUDE_TOKEN, inclusion);
     }
 
-    /**
-     * @param bootstrapPolicy
-     *            The bootstrapPolicy to set.
-     */
-    public void setBootstrapPolicy(Policy bootstrapPolicy) {
-        this.bootstrapPolicy = bootstrapPolicy;
+    if (issuerEpr != null) {
+      // <sp:Issuer>
+      writeStartElement(writer, prefix, SPConstants.ISSUER , namespaceURI);
+
+      issuerEpr.serialize(writer);
+
+      writer.writeEndElement();
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.apache.neethi.Assertion#getName()
-     */
-    public QName getName() {
-        if ( version == SPConstants.SP_V12) {
-            return SP12Constants.SECURE_CONVERSATION_TOKEN;
-        } else {
-            return SP11Constants.SECURE_CONVERSATION_TOKEN; 
-        }      
-    }
+    if (isDerivedKeys() || isRequireExternalUriRef()
+        || isSc10SecurityContextToken() || (bootstrapPolicy != null)) {
 
-    public void serialize(XMLStreamWriter writer) throws XMLStreamException {
+      // <wsp:Policy>
+      writeStartElement(writer, SPConstants.POLICY);
 
-        String prefix = getName().getPrefix();
-        String localname = getName().getLocalPart();
-        String namespaceURI = getName().getNamespaceURI();
+      if (isDerivedKeys()) {
+        // <sp:RequireDerivedKeys />
+        writeEmptyElement(writer, prefix, SPConstants.REQUIRE_DERIVED_KEYS, namespaceURI);
+      }
 
-        // <sp:SecureConversationToken>
-        writeStartElement(writer, prefix, localname, namespaceURI);
+      if (isRequireExternalUriRef()) {
+        // <sp:RequireExternalUriReference />
+        writeEmptyElement(writer, prefix, SPConstants.REQUIRE_EXTERNAL_URI_REFERNCE, namespaceURI);
+      }
 
-        String inclusion;
-        
-        if (version == SPConstants.SP_V12) {
-            inclusion = SP12Constants.getAttributeValueFromInclusion(getInclusion());
-        } else {
-            inclusion = SP11Constants.getAttributeValueFromInclusion(getInclusion()); 
-        }
+      if (isSc10SecurityContextToken()) {
+        // <sp:SC10SecurityContextToken />
+        writeEmptyElement(writer, prefix, SPConstants.SC10_SECURITY_CONTEXT_TOKEN, namespaceURI);
+      }
 
-        if (inclusion != null) {
-            writeAttribute(writer, prefix, namespaceURI, SPConstants.ATTR_INCLUDE_TOKEN, inclusion);
-        }
-
-        if (issuerEpr != null) {
-            // <sp:Issuer>
-            writeStartElement(writer, prefix, SPConstants.ISSUER , namespaceURI);
-
-            issuerEpr.serialize(writer);
-
-            writer.writeEndElement();
-        }
-
-        if (isDerivedKeys() || isRequireExternalUriRef()
-                || isSc10SecurityContextToken() || (bootstrapPolicy != null)) {
-
-            // <wsp:Policy>
-            writeStartElement(writer, SPConstants.POLICY);
-
-            if (isDerivedKeys()) {
-                // <sp:RequireDerivedKeys />
-                writeEmptyElement(writer, prefix, SPConstants.REQUIRE_DERIVED_KEYS, namespaceURI);
-            }
-            
-            if (isRequireExternalUriRef()) {
-                // <sp:RequireExternalUriReference />
-                writeEmptyElement(writer, prefix, SPConstants.REQUIRE_EXTERNAL_URI_REFERNCE, namespaceURI);
-            }
-            
-            if (isSc10SecurityContextToken()) {
-                // <sp:SC10SecurityContextToken />
-                writeEmptyElement(writer, prefix, SPConstants.SC10_SECURITY_CONTEXT_TOKEN, namespaceURI);
-            }
-            
-            if (bootstrapPolicy != null) {
-                // <sp:BootstrapPolicy ..>
-                writeStartElement(writer, prefix, SPConstants.BOOTSTRAP_POLICY, namespaceURI);
-                bootstrapPolicy.serialize(writer);
-                writer.writeEndElement();
-            }
-
-            // </wsp:Policy>
-            writer.writeEndElement();
-        }
-
-        // </sp:SecureConversationToken>
+      if (bootstrapPolicy != null) {
+        // <sp:BootstrapPolicy ..>
+        writeStartElement(writer, prefix, SPConstants.BOOTSTRAP_POLICY, namespaceURI);
+        bootstrapPolicy.serialize(writer);
         writer.writeEndElement();
+      }
+
+      // </wsp:Policy>
+      writer.writeEndElement();
     }
 
-    /**
-     * @return Returns the issuerEpr.
-     */
-    public OMElement getIssuerEpr() {
-        return issuerEpr;
-    }
+    // </sp:SecureConversationToken>
+    writer.writeEndElement();
+  }
 
-    /**
-     * @param issuerEpr
-     *            The issuerEpr to set.
-     */
-    public void setIssuerEpr(OMElement issuerEpr) {
-        this.issuerEpr = issuerEpr;
-    }
+  /**
+   * @return Returns the issuerEpr.
+   */
+  public OMElement getIssuerEpr() {
+    return issuerEpr;
+  }
+
+  /**
+   * @param issuerEpr
+   *            The issuerEpr to set.
+   */
+  public void setIssuerEpr(OMElement issuerEpr) {
+    this.issuerEpr = issuerEpr;
+  }
 
 }

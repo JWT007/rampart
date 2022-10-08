@@ -22,82 +22,82 @@ package org.apache.ws.secpolicy.model;
  */
 public abstract class Binding extends AbstractSecurityAssertion implements AlgorithmWrapper {
 
-    private AlgorithmSuite algorithmSuite;
-    private boolean includeTimestamp;
-    private boolean includeTimestampOptional;
-    private Layout layout;
-    private SupportingToken signedSupportingToken;
-    private SupportingToken signedEndorsingSupportingTokens;
-    
-    public Binding (int version) {
-        setVersion(version);
-        layout = new Layout(version);
-    }
-        
-    /**
-     * @return Returns the algorithmSuite.
-     */
-    public AlgorithmSuite getAlgorithmSuite() {
-        return algorithmSuite;
-    }
+  private AlgorithmSuite algorithmSuite;
+  private boolean includeTimestamp;
+  private boolean includeTimestampOptional;
+  private Layout layout;
+  private SupportingToken signedSupportingToken;
+  private SupportingToken signedEndorsingSupportingTokens;
 
-    /**
-     * @param algorithmSuite The algorithmSuite to set.
-     */
-    public void setAlgorithmSuite(AlgorithmSuite algorithmSuite) {
-        this.algorithmSuite = algorithmSuite;
-    }
+  public Binding (int version) {
+    setVersion(version);
+    layout = new Layout(version);
+  }
 
-    /**
-     * @return Returns the includeTimestamp.
-     */
-    public boolean isIncludeTimestamp() {
-        return includeTimestamp;
-    }
+  /**
+   * @return Returns the algorithmSuite.
+   */
+  public AlgorithmSuite getAlgorithmSuite() {
+    return algorithmSuite;
+  }
 
-    /**
-     * @param includeTimestamp The includeTimestamp to set.
-     */
-    public void setIncludeTimestamp(boolean includeTimestamp) {
-        this.includeTimestamp = includeTimestamp;
-    }     
-    
-    public boolean isIncludeTimestampOptional() {
-		return includeTimestampOptional;
-	}
+  /**
+   * @param algorithmSuite The algorithmSuite to set.
+   */
+  public void setAlgorithmSuite(AlgorithmSuite algorithmSuite) {
+    this.algorithmSuite = algorithmSuite;
+  }
 
-	public void setIncludeTimestampOptional(boolean includeTimestampOptional) {
-		this.includeTimestampOptional = includeTimestampOptional;
-	}
+  /**
+   * @return Returns the includeTimestamp.
+   */
+  public boolean isIncludeTimestamp() {
+    return includeTimestamp;
+  }
 
-	/**
-     * @return Returns the layout.
-     */
-    public Layout getLayout() {
-        return layout;
-    }
+  /**
+   * @param includeTimestamp The includeTimestamp to set.
+   */
+  public void setIncludeTimestamp(boolean includeTimestamp) {
+    this.includeTimestamp = includeTimestamp;
+  }
 
-    /**
-     * @param layout The layout to set.
-     */
-    public void setLayout(Layout layout) {
-        this.layout = layout;
-    }
+  public boolean isIncludeTimestampOptional() {
+    return includeTimestampOptional;
+  }
 
-    public SupportingToken getSignedEndorsingSupportingTokens() {
-        return signedEndorsingSupportingTokens;
-    }
+  public void setIncludeTimestampOptional(boolean includeTimestampOptional) {
+    this.includeTimestampOptional = includeTimestampOptional;
+  }
 
-    public void setSignedEndorsingSupportingTokens(
-            SupportingToken signedEndorsingSupportingTokens) {
-        this.signedEndorsingSupportingTokens = signedEndorsingSupportingTokens;
-    }
+  /**
+   * @return Returns the layout.
+   */
+  public Layout getLayout() {
+    return layout;
+  }
 
-    public SupportingToken getSignedSupportingToken() {
-        return signedSupportingToken;
-    }
+  /**
+   * @param layout The layout to set.
+   */
+  public void setLayout(Layout layout) {
+    this.layout = layout;
+  }
 
-    public void setSignedSupportingToken(SupportingToken signedSupportingToken) {
-        this.signedSupportingToken = signedSupportingToken;
-    }
+  public SupportingToken getSignedEndorsingSupportingTokens() {
+    return signedEndorsingSupportingTokens;
+  }
+
+  public void setSignedEndorsingSupportingTokens(
+    SupportingToken signedEndorsingSupportingTokens) {
+    this.signedEndorsingSupportingTokens = signedEndorsingSupportingTokens;
+  }
+
+  public SupportingToken getSignedSupportingToken() {
+    return signedSupportingToken;
+  }
+
+  public void setSignedSupportingToken(SupportingToken signedSupportingToken) {
+    this.signedSupportingToken = signedSupportingToken;
+  }
 }

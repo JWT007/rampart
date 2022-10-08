@@ -1,12 +1,12 @@
 /*
  * Copyright 2001-2004 The Apache Software Foundation.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,25 +21,19 @@ import java.util.List;
 import org.apache.neethi.Assertion;
 
 public abstract class AbstractConfigurableSecurityAssertion extends AbstractSecurityAssertion {
-    
-    protected ArrayList<Assertion> configurations = null;
-    
-    public void addConfiguration(Assertion assertion) {
-        if (configurations == null) {
-            configurations = new ArrayList<Assertion>();
-        }
-        configurations.add(assertion);
-    }
-    
-    public List<Assertion> getConfigurations() {
-        return configurations;
-    }
-    
-    public Assertion getDefaultAssertion() {
-        if (configurations != null) {
-            return (Assertion) configurations.get(0);
-        }
-        return null;
-    }
-    
+
+  protected List<Assertion> configurations = new ArrayList<>();
+
+  public void addConfiguration(Assertion assertion) {
+    configurations.add(assertion);
+  }
+
+  public List<Assertion> getConfigurations() {
+    return configurations;
+  }
+
+  public Assertion getDefaultAssertion() {
+    return (!configurations.isEmpty()) ? configurations.get(0) : null;
+  }
+
 }

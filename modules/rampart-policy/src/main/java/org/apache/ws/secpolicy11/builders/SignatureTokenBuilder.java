@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  *  http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -37,29 +37,37 @@ import org.apache.ws.secpolicy.model.Token;
 
 public class SignatureTokenBuilder  implements AssertionBuilder<OMElement> {
 
-    public Assertion build(OMElement element, AssertionBuilderFactory factory) throws IllegalArgumentException {
-    	SignatureToken sigToken = new SignatureToken(SPConstants.SP_V11);
-        
-        Policy policy = PolicyEngine.getPolicy(element.getFirstElement());
-        policy = (Policy) policy.normalize(false);
-        
-        for (Iterator<List<Assertion>> iterator = policy.getAlternatives(); iterator.hasNext();) {
-            processAlternative(iterator.next(), sigToken);
-            break; // since there should be only one alternative ..
-        }
-        
-        return sigToken;
-    }
-        
-    public QName[] getKnownElements() {
-        return new QName[] {SP11Constants.SIGNATURE_TOKEN};
+  public Assertion build(OMElement element, AssertionBuilderFactory factory) throws IllegalArgumentException {
+
+    SignatureToken sigToken = new SignatureToken(SPConstants.SP_V11);
+
+    Policy policy = PolicyEngine.getPolicy(element.getFirstElement()).normalize(false);
+
+    final Iterator<List<Assertion>> iterator = policy.getAlternatives();
+    if (iterator.hasNext()) { // there should be only one
+      processAlternative(iterator.next(), sigToken);
     }
 
-    private void processAlternative(List<Assertion> assertions, SignatureToken parent) {
-        Object token = assertions.get(0);
-        
-        if (token instanceof Token) {
-            parent.setToken((Token) token);
-        }
+    return sigToken;
+
+  }
+
+  public QName[] getKnownElements() {
+    return new QName[] {SP11Constants.SIGNATURE_TOKEN};
+  }
+
+  private void processAlternative(List<Assertion> assertions, SignatureToken parent) {
+
+    if (assertions != null && !assertions.isEmpty()) {
+
+      final Object token = assertions.get(0);
+
+      if (token instanceof Token) {
+        parent.setToken((Token) token);
+      }
+
     }
+
+  }
+
 }

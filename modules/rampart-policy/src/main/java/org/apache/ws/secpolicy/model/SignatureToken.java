@@ -26,55 +26,55 @@ import org.apache.ws.secpolicy.SPConstants;
 
 public class SignatureToken extends AbstractSecurityAssertion implements TokenWrapper {
 
-    private Token signatureToken;
-    
-    public SignatureToken(int version){
-        setVersion(version);
+  private Token signatureToken;
+
+  public SignatureToken(int version){
+    setVersion(version);
+  }
+
+  /**
+   * @return Returns the signatureToken.
+   */
+  public Token getSignatureToken() {
+    return signatureToken;
+  }
+
+  /**
+   * @param signatureToken The signatureToken to set.
+   */
+  public void setSignatureToken(Token signatureToken) {
+    this.signatureToken = signatureToken;
+  }
+
+  public void setToken(Token tok) {
+    this.setSignatureToken(tok);
+  }
+
+  public QName getName() {
+    if ( version == SPConstants.SP_V12 ) {
+      return SP12Constants.SIGNATURE_TOKEN;
+    } else {
+      return SP11Constants.SIGNATURE_TOKEN;
+    }
+  }
+
+  public void serialize(XMLStreamWriter writer) throws XMLStreamException {
+    // <sp:SignatureToken>
+    writeStartElement(writer, getName());
+
+    // <wsp:Policy>
+    writeStartElement(writer, SPConstants.POLICY);
+
+    if (signatureToken == null) {
+      throw new RuntimeException("EncryptionToken is not set");
     }
 
-    /**
-     * @return Returns the signatureToken.
-     */
-    public Token getSignatureToken() {
-        return signatureToken;
-    }
+    signatureToken.serialize(writer);
 
-    /**
-     * @param signatureToken The signatureToken to set.
-     */
-    public void setSignatureToken(Token signatureToken) {
-        this.signatureToken = signatureToken;
-    }
+    // </wsp:Policy>
+    writer.writeEndElement();
 
-    public void setToken(Token tok) {
-        this.setSignatureToken(tok);
-    }
-
-    public QName getName() {
-        if ( version == SPConstants.SP_V12 ) {
-            return SP12Constants.SIGNATURE_TOKEN;
-        } else {
-            return SP11Constants.SIGNATURE_TOKEN;
-        }    
-    }
-
-    public void serialize(XMLStreamWriter writer) throws XMLStreamException {
-        // <sp:SignatureToken>
-        writeStartElement(writer, getName());
-        
-        // <wsp:Policy>
-        writeStartElement(writer, SPConstants.POLICY);
-        
-        if (signatureToken == null) {
-            throw new RuntimeException("EncryptionToken is not set");
-        }
-        
-        signatureToken.serialize(writer);
-        
-        // </wsp:Policy>
-        writer.writeEndElement();
-        
-        // </sp:SignatureToken>
-        writer.writeEndElement();
-    }
+    // </sp:SignatureToken>
+    writer.writeEndElement();
+  }
 }

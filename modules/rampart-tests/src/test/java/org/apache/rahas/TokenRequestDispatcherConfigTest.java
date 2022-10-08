@@ -16,65 +16,59 @@
 
 package org.apache.rahas;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
-public class TokenRequestDispatcherConfigTest extends TestCase {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-    public TokenRequestDispatcherConfigTest() {
-        super();
-    }
+@SuppressWarnings("HttpUrlsUsage")
+public class TokenRequestDispatcherConfigTest {
 
-    public TokenRequestDispatcherConfigTest(String arg0) {
-        super(arg0);
-    }
+  @DisplayName("with valid configuration file")
+  @Test
+  public void testWithConfigFile() throws Exception {
+    TokenRequestDispatcherConfig config = TokenRequestDispatcherConfig
+      .load("test-resources/trust/dispatcher.config.xml");
 
-    /**
-     * Testing a valid config file
-     */
-    public void testWithConfigFile() throws Exception {
-        TokenRequestDispatcherConfig config = TokenRequestDispatcherConfig
-                .load("test-resources/trust/dispatcher.config.xml");
+    final String tokenType = "http://example.org/mySpecialToken1";
 
-        assertEquals("Incorrect default issuer class name",
-                "org.apache.rahas.TempIssuer", config
-                        .getDefaultIssuerName());
+    assertEquals("org.apache.rahas.TempIssuer",
+                 config.getDefaultIssuerName(),
+                 "Incorrect default issuer class name");
 
-        TokenIssuer issuer = config
-                .getIssuer("http://example.org/mySpecialToken1");
+    final TokenIssuer issuer = config.getIssuer(tokenType);
 
-        assertEquals("Incorrect issuer for token type : "
-                + "http://example.org/mySpecialToken1", TempIssuer.class
-                .getName(), issuer.getClass().getName());
-    }
+    assertEquals(TempIssuer.class.getName(),
+                 issuer.getClass().getName(),
+                 "Incorrect issuer for token type : " + tokenType);
+  }
 
-    /**
-     * Testing expected faliure when the default issuer is not specified
-     */
-    public void testInvalidCOnfigWithMissingDefaultIssuer() {
-        try {
-            TokenRequestDispatcherConfig
-                .load("test-resources/trust/dispatcher.config.invalid.1.xml");
-            fail("This should fail since there's no default isser specified");
-        } catch (TrustException e) {
-            assertEquals("Incorrect error", TrustException.getMessage(
-                    "defaultIssuerMissing", null), e.getMessage());
-        }
-    }
+  @DisplayName("with default issuer not specified")
+  @Test
+  public void testInvalidCOnfigWithMissingDefaultIssuer() {
 
-    /**
-     * Testing expected faliure when the tokenType value is missing from a 
-     * tokenType definition
-     */
-    public void testInvalidRequestTypeDef() {
-        try {
-            TokenRequestDispatcherConfig
-                .load("test-resources/trust/dispatcher.config.invalid.2.xml");
-            fail("This should fail since there is an invalid " +
-                    "requestType definition");
-        } catch (TrustException e) {
-            assertEquals("Incorrect error", TrustException.getMessage(
-                    "invalidTokenTypeDefinition", new String[] { "Issuer",
-                            TempIssuer.class.getName() }), e.getMessage());
-        }
-    }
+    TrustException thrown =
+      assertThrows(TrustException.class,
+                   () -> TokenRequestDispatcherConfig.load("test-resources/trust/dispatcher.config.invalid.1.xml"));
+
+    assertEquals(TrustException.getMessage("defaultIssuerMissing", null),
+                 thrown.getMessage(),
+                 "Incorrect error message");
+
+  }
+
+  @DisplayName("with missing token type")
+  @Test
+  public void testInvalidRequestTypeDef() {
+
+    TrustException thrown =
+      assertThrows(TrustException.class,
+                   () -> TokenRequestDispatcherConfig.load("test-resources/trust/dispatcher.config.invalid.2.xml"));
+
+    assertEquals(TrustException.getMessage("invalidTokenTypeDefinition", new String[] { "Issuer", TempIssuer.class.getName() }),
+                 thrown.getMessage(),
+                 "Incorrect error");
+  }
+
 }

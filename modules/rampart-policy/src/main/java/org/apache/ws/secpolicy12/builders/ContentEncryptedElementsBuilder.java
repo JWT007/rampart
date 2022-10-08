@@ -1,12 +1,12 @@
 /*
  * Copyright 2001-2004 The Apache Software Foundation.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -31,37 +31,44 @@ import org.apache.ws.secpolicy.model.ContentEncryptedElements;
 
 public class ContentEncryptedElementsBuilder implements AssertionBuilder<OMElement> {
 
-    
-    public Assertion build(OMElement element, AssertionBuilderFactory factory) throws IllegalArgumentException {
-        
-        ContentEncryptedElements contentEncryptedElements = new ContentEncryptedElements(SPConstants.SP_V12);
-        OMAttribute attrXPathVersion = element.getAttribute(SP12Constants.ATTR_XPATH_VERSION);
-        
-        if (attrXPathVersion != null) {
-            contentEncryptedElements.setXPathVersion(attrXPathVersion.getAttributeValue());
-        }
-        
-        for (Iterator iterator = element.getChildElements(); iterator.hasNext();) {
-            processElement((OMElement) iterator.next(),contentEncryptedElements);            
-        }
-        
-        return contentEncryptedElements;
-    }
-        
-    public QName[] getKnownElements() {
-        return new QName[] {SP12Constants.CONTENT_ENCRYPTED_ELEMENTS};
+  public Assertion build(OMElement element, AssertionBuilderFactory factory) throws IllegalArgumentException {
+
+    ContentEncryptedElements contentEncryptedElements = new ContentEncryptedElements(SPConstants.SP_V12);
+    OMAttribute attrXPathVersion = element.getAttribute(SP12Constants.ATTR_XPATH_VERSION);
+
+    if (attrXPathVersion != null) {
+      contentEncryptedElements.setXPathVersion(attrXPathVersion.getAttributeValue());
     }
 
-    private void processElement(OMElement element, ContentEncryptedElements parent) {
-        QName name = element.getQName();
-        if (SP12Constants.XPATH.equals(name)) {
-            parent.addXPathExpression(element.getText());
-            Iterator namespaces = element.getNamespacesInScope();
-            while (namespaces.hasNext()) {
-                OMNamespace nm = (OMNamespace) namespaces.next();
-                parent.addDeclaredNamespaces(nm.getNamespaceURI(), nm.getPrefix());
-            }
-        }
+    for (Iterator<OMElement> iterator = element.getChildElements(); iterator.hasNext();) {
+      processElement(iterator.next(),contentEncryptedElements);
     }
-    
+
+    return contentEncryptedElements;
+
+  }
+
+  public QName[] getKnownElements() {
+    return new QName[] {SP12Constants.CONTENT_ENCRYPTED_ELEMENTS};
+  }
+
+  private void processElement(OMElement element, ContentEncryptedElements parent) {
+
+    final QName name = element.getQName();
+
+    if (SP12Constants.XPATH.equals(name)) {
+
+      parent.addXPathExpression(element.getText());
+
+      final Iterator<OMNamespace> namespaces = element.getNamespacesInScope();
+
+      while (namespaces.hasNext()) {
+        final OMNamespace nm = namespaces.next();
+        parent.addDeclaredNamespaces(nm.getNamespaceURI(), nm.getPrefix());
+      }
+
+    }
+
+  }
+
 }

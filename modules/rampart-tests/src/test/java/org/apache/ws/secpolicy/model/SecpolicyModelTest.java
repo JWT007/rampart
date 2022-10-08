@@ -23,69 +23,86 @@ import org.apache.neethi.Assertion;
 import org.apache.neethi.Policy;
 import org.apache.neethi.PolicyEngine;
 import org.apache.ws.secpolicy.SPConstants;
+import org.junit.jupiter.api.Test;
 
-import java.io.FileInputStream;
-import java.util.Iterator;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 
-import junit.framework.TestCase;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
-public class SecpolicyModelTest extends TestCase {
-    
-    
-    public void testSymmBinding() throws Exception {
-        Policy p = this.getPolicy("test-resources/policy-symm-binding.xml");
-        List<Assertion> assertions = (List<Assertion>)p.getAlternatives().next();
-        
-        boolean symmBindingFound = false;
-        
-        for (Iterator<Assertion> iter = assertions.iterator(); iter.hasNext();) {
-            Assertion assertion = iter.next();
-            if(assertion instanceof SymmetricBinding) {
-                symmBindingFound = true;
-                SymmetricBinding binding = (SymmetricBinding)assertion;
-                assertEquals("IncludeTimestamp assertion not processed", true, binding.isIncludeTimestamp());
-                
-                ProtectionToken protectionToken = binding.getProtectionToken();
-                assertNotNull("ProtectionToken missing", protectionToken);
-                
-                Token token = protectionToken.getProtectionToken();
-                if(token instanceof X509Token) {
-                    assertEquals("incorrect X509 token versin and type",
-                            SPConstants.WSS_X509_V3_TOKEN10,
-                            ((X509Token) token).getTokenVersionAndType());
-                } else {
-                    fail("ProtectionToken must contain a X509Token assertion");
-                }
-                
-            }
+public class SecpolicyModelTest {
+
+  @Test
+  public void testSymmBinding() throws Exception {
+
+    Policy policy = this.getPolicy("test-resources/policy-symm-binding.xml");
+
+    List<Assertion> assertions = policy.getAlternatives().next();
+
+    boolean symmBindingFound = false;
+
+    for (Assertion assertion : assertions) {
+
+      if (assertion instanceof SymmetricBinding) {
+        symmBindingFound = true;
+        SymmetricBinding binding = (SymmetricBinding) assertion;
+
+        assertTrue(binding.isIncludeTimestamp(), "IncludeTimestamp assertion not processed");
+
+        ProtectionToken protectionToken = binding.getProtectionToken();
+
+        assertNotNull(protectionToken, "ProtectionToken missing");
+
+        Token token = protectionToken.getProtectionToken();
+
+        if (token instanceof X509Token) {
+
+          assertEquals(SPConstants.WSS_X509_V3_TOKEN10,
+                       ((X509Token) token).getTokenVersionAndType(),
+                       "incorrect X509 token versin and type");
+
+        } else {
+
+          fail("ProtectionToken must contain a X509Token assertion");
+
         }
-        //The Asymm binding mean is not built in the policy processing :-(
-        assertTrue("SymmetricBinding not porcessed",  symmBindingFound);
-    }
-    
-    public void testAsymmBinding() throws Exception {
-        this.getPolicy("test-resources/policy-asymm-binding.xml");
-    }
 
-    public void testTransportBinding() throws Exception {
-        this.getPolicy("test-resources/policy-transport-binding.xml");
+
+      }
     }
-    
-    public void testSymmBindingWithBothProtectionTokenAndEncryptionToken() throws Exception {
-    	boolean exceptionThrown = false;
-    	try {
-    		this.getPolicy("test-resources/policy-symm-binding-fault1.xml");
-    	} catch (IllegalArgumentException e) {
-    		exceptionThrown = true;
-    	}
-    	assertTrue("Policy cannot contain both ProtectionToken and EncryptionToken",
-    			exceptionThrown);
-    }
-    
-    private Policy getPolicy(String filePath) throws Exception {
-        OMXMLParserWrapper builder = OMXMLBuilderFactory.createOMBuilder(new FileInputStream(filePath));
-        OMElement elem = builder.getDocumentElement();
-        return PolicyEngine.getPolicy(elem);
-    }
+    //The Asymm binding mean is not built in the policy processing :-(
+    assertTrue(symmBindingFound, "SymmetricBinding not processed");
+
+  }
+
+  @Test
+  public void testAsymmBinding() throws Exception {
+    this.getPolicy("test-resources/policy-asymm-binding.xml");
+  }
+
+  @Test
+  public void testTransportBinding() throws Exception {
+    this.getPolicy("test-resources/policy-transport-binding.xml");
+  }
+
+  @Test
+  public void testSymmBindingWithBothProtectionTokenAndEncryptionToken() throws Exception {
+
+    assertThrows(IllegalArgumentException.class,
+                 () -> this.getPolicy("test-resources/policy-symm-binding-fault1.xml"),
+                 "Policy cannot contain both ProtectionToken and EncryptionToken.");
+
+  }
+
+  private Policy getPolicy(String filePath) throws Exception {
+    OMXMLParserWrapper builder = OMXMLBuilderFactory.createOMBuilder(Files.newInputStream(Paths.get(filePath)));
+    OMElement elem = builder.getDocumentElement();
+    return PolicyEngine.getPolicy(elem);
+  }
+
 }

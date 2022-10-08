@@ -20,188 +20,202 @@ import org.apache.axis2.context.MessageContext;
 import org.apache.neethi.Policy;
 import org.apache.ws.security.WSConstants;
 import org.apache.ws.security.conversation.ConversationConstants;
+import org.junit.jupiter.api.Test;
 
 import javax.xml.namespace.QName;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class AsymmetricBindingBuilderTest extends MessageBuilderTestBase {
-    
-    public void testAsymmBinding() throws Exception {
-        MessageContext ctx = getMsgCtx();
-        
-        String policyXml = "test-resources/policy/rampart-asymm-binding-1.xml";
-        Policy policy = this.loadPolicy(policyXml);
-        
-        ctx.setProperty(RampartMessageData.KEY_RAMPART_POLICY, policy);
-        
-        MessageBuilder builder = new MessageBuilder();
-        builder.build(ctx);
 
-        ArrayList<QName> list = new ArrayList<QName>();
-        
-        list.add(new QName(WSConstants.WSU_NS, WSConstants.TIMESTAMP_TOKEN_LN));
-        list.add(new QName(WSConstants.WSSE_NS, WSConstants.BINARY_TOKEN_LN));
-        list.add(new QName(WSConstants.SIG_NS, WSConstants.SIG_LN));
-        
-        this.verifySecHeader(list.iterator(), ctx.getEnvelope());
-    }
-    
-    public void testAsymmBindingServerSide() throws Exception {
-        MessageContext ctx = getMsgCtx();
-        
-        ctx.setServerSide(true);
-        String policyXml = "test-resources/policy/rampart-asymm-binding-1.xml";
-        Policy policy = this.loadPolicy(policyXml);
-        
-        ctx.setProperty(RampartMessageData.KEY_RAMPART_POLICY, policy);
-        
-        MessageBuilder builder = new MessageBuilder();
-        builder.build(ctx);
-        
-        ArrayList<QName> list = new ArrayList<QName>();
-        
-        list.add(new QName(WSConstants.WSU_NS, WSConstants.TIMESTAMP_TOKEN_LN));
-        list.add(new QName(WSConstants.SIG_NS, WSConstants.SIG_LN));
+  @Test
+  public void testAsymmBinding() throws Exception {
+    MessageContext ctx = getMsgCtx();
 
-        
-        this.verifySecHeader(list.iterator(), ctx.getEnvelope());
-    }
-    
-    public void testAsymmBindingWithSigDK() throws Exception {
-        MessageContext ctx = getMsgCtx();
-        
-        String policyXml = "test-resources/policy/rampart-asymm-binding-2-sig-dk.xml";
-        Policy policy = this.loadPolicy(policyXml);
-        
-        ctx.setProperty(RampartMessageData.KEY_RAMPART_POLICY, policy);
-        
-        MessageBuilder builder = new MessageBuilder();
-        builder.build(ctx);
-        
-        ArrayList<QName> list = new ArrayList<QName>();
-        
-        list.add(new QName(WSConstants.WSU_NS, WSConstants.TIMESTAMP_TOKEN_LN));
-        list.add(new QName(WSConstants.WSSE_NS, WSConstants.BINARY_TOKEN_LN));
-        list.add(new QName(WSConstants.ENC_NS, WSConstants.ENC_KEY_LN));
-        list.add(new QName(ConversationConstants.WSC_NS_05_02, ConversationConstants.DERIVED_KEY_TOKEN_LN));
-        list.add(new QName(WSConstants.SIG_NS, WSConstants.SIG_LN));
+    String policyXml = "test-resources/policy/rampart-asymm-binding-1.xml";
+    Policy policy = this.loadPolicy(policyXml);
 
-        
-        this.verifySecHeader(list.iterator(), ctx.getEnvelope());
-    }
-    
-    public void testAsymmBindingWithDK() throws Exception {
-        MessageContext ctx = getMsgCtx();
-        
-        String policyXml = "test-resources/policy/rampart-asymm-binding-3-dk.xml";
-        Policy policy = this.loadPolicy(policyXml);
-        
-        ctx.setProperty(RampartMessageData.KEY_RAMPART_POLICY, policy);
-        
-        MessageBuilder builder = new MessageBuilder();
-        builder.build(ctx);
-        
-        ArrayList<QName> list = new ArrayList<QName>();
-        
-        list.add(new QName(WSConstants.WSU_NS, WSConstants.TIMESTAMP_TOKEN_LN));
-        list.add(new QName(WSConstants.WSSE_NS, WSConstants.BINARY_TOKEN_LN));
-        list.add(new QName(WSConstants.ENC_NS, WSConstants.ENC_KEY_LN));
-        list.add(new QName(ConversationConstants.WSC_NS_05_02, ConversationConstants.DERIVED_KEY_TOKEN_LN));
-        list.add(new QName(WSConstants.SIG_NS, WSConstants.SIG_LN));
-        
-        this.verifySecHeader(list.iterator(), ctx.getEnvelope());
-    }
-    
-    public void testAsymmBindingWithDKEncrBeforeSig() throws Exception {
-        MessageContext ctx = getMsgCtx();
-        
-        String policyXml = "test-resources/policy/rampart-asymm-binding-4-dk-ebs.xml";
-        Policy policy = this.loadPolicy(policyXml);
-        
-        ctx.setProperty(RampartMessageData.KEY_RAMPART_POLICY, policy);
-        
-        MessageBuilder builder = new MessageBuilder();
-        builder.build(ctx);
-        
-        ArrayList<QName> list = new ArrayList<QName>();
-        
-        list.add(new QName(WSConstants.WSU_NS, WSConstants.TIMESTAMP_TOKEN_LN));
-        list.add(new QName(WSConstants.ENC_NS, WSConstants.ENC_KEY_LN));
-        list.add(new QName(ConversationConstants.WSC_NS_05_02, ConversationConstants.DERIVED_KEY_TOKEN_LN));
-        list.add(new QName(WSConstants.SIG_NS, WSConstants.SIG_LN));
-        list.add(new QName(ConversationConstants.WSC_NS_05_02, ConversationConstants.DERIVED_KEY_TOKEN_LN));
-        list.add(new QName(WSConstants.ENC_NS, WSConstants.REF_LIST_LN));
-         
-        this.verifySecHeader(list.iterator(), ctx.getEnvelope());
-    }
-    
-    
-    public void testAsymmBindingEncrBeforeSig() throws Exception {
-        MessageContext ctx = getMsgCtx();
-        
-        String policyXml = "test-resources/policy/rampart-asymm-binding-5-ebs.xml";
-        Policy policy = this.loadPolicy(policyXml);
-        
-        ctx.setProperty(RampartMessageData.KEY_RAMPART_POLICY, policy);
-        
-        MessageBuilder builder = new MessageBuilder();
-        builder.build(ctx);
-        
-        ArrayList<QName> list = new ArrayList<QName>();
-        
-        list.add(new QName(WSConstants.WSU_NS, WSConstants.TIMESTAMP_TOKEN_LN));
-        list.add(new QName(WSConstants.ENC_NS, WSConstants.ENC_KEY_LN));
-        list.add(new QName(WSConstants.WSSE_NS, WSConstants.BINARY_TOKEN_LN));
-        list.add(new QName(WSConstants.SIG_NS, WSConstants.SIG_LN));
-        list.add(new QName(WSConstants.ENC_NS, WSConstants.REF_LIST_LN));
-         
-        this.verifySecHeader(list.iterator(), ctx.getEnvelope());
-    }
-    
-    public void testAsymmBindingTripleDesRSA15() throws Exception {
-        MessageContext ctx = getMsgCtx();
-        
-        String policyXml = "test-resources/policy/rampart-asymm-binding-6-3des-r15.xml";
-        Policy policy = this.loadPolicy(policyXml);
-        
-        ctx.setProperty(RampartMessageData.KEY_RAMPART_POLICY, policy);
-        
-        MessageBuilder builder = new MessageBuilder();
-        builder.build(ctx);
-        
-        ArrayList<QName> list = new ArrayList<QName>();
-        
-        list.add(new QName(WSConstants.WSU_NS, WSConstants.TIMESTAMP_TOKEN_LN));
-        list.add(new QName(WSConstants.ENC_NS, WSConstants.ENC_KEY_LN));
-        list.add(new QName(WSConstants.WSSE_NS, WSConstants.BINARY_TOKEN_LN));
-        list.add(new QName(WSConstants.SIG_NS, WSConstants.SIG_LN));
-        
-        this.verifySecHeader(list.iterator(), ctx.getEnvelope());
-    }
+    ctx.setProperty(RampartMessageData.KEY_RAMPART_POLICY, policy);
 
-    public void testAsymmBindingTripleDesRSA15DK() throws Exception {
-        MessageContext ctx = getMsgCtx();
-        
-        String policyXml = "test-resources/policy/rampart-asymm-binding-7-3des-r15-DK.xml";
-        Policy policy = this.loadPolicy(policyXml);
-        
-        ctx.setProperty(RampartMessageData.KEY_RAMPART_POLICY, policy);
-        
-        MessageBuilder builder = new MessageBuilder();
-        builder.build(ctx);
-        
-        ArrayList<QName> list = new ArrayList<QName>();
-        
-        list.add(new QName(WSConstants.WSU_NS, WSConstants.TIMESTAMP_TOKEN_LN));
-        list.add(new QName(WSConstants.WSSE_NS,WSConstants.BINARY_TOKEN_LN));
-        list.add(new QName(WSConstants.ENC_NS, WSConstants.ENC_KEY_LN));
-        list.add(new QName(ConversationConstants.WSC_NS_05_02, ConversationConstants.DERIVED_KEY_TOKEN_LN));
-        list.add(new QName(WSConstants.ENC_NS, WSConstants.REF_LIST_LN));
-        list.add(new QName(ConversationConstants.WSC_NS_05_02, ConversationConstants.DERIVED_KEY_TOKEN_LN));
-        list.add(new QName(WSConstants.SIG_NS, WSConstants.SIG_LN));
-        
-        this.verifySecHeader(list.iterator(), ctx.getEnvelope());
-    }
-    
+    MessageBuilder builder = new MessageBuilder();
+    builder.build(ctx);
+
+    ArrayList<QName> list = new ArrayList<QName>();
+
+    list.add(new QName(WSConstants.WSU_NS, WSConstants.TIMESTAMP_TOKEN_LN));
+    list.add(new QName(WSConstants.WSSE_NS, WSConstants.BINARY_TOKEN_LN));
+    list.add(new QName(WSConstants.SIG_NS, WSConstants.SIG_LN));
+
+    this.verifySecHeader(list.iterator(), ctx.getEnvelope());
+  }
+
+  @Test
+  public void testAsymmBindingServerSide() throws Exception {
+    MessageContext ctx = getMsgCtx();
+
+    ctx.setServerSide(true);
+    String policyXml = "test-resources/policy/rampart-asymm-binding-1.xml";
+    Policy policy = this.loadPolicy(policyXml);
+
+    ctx.setProperty(RampartMessageData.KEY_RAMPART_POLICY, policy);
+
+    MessageBuilder builder = new MessageBuilder();
+    builder.build(ctx);
+
+    ArrayList<QName> list = new ArrayList<QName>();
+
+    list.add(new QName(WSConstants.WSU_NS, WSConstants.TIMESTAMP_TOKEN_LN));
+    list.add(new QName(WSConstants.SIG_NS, WSConstants.SIG_LN));
+
+
+    this.verifySecHeader(list.iterator(), ctx.getEnvelope());
+  }
+
+  @Test
+  public void testAsymmBindingWithSigDK() throws Exception {
+    MessageContext ctx = getMsgCtx();
+
+    String policyXml = "test-resources/policy/rampart-asymm-binding-2-sig-dk.xml";
+    Policy policy = this.loadPolicy(policyXml);
+
+    ctx.setProperty(RampartMessageData.KEY_RAMPART_POLICY, policy);
+
+    MessageBuilder builder = new MessageBuilder();
+    builder.build(ctx);
+
+    ArrayList<QName> list = new ArrayList<QName>();
+
+    list.add(new QName(WSConstants.WSU_NS, WSConstants.TIMESTAMP_TOKEN_LN));
+    list.add(new QName(WSConstants.WSSE_NS, WSConstants.BINARY_TOKEN_LN));
+    list.add(new QName(WSConstants.ENC_NS, WSConstants.ENC_KEY_LN));
+    list.add(new QName(ConversationConstants.WSC_NS_05_02, ConversationConstants.DERIVED_KEY_TOKEN_LN));
+    list.add(new QName(WSConstants.SIG_NS, WSConstants.SIG_LN));
+
+
+    this.verifySecHeader(list.iterator(), ctx.getEnvelope());
+  }
+
+  @Test
+  public void testAsymmBindingWithDK() throws Exception {
+
+    MessageContext ctx = getMsgCtx();
+
+    String policyXml = "test-resources/policy/rampart-asymm-binding-3-dk.xml";
+    Policy policy = this.loadPolicy(policyXml);
+
+    ctx.setProperty(RampartMessageData.KEY_RAMPART_POLICY, policy);
+
+    MessageBuilder builder = new MessageBuilder();
+    builder.build(ctx);
+
+    List<QName> list = new ArrayList<QName>();
+
+    list.add(new QName(WSConstants.WSU_NS, WSConstants.TIMESTAMP_TOKEN_LN));
+    list.add(new QName(WSConstants.WSSE_NS, WSConstants.BINARY_TOKEN_LN));
+    list.add(new QName(WSConstants.ENC_NS, WSConstants.ENC_KEY_LN));
+    list.add(new QName(ConversationConstants.WSC_NS_05_02, ConversationConstants.DERIVED_KEY_TOKEN_LN));
+    list.add(new QName(WSConstants.SIG_NS, WSConstants.SIG_LN));
+
+    this.verifySecHeader(list.iterator(), ctx.getEnvelope());
+
+  }
+
+  @Test
+  public void testAsymmBindingWithDKEncrBeforeSig() throws Exception {
+    MessageContext ctx = getMsgCtx();
+
+    String policyXml = "test-resources/policy/rampart-asymm-binding-4-dk-ebs.xml";
+    Policy policy = this.loadPolicy(policyXml);
+
+    ctx.setProperty(RampartMessageData.KEY_RAMPART_POLICY, policy);
+
+    MessageBuilder builder = new MessageBuilder();
+    builder.build(ctx);
+
+    List<QName> list = new ArrayList<QName>();
+
+    list.add(new QName(WSConstants.WSU_NS, WSConstants.TIMESTAMP_TOKEN_LN));
+    list.add(new QName(WSConstants.ENC_NS, WSConstants.ENC_KEY_LN));
+    list.add(new QName(ConversationConstants.WSC_NS_05_02, ConversationConstants.DERIVED_KEY_TOKEN_LN));
+    list.add(new QName(WSConstants.SIG_NS, WSConstants.SIG_LN));
+    list.add(new QName(ConversationConstants.WSC_NS_05_02, ConversationConstants.DERIVED_KEY_TOKEN_LN));
+    list.add(new QName(WSConstants.ENC_NS, WSConstants.REF_LIST_LN));
+
+    this.verifySecHeader(list.iterator(), ctx.getEnvelope());
+  }
+
+  @Test
+  public void testAsymmBindingEncrBeforeSig() throws Exception {
+    MessageContext ctx = getMsgCtx();
+
+    String policyXml = "test-resources/policy/rampart-asymm-binding-5-ebs.xml";
+    Policy policy = this.loadPolicy(policyXml);
+
+    ctx.setProperty(RampartMessageData.KEY_RAMPART_POLICY, policy);
+
+    MessageBuilder builder = new MessageBuilder();
+    builder.build(ctx);
+
+    List<QName> list = new ArrayList<QName>();
+
+    list.add(new QName(WSConstants.WSU_NS, WSConstants.TIMESTAMP_TOKEN_LN));
+    list.add(new QName(WSConstants.ENC_NS, WSConstants.ENC_KEY_LN));
+    list.add(new QName(WSConstants.WSSE_NS, WSConstants.BINARY_TOKEN_LN));
+    list.add(new QName(WSConstants.SIG_NS, WSConstants.SIG_LN));
+    list.add(new QName(WSConstants.ENC_NS, WSConstants.REF_LIST_LN));
+
+    this.verifySecHeader(list.iterator(), ctx.getEnvelope());
+  }
+
+  @Test
+  public void testAsymmBindingTripleDesRSA15() throws Exception {
+    MessageContext ctx = getMsgCtx();
+
+    String policyXml = "test-resources/policy/rampart-asymm-binding-6-3des-r15.xml";
+    Policy policy = this.loadPolicy(policyXml);
+
+    ctx.setProperty(RampartMessageData.KEY_RAMPART_POLICY, policy);
+
+    MessageBuilder builder = new MessageBuilder();
+    builder.build(ctx);
+
+    List<QName> list = new ArrayList<QName>();
+
+    list.add(new QName(WSConstants.WSU_NS, WSConstants.TIMESTAMP_TOKEN_LN));
+    list.add(new QName(WSConstants.ENC_NS, WSConstants.ENC_KEY_LN));
+    list.add(new QName(WSConstants.WSSE_NS, WSConstants.BINARY_TOKEN_LN));
+    list.add(new QName(WSConstants.SIG_NS, WSConstants.SIG_LN));
+
+    this.verifySecHeader(list.iterator(), ctx.getEnvelope());
+
+  }
+
+  @Test
+  public void testAsymmBindingTripleDesRSA15DK() throws Exception {
+
+    MessageContext ctx = getMsgCtx();
+
+    String policyXml = "test-resources/policy/rampart-asymm-binding-7-3des-r15-DK.xml";
+    Policy policy = this.loadPolicy(policyXml);
+
+    ctx.setProperty(RampartMessageData.KEY_RAMPART_POLICY, policy);
+
+    MessageBuilder builder = new MessageBuilder();
+    builder.build(ctx);
+
+    List<QName> list = new ArrayList<QName>();
+
+    list.add(new QName(WSConstants.WSU_NS, WSConstants.TIMESTAMP_TOKEN_LN));
+    list.add(new QName(WSConstants.WSSE_NS,WSConstants.BINARY_TOKEN_LN));
+    list.add(new QName(WSConstants.ENC_NS, WSConstants.ENC_KEY_LN));
+    list.add(new QName(ConversationConstants.WSC_NS_05_02, ConversationConstants.DERIVED_KEY_TOKEN_LN));
+    list.add(new QName(WSConstants.ENC_NS, WSConstants.REF_LIST_LN));
+    list.add(new QName(ConversationConstants.WSC_NS_05_02, ConversationConstants.DERIVED_KEY_TOKEN_LN));
+    list.add(new QName(WSConstants.SIG_NS, WSConstants.SIG_LN));
+
+    this.verifySecHeader(list.iterator(), ctx.getEnvelope());
+
+  }
+
 }

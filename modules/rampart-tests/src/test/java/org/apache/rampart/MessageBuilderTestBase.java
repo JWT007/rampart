@@ -40,101 +40,95 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLStreamException;
 
-import java.io.FileInputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Iterator;
 
-import junit.framework.TestCase;
+import static org.junit.jupiter.api.Assertions.fail;
 
-public class MessageBuilderTestBase extends TestCase {
+public class MessageBuilderTestBase {
 
-    public MessageBuilderTestBase() {
-        super();
-    }
+  /**
+   * @throws XMLStreamException
+   * @throws FactoryConfigurationError
+   * @throws AxisFault
+   */
+  protected MessageContext getMsgCtx() throws Exception {
+    return initMsgCtxFromMessage("test-resources/policy/soapmessage.xml");
+  }
 
-    public MessageBuilderTestBase(String arg0) {
-        super(arg0);
-    }
+  /**
+   * Return a message context initialized with a SOAP 1.2 message.
+   *
+   * @throws XMLStreamException
+   * @throws FactoryConfigurationError
+   * @throws AxisFault
+   */
+  protected MessageContext getMsgCtx12() throws Exception {
+    return initMsgCtxFromMessage("test-resources/policy/soapmessage12.xml");
+  }
 
-    /**
-     * @throws XMLStreamException
-     * @throws FactoryConfigurationError
-     * @throws AxisFault
-     */
-    protected MessageContext getMsgCtx() throws Exception {
-        return initMsgCtxFromMessage("test-resources/policy/soapmessage.xml");
-    }
+  /**
+   * @throws XMLStreamException
+   * @throws FactoryConfigurationError
+   * @throws AxisFault
+   */
+  private MessageContext initMsgCtxFromMessage(String messageResource) throws Exception {
+    MessageContext ctx = new MessageContext();
 
-    /**
-     * Return a message context initialized with a SOAP 1.2 message.
-     *
-     * @throws XMLStreamException
-     * @throws FactoryConfigurationError
-     * @throws AxisFault
-     */
-    protected MessageContext getMsgCtx12() throws Exception {
-        return initMsgCtxFromMessage("test-resources/policy/soapmessage12.xml");
-    }
+    AxisConfiguration axisConfiguration = new AxisConfiguration();
+    AxisService axisService = new AxisService("TestService");
+    axisConfiguration.addService(axisService);
+    AxisServiceGroup axisServiceGroup = new AxisServiceGroup();
+    axisConfiguration.addServiceGroup(axisServiceGroup);
+    ctx.setConfigurationContext(new ConfigurationContext(axisConfiguration));
+    axisServiceGroup.addService(axisService);
+    ServiceGroupContext gCtx = ctx.getConfigurationContext().createServiceGroupContext(axisServiceGroup);
+    ServiceContext serviceContext = gCtx.getServiceContext(axisService);
+    ctx.setServiceContext(serviceContext);
+    ctx.setAxisService(axisService);
+    OutInAxisOperation outInAxisOperation = new OutInAxisOperation(new QName("http://rampart.org", "test"));
+    AxisMessage msg = new AxisMessage();
+    outInAxisOperation.addMessage(msg,WSDLConstants.MESSAGE_LABEL_OUT_VALUE);
+    outInAxisOperation.addMessage(msg,WSDLConstants.MESSAGE_LABEL_IN_VALUE);
+    ctx.setAxisOperation(outInAxisOperation);
+    ctx.setAxisMessage(msg);
+    Options options = new Options();
+    options.setAction("urn:testOperation");
+    ctx.setOptions(options);
 
-    /**
-     * @throws XMLStreamException
-     * @throws FactoryConfigurationError
-     * @throws AxisFault
-     */
-    private MessageContext initMsgCtxFromMessage(String messageResource) throws Exception {
-        MessageContext ctx = new MessageContext();
+    ctx.setEnvelope(OMXMLBuilderFactory.createSOAPModelBuilder(
+      Files.newInputStream(Paths.get(messageResource)), null).getSOAPEnvelope());
+    return ctx;
+  }
 
-        AxisConfiguration axisConfiguration = new AxisConfiguration();
-        AxisService axisService = new AxisService("TestService");
-        axisConfiguration.addService(axisService);
-        AxisServiceGroup axisServiceGroup = new AxisServiceGroup();
-        axisConfiguration.addServiceGroup(axisServiceGroup);
-        ctx.setConfigurationContext(new ConfigurationContext(axisConfiguration));
-        axisServiceGroup.addService(axisService);
-        ServiceGroupContext gCtx = ctx.getConfigurationContext().createServiceGroupContext(axisServiceGroup);
-        ServiceContext serviceContext = gCtx.getServiceContext(axisService);
-        ctx.setServiceContext(serviceContext);
-        ctx.setAxisService(axisService);
-        OutInAxisOperation outInAxisOperation = new OutInAxisOperation(new QName("http://rampart.org", "test"));
-        AxisMessage msg = new AxisMessage();
-        outInAxisOperation.addMessage(msg,WSDLConstants.MESSAGE_LABEL_OUT_VALUE);
-        outInAxisOperation.addMessage(msg,WSDLConstants.MESSAGE_LABEL_IN_VALUE);
-        ctx.setAxisOperation(outInAxisOperation);
-        ctx.setAxisMessage(msg);
-        Options options = new Options();
-        options.setAction("urn:testOperation");
-        ctx.setOptions(options);
+  protected Policy loadPolicy(String xmlPath) throws Exception {
+    OMXMLParserWrapper builder = OMXMLBuilderFactory.createOMBuilder(Files.newInputStream(Paths.get(xmlPath)));
+    return PolicyEngine.getPolicy(builder.getDocumentElement());
+  }
 
-        ctx.setEnvelope(OMXMLBuilderFactory.createSOAPModelBuilder(
-                new FileInputStream(messageResource), null).getSOAPEnvelope());
-        return ctx;
-    }
+  protected void verifySecHeader(Iterator<QName> qnameList, SOAPEnvelope env) {
+    Iterator<OMElement> secHeaderChildren =
+      env.getHeader()
+         .getFirstChildWithName(new QName(WSConstants.WSSE_NS, WSConstants.WSSE_LN))
+         .getChildElements();
 
-    protected Policy loadPolicy(String xmlPath) throws Exception {
-        OMXMLParserWrapper builder = OMXMLBuilderFactory.createOMBuilder(new FileInputStream(xmlPath));
-        return PolicyEngine.getPolicy(builder.getDocumentElement());
-    }
-
-    protected void verifySecHeader(Iterator<QName> qnameList, SOAPEnvelope env) {
-        Iterator secHeaderChildren =
-                env.getHeader().
-                        getFirstChildWithName(new QName(WSConstants.WSSE_NS,
-                                                        WSConstants.WSSE_LN)).getChildElements();
-
-        while (secHeaderChildren.hasNext()) {
-            OMElement element = (OMElement) secHeaderChildren.next();
-            if (qnameList.hasNext()) {
-                QName elementQName = (QName)qnameList.next();
-                if (!element.getQName().equals(elementQName)) {
-                    fail("Incorrect Element" + element);
-                }
-            } else {
-                fail("Extra child in the security header: " + element.toString());
-            }
+    while (secHeaderChildren.hasNext()) {
+      OMElement element = (OMElement) secHeaderChildren.next();
+      if (qnameList.hasNext()) {
+        QName elementQName = (QName)qnameList.next();
+        if (!element.getQName().equals(elementQName)) {
+          fail("Incorrect Element" + element);
         }
-
-        if (qnameList.hasNext()) {
-            fail("Incorrect number of children in the security header: " +
-                 "next expected element" + qnameList.next().toString());
-        }
+      } else {
+        fail("Extra child in the security header: " + element.toString());
+      }
     }
+
+    if (qnameList.hasNext()) {
+      fail("Incorrect number of children in the security header: " +
+           "next expected element" + qnameList.next().toString());
+    }
+  }
+
 }

@@ -19,15 +19,15 @@ import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.description.AxisService;
 import org.apache.neethi.Policy;
 import org.apache.ws.security.handler.WSHandlerConstants;
+import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 public class PolicyAssertionsTest extends MessageBuilderTestBase {
 
-    public PolicyAssertionsTest(String name) {
-        super(name);
-    }
-
+    @Test
     public void testRequiredElementsValid() throws Exception {
 
         MessageContext ctx = getMsgCtx();
@@ -52,6 +52,7 @@ public class PolicyAssertionsTest extends MessageBuilderTestBase {
 
     }
 
+    @Test
     public void testRequiredElementsInvalid() throws Exception {
 
         MessageContext ctx = getMsgCtx();
@@ -83,6 +84,7 @@ public class PolicyAssertionsTest extends MessageBuilderTestBase {
 
     }
 
+    @Test
     public void testHashedPasswordRequiredValid() throws Exception {
 
         MessageContext ctx = getMsgCtx();
@@ -116,6 +118,7 @@ public class PolicyAssertionsTest extends MessageBuilderTestBase {
 
     }
 
+    @Test
     public void testHashedPasswordRequiredInvalid() throws Exception {
 
         MessageContext ctx = getMsgCtx();
@@ -158,4 +161,5 @@ public class PolicyAssertionsTest extends MessageBuilderTestBase {
         }
 
     }
+
 }

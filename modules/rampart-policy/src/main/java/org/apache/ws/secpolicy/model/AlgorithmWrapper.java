@@ -18,6 +18,6 @@ package org.apache.ws.secpolicy.model;
 
 public interface AlgorithmWrapper {
 
-    public void setAlgorithmSuite(AlgorithmSuite algorithmSuite);
-    
+  public void setAlgorithmSuite(AlgorithmSuite algorithmSuite);
+
 }

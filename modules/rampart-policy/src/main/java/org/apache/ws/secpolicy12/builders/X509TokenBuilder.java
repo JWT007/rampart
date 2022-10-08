@@ -1,12 +1,12 @@
 /*
  * Copyright 2001-2004 The Apache Software Foundation.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,129 +33,119 @@ import org.apache.ws.secpolicy.SP12Constants;
 import org.apache.ws.secpolicy.model.X509Token;
 
 public class X509TokenBuilder implements AssertionBuilder<OMElement> {
-	
-    public final static String USER_CERT_ALIAS_LN = "userCertAlias";
 
-    public final static String ENCRYPTION_USER_LN = "encryptionUser";
+  public final static String USER_CERT_ALIAS_LN = "userCertAlias";
 
-    public static final QName RAMPART_CONFIG = new QName("http://ws.apache.org/rampart/policy",
-            "RampartConfig");
+  public final static String ENCRYPTION_USER_LN = "encryptionUser";
 
-    public static final QName USER_CERT_ALIAS = new QName("http://ws.apache.org/rampart/policy",
-            USER_CERT_ALIAS_LN);
+  public static final QName RAMPART_CONFIG = new QName("http://ws.apache.org/rampart/policy", "RampartConfig");
 
-    public static final QName ENCRYPTION_USER = new QName("http://ws.apache.org/rampart/policy",
-            ENCRYPTION_USER_LN);
+  public static final QName USER_CERT_ALIAS = new QName("http://ws.apache.org/rampart/policy", USER_CERT_ALIAS_LN);
 
-    public Assertion build(OMElement element, AssertionBuilderFactory factory)
-            throws IllegalArgumentException {
-        X509Token x509Token = new X509Token(SPConstants.SP_V12);
+  public static final QName ENCRYPTION_USER = new QName("http://ws.apache.org/rampart/policy", ENCRYPTION_USER_LN);
 
-        OMElement policyElement = element.getFirstElement();
-        
-        //Process token inclusion
-        OMAttribute  includeAttr = element.getAttribute(SP12Constants.INCLUDE_TOKEN);
-        if(includeAttr != null) {
-            int inclusion = SP12Constants.getInclusionFromAttributeValue(includeAttr.getAttributeValue());
-            x509Token.setInclusion(inclusion);
-        }
-        
-        OMAttribute isOptional = element.getAttribute(Constants.Q_ELEM_OPTIONAL_ATTR);
-		if (isOptional != null) {
-			x509Token.setOptional(Boolean.valueOf(isOptional.getAttributeValue())
-					.booleanValue());
-		}
+  public Assertion build(final OMElement element, final AssertionBuilderFactory factory) throws IllegalArgumentException {
 
-        if (policyElement != null) {
-            
-            if (policyElement.getFirstChildWithName(SP12Constants.REQUIRE_DERIVED_KEYS) != null) {
-                x509Token.setDerivedKeys(true);
-            } else if (policyElement.getFirstChildWithName(SP12Constants.REQUIRE_IMPLIED_DERIVED_KEYS) != null) {
-                x509Token.setImpliedDerivedKeys(true);
-            } else if (policyElement.getFirstChildWithName(SP12Constants.REQUIRE_EXPLICIT_DERIVED_KEYS) != null) {
-                x509Token.setExplicitDerivedKeys(true);
-            }
-            
-            Policy policy = PolicyEngine.getPolicy(element.getFirstElement());
-            policy = (Policy) policy.normalize(false);
+    final X509Token x509Token = new X509Token(SPConstants.SP_V12);
 
-            for (Iterator<List<Assertion>> iterator = policy.getAlternatives(); iterator
-                    .hasNext();) {
-                processAlternative(iterator.next(), x509Token);
-                
-                /*
-                 * since there should be only one alternative
-                 */
-                break;
-            }
-        }
-        
-        if (x509Token != null && policyElement != null) {
-            OMElement ramp = null;
-            ramp = policyElement.getFirstChildWithName(RAMPART_CONFIG);
-            if (ramp != null) {
-                OMElement child = null;
-                if ((child = ramp.getFirstChildWithName(USER_CERT_ALIAS)) != null) {
-                    x509Token.setUserCertAlias(child.getText());
-                }
-                if ((child = ramp.getFirstChildWithName(ENCRYPTION_USER)) != null) {
-                    x509Token.setEncryptionUser(child.getText());
-                }
-            }
-        }
-        
-        return x509Token;
+    final OMElement policyElement = element.getFirstElement();
+
+    //Process token inclusion
+    final OMAttribute  includeAttr = element.getAttribute(SP12Constants.INCLUDE_TOKEN);
+    if(includeAttr != null) {
+      int inclusion = SP12Constants.getInclusionFromAttributeValue(includeAttr.getAttributeValue());
+      x509Token.setInclusion(inclusion);
     }
 
-    private void processAlternative(List<Assertion> assertions, X509Token parent) {
-                Assertion assertion;
-        QName name;
+    final OMAttribute isOptional = element.getAttribute(Constants.Q_ELEM_OPTIONAL_ATTR);
+    if (isOptional != null) {
+      x509Token.setOptional(Boolean.parseBoolean(isOptional.getAttributeValue()));
+    }
 
-        for (Iterator<Assertion> iterator = assertions.iterator(); iterator.hasNext();) {
-            assertion = iterator.next();
-            name = assertion.getName();
+    if (policyElement != null) {
 
-            if (SP12Constants.REQUIRE_KEY_IDENTIFIRE_REFERENCE.equals(name)) {
-                parent.setRequireKeyIdentifierReference(true);
+      if (policyElement.getFirstChildWithName(SP12Constants.REQUIRE_DERIVED_KEYS) != null) {
+        x509Token.setDerivedKeys(true);
+      } else if (policyElement.getFirstChildWithName(SP12Constants.REQUIRE_IMPLIED_DERIVED_KEYS) != null) {
+        x509Token.setImpliedDerivedKeys(true);
+      } else if (policyElement.getFirstChildWithName(SP12Constants.REQUIRE_EXPLICIT_DERIVED_KEYS) != null) {
+        x509Token.setExplicitDerivedKeys(true);
+      }
 
-            } else if (SP12Constants.REQUIRE_ISSUER_SERIAL_REFERENCE.equals(name)) {
-                parent.setRequireIssuerSerialReference(true);
+      final Policy policy = PolicyEngine.getPolicy(element.getFirstElement()).normalize(false);
 
-            } else if (SP12Constants.REQUIRE_EMBEDDED_TOKEN_REFERENCE.equals(name)) {
-                parent.setRequireEmbeddedTokenReference(true);
+      final Iterator<List<Assertion>> alternatives = policy.getAlternatives();
 
-            } else if (SP12Constants.REQUIRE_THUMBPRINT_REFERENCE.equals(name)) {
-                parent.setRequireThumbprintReference(true);
+      if (alternatives.hasNext()) { // there should be max one alternative
+        processAlternative(alternatives.next(), x509Token);
+      }
 
-            } else if (SP12Constants.WSS_X509_V1_TOKEN_10.equals(name)) {
-                parent.setTokenVersionAndType(SPConstants.WSS_X509_V1_TOKEN10);
+    }
 
-            } else if (SP12Constants.WSS_X509_V1_TOKEN_11.equals(name)) {
-                parent.setTokenVersionAndType(SPConstants.WSS_X509_V1_TOKEN11);
+    if (policyElement != null) {
 
-            } else if (SP12Constants.WSS_X509_V3_TOKEN_10.equals(name)) {
-                parent.setTokenVersionAndType(SPConstants.WSS_X509_V3_TOKEN10);
+      final OMElement ramp = policyElement.getFirstChildWithName(RAMPART_CONFIG);
 
-            } else if (SP12Constants.WSS_X509_V3_TOKEN_11.equals(name)) {
-                parent.setTokenVersionAndType(SPConstants.WSS_X509_V3_TOKEN11);
-
-            } else if (SP12Constants.WSS_X509_PKCS7_TOKEN_10.equals(name)) {
-                parent.setTokenVersionAndType(SPConstants.WSS_X509_PKCS7_TOKEN10);
-                
-            } else if (SP12Constants.WSS_X509_PKCS7_TOKEN_11.equals(name)) {
-                parent.setTokenVersionAndType(SPConstants.WSS_X509_PKCS7_TOKEN11);
-                
-            } else if (SP12Constants.WSS_X509_PKI_PATH_V1_TOKEN_10.equals(name)) {
-                parent.setTokenVersionAndType(SPConstants.WSS_X509_PKI_PATH_V1_TOKEN10);
-                
-            } else if (SP12Constants.WSS_X509_PKI_PATH_V1_TOKEN_11.equals(name)) {
-                parent.setTokenVersionAndType(SPConstants.WSS_X509_PKI_PATH_V1_TOKEN11);
-                
-            }
+      if (ramp != null) {
+        OMElement child = null;
+        if ((child = ramp.getFirstChildWithName(USER_CERT_ALIAS)) != null) {
+          x509Token.setUserCertAlias(child.getText());
         }
+        if ((child = ramp.getFirstChildWithName(ENCRYPTION_USER)) != null) {
+          x509Token.setEncryptionUser(child.getText());
+        }
+      }
+
     }
 
-    public QName[] getKnownElements() {
-        return new QName[] {SP12Constants.X509_TOKEN};
+    return x509Token;
+
+  }
+
+  private void processAlternative(List<Assertion> assertions, X509Token parent) {
+
+    if (assertions != null) {
+
+      for (Assertion assertion : assertions) {
+
+        final QName name = assertion.getName();
+
+        if (SP12Constants.REQUIRE_KEY_IDENTIFIRE_REFERENCE.equals(name)) {
+          parent.setRequireKeyIdentifierReference(true);
+        } else if (SP12Constants.REQUIRE_ISSUER_SERIAL_REFERENCE.equals(name)) {
+          parent.setRequireIssuerSerialReference(true);
+        } else if (SP12Constants.REQUIRE_EMBEDDED_TOKEN_REFERENCE.equals(name)) {
+          parent.setRequireEmbeddedTokenReference(true);
+        } else if (SP12Constants.REQUIRE_THUMBPRINT_REFERENCE.equals(name)) {
+          parent.setRequireThumbprintReference(true);
+        } else if (SP12Constants.WSS_X509_V1_TOKEN_10.equals(name)) {
+          parent.setTokenVersionAndType(SPConstants.WSS_X509_V1_TOKEN10);
+        } else if (SP12Constants.WSS_X509_V1_TOKEN_11.equals(name)) {
+          parent.setTokenVersionAndType(SPConstants.WSS_X509_V1_TOKEN11);
+        } else if (SP12Constants.WSS_X509_V3_TOKEN_10.equals(name)) {
+          parent.setTokenVersionAndType(SPConstants.WSS_X509_V3_TOKEN10);
+        } else if (SP12Constants.WSS_X509_V3_TOKEN_11.equals(name)) {
+          parent.setTokenVersionAndType(SPConstants.WSS_X509_V3_TOKEN11);
+        } else if (SP12Constants.WSS_X509_PKCS7_TOKEN_10.equals(name)) {
+          parent.setTokenVersionAndType(SPConstants.WSS_X509_PKCS7_TOKEN10);
+        } else if (SP12Constants.WSS_X509_PKCS7_TOKEN_11.equals(name)) {
+          parent.setTokenVersionAndType(SPConstants.WSS_X509_PKCS7_TOKEN11);
+        } else if (SP12Constants.WSS_X509_PKI_PATH_V1_TOKEN_10.equals(name)) {
+          parent.setTokenVersionAndType(SPConstants.WSS_X509_PKI_PATH_V1_TOKEN10);
+        } else if (SP12Constants.WSS_X509_PKI_PATH_V1_TOKEN_11.equals(name)) {
+          parent.setTokenVersionAndType(SPConstants.WSS_X509_PKI_PATH_V1_TOKEN11);
+        }
+
+      }
+
     }
+
+  }
+
+  public QName[] getKnownElements() {
+
+    return new QName[] { SP12Constants.X509_TOKEN };
+
+  }
+
 }

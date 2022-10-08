@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * 
+ *
  *  http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -37,29 +37,36 @@ import org.apache.ws.secpolicy.model.Token;
 
 public class EncryptionTokenBuilder  implements AssertionBuilder<OMElement> {
 
-    public Assertion build(OMElement element, AssertionBuilderFactory factory) throws IllegalArgumentException {
-        EncryptionToken encrToken = new EncryptionToken(SPConstants.SP_V11);
-        
-        Policy policy = PolicyEngine.getPolicy(element.getFirstElement());
-        policy = (Policy) policy.normalize(false);
-        
-        for (Iterator<List<Assertion>> iterator = policy.getAlternatives(); iterator.hasNext();) {
-            processAlternative(iterator.next(), encrToken);
-            break; // since there should be only one alternative ..
-        }
-        
-        return encrToken;
-    }
-        
-    public QName[] getKnownElements() {
-        return new QName[] {SP11Constants.ENCRYPTION_TOKEN};
+  public Assertion build(OMElement element, AssertionBuilderFactory factory) throws IllegalArgumentException {
+    EncryptionToken encrToken = new EncryptionToken(SPConstants.SP_V11);
+
+    Policy policy = PolicyEngine.getPolicy(element.getFirstElement()).normalize(false);
+
+    final Iterator<List<Assertion>> iterator = policy.getAlternatives();
+
+    if (iterator.hasNext()) { // there should at most one
+      processAlternative(iterator.next(), encrToken);
     }
 
-    private void processAlternative(List<Assertion> assertions, EncryptionToken parent) {
-        Object token = assertions.get(0);
-        
-        if (token instanceof Token) {
-            parent.setToken((Token) token);
-        }
+    return encrToken;
+  }
+
+  public QName[] getKnownElements() {
+    return new QName[] {SP11Constants.ENCRYPTION_TOKEN};
+  }
+
+  private void processAlternative(List<Assertion> assertions, EncryptionToken parent) {
+
+    if (assertions != null && !assertions.isEmpty()) {
+
+      Object token = assertions.get(0);
+
+      if (token instanceof Token) {
+        parent.setToken((Token) token);
+      }
+
     }
+
+  }
+
 }

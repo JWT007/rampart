@@ -17,7 +17,7 @@
 package org.apache.ws.secpolicy.model;
 
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.List;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
@@ -30,134 +30,132 @@ import org.apache.ws.secpolicy.SPConstants;
 
 public class SignedEncryptedParts extends AbstractSecurityAssertion {
 
-    private boolean body;
-    
-    private boolean attachments;
-    
-    private ArrayList<Header> headers = new ArrayList<Header>();
-    
-    private boolean signedParts;
+  private boolean body;
 
-    private boolean signAllHeaders;
+  private boolean attachments;
 
-    public boolean isSignAllHeaders() {
-        return signAllHeaders;
+  private final List<Header> headers = new ArrayList<>();
+
+  private final boolean signedParts;
+
+  private boolean signAllHeaders;
+
+  public boolean isSignAllHeaders() {
+    return signAllHeaders;
+  }
+
+  public void setSignAllHeaders(boolean signAllHeaders) {
+    this.signAllHeaders = signAllHeaders;
+  }
+
+  public SignedEncryptedParts(boolean signedParts, int version) {
+    this.signedParts = signedParts;
+    setVersion(version);
+  }
+
+  /**
+   * @return Returns the body.
+   */
+  public boolean isBody() {
+    return body;
+  }
+
+  /**
+   * @param body The body to set.
+   */
+  public void setBody(boolean body) {
+    this.body = body;
+  }
+
+  /**
+   * @return Returns the attachments.
+   */
+  public boolean isAttachments() {
+    return attachments;
+  }
+
+  /**
+   * @param attachments The attachments to set.
+   */
+  public void setAttachments(boolean attachments) {
+    this.attachments = attachments;
+  }
+
+  /**
+   * @return Returns the headers.
+   */
+  public List<Header> getHeaders() {
+    return this.headers;
+  }
+
+  /**
+   * @param header The header to set.
+   */
+  public void addHeader(Header header) {
+    this.headers.add(header);
+  }
+
+  /**
+   * @return Returns the signedParts.
+   */
+  public boolean isSignedParts() {
+    return signedParts;
+  }
+
+  public QName getName() {
+    if (signedParts) {
+      if ( version == SPConstants.SP_V12) {
+        return SP12Constants.SIGNED_PARTS;
+      } else {
+        return SP11Constants.SIGNED_PARTS;
+      }
     }
 
-    public void setSignAllHeaders(boolean signAllHeaders) {
-        this.signAllHeaders = signAllHeaders;
-    }
-    
-    public SignedEncryptedParts(boolean signedParts, int version) {
-        this.signedParts = signedParts;
-        setVersion(version);
+    if ( version == SPConstants.SP_V12) {
+      return SP12Constants.ENCRYPTED_PARTS;
+    } else {
+      return SP11Constants.ENCRYPTED_PARTS;
     }
 
-    /**
-     * @return Returns the body.
-     */
-    public boolean isBody() {
-        return body;
+  }
+
+  public PolicyComponent normalize() {
+    return this;
+  }
+
+  public void serialize(XMLStreamWriter writer) throws XMLStreamException {
+    String prefix = getName().getPrefix();
+    String localName = getName().getLocalPart();
+    String namespaceURI = getName().getNamespaceURI();
+
+    // <sp:SignedParts> | <sp:EncryptedParts>
+    writeStartElement(writer, prefix, localName, namespaceURI);
+
+    if (isBody()) {
+      // <sp:Body />
+      writeEmptyElement(writer, prefix, SPConstants.BODY, namespaceURI);
     }
 
-    /**
-     * @param body The body to set.
-     */
-    public void setBody(boolean body) {
-        this.body = body;
-    }
-    
-    /**
-     * @return Returns the attachments.
-     */
-    public boolean isAttachments() {
-        return attachments;
+    for (Header header : headers) {
+      // <sp:Header Name=".." Namespace=".." />
+      writeStartElement(writer, prefix, SPConstants.HEADER, namespaceURI);
+      // Name attribute is optional
+      if (header.getName() != null) {
+        writer.writeAttribute("Name", header.getName());
+      }
+      writer.writeAttribute("Namespace", header.getNamespace());
+
+      writer.writeEndElement();
     }
 
-    /**
-     * @param attachments The attachments to set.
-     */
-    public void setAttachments(boolean attachments) {
-        this.attachments = attachments;
+    if (isAttachments() && version == SPConstants.SP_V12) {
+      // <sp:Attachments />
+      writeEmptyElement(writer, prefix, SPConstants.ATTACHMENTS, namespaceURI);
     }
 
-    /**
-     * @return Returns the headers.
-     */
-    public ArrayList<Header> getHeaders() {
-        return this.headers;
-    }
+    // </sp:SignedParts> | </sp:EncryptedParts>
+    writer.writeEndElement();
+  }
 
-    /**
-     * @param header The header to set.
-     */
-    public void addHeader(Header header) {
-        this.headers.add(header);
-    }
 
-    /**
-     * @return Returns the signedParts.
-     */
-    public boolean isSignedParts() {
-        return signedParts;
-    }
-
-    public QName getName() {
-        if (signedParts) {
-            if ( version == SPConstants.SP_V12) {
-                return SP12Constants.SIGNED_PARTS;
-            } else {
-                return SP11Constants.SIGNED_PARTS;
-            }           
-        }
-        
-        if ( version == SPConstants.SP_V12) {
-            return SP12Constants.ENCRYPTED_PARTS;
-        } else {
-            return SP11Constants.ENCRYPTED_PARTS;
-        }
-        
-    }
-
-    public PolicyComponent normalize() {
-        return this;
-    }
-
-    public void serialize(XMLStreamWriter writer) throws XMLStreamException {
-        String prefix = getName().getPrefix();
-        String localName = getName().getLocalPart();
-        String namespaceURI = getName().getNamespaceURI();
-            
-        // <sp:SignedParts> | <sp:EncryptedParts> 
-        writeStartElement(writer, prefix, localName, namespaceURI);
-        
-        if (isBody()) {
-            // <sp:Body />
-            writeEmptyElement(writer, prefix, SPConstants.BODY, namespaceURI);
-        }
-        
-        Header header;        
-        for (Iterator<Header> iterator = headers.iterator(); iterator.hasNext();) {
-            header = iterator.next();
-            // <sp:Header Name=".." Namespace=".." />
-            writeStartElement(writer, prefix, SPConstants.HEADER, namespaceURI);
-            // Name attribute is optional
-            if (header.getName() != null) {
-                writer.writeAttribute("Name", header.getName());
-            }
-            writer.writeAttribute("Namespace", header.getNamespace());
-            
-            writer.writeEndElement();
-        }
-        
-        if (isAttachments() && version == SPConstants.SP_V12) {
-            // <sp:Attachments />
-            writeEmptyElement(writer, prefix, SPConstants.ATTACHMENTS, namespaceURI);
-        }
-        
-        // </sp:SignedParts> | </sp:EncryptedParts>
-        writer.writeEndElement();
-    }    
-    
-    
 }

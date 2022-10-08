@@ -20,81 +20,78 @@ import org.apache.ws.secpolicy.SPConstants;
 
 public abstract class SymmetricAsymmetricBindingBase extends Binding {
 
-    private String protectionOrder = SPConstants.SIGN_BEFORE_ENCRYPTING;
-    
-    private boolean signatureProtection;
-    
-    private boolean tokenProtection;
-    
-    private boolean entireHeadersAndBodySignatures;
-    
-    public SymmetricAsymmetricBindingBase(int version) {
-        super(version);
-    }
+  private String protectionOrder = SPConstants.SIGN_BEFORE_ENCRYPTING;
 
-    /**
-     * @return Returns the entireHeaderAndBodySignatures.
-     */
-    public boolean isEntireHeadersAndBodySignatures() {
-        return entireHeadersAndBodySignatures;
-    }
+  private boolean signatureProtection;
 
-    /**
-     * @param entireHeaderAndBodySignatures The entireHeaderAndBodySignatures to set.
-     */
-    public void setEntireHeadersAndBodySignatures(
-            boolean entireHeaderAndBodySignatures) {
-        this.entireHeadersAndBodySignatures = entireHeaderAndBodySignatures;
-    }
+  private boolean tokenProtection;
 
-    /**
-     * @return Returns the protectionOrder.
-     */
-    public String getProtectionOrder() {
-        return protectionOrder;
-    }
+  private boolean entireHeadersAndBodySignatures;
 
-    /**
-     * @param protectionOrder The protectionOrder to set.
-     */
-    public void setProtectionOrder(String protectionOrder) {
-        if(SPConstants.ENCRYPT_BEFORE_SIGNING.equals(protectionOrder) ||
-           SPConstants.SIGN_BEFORE_ENCRYPTING.equals(protectionOrder)) {
-            this.protectionOrder = protectionOrder;
-        } else {
-//            throw new WSSPolicyException("Incorrect protection order value : "
-//                    + protectionOrder);
-        }
-    }
+  public SymmetricAsymmetricBindingBase(int version) {
+    super(version);
+  }
 
-    /**
-     * @return Returns the signatureProtection.
-     */
-    public boolean isSignatureProtection() {
-        return signatureProtection;
-    }
+  /**
+   * @return Returns the entireHeaderAndBodySignatures.
+   */
+  public boolean isEntireHeadersAndBodySignatures() {
+    return entireHeadersAndBodySignatures;
+  }
 
-    /**
-     * @param signatureProtection The signatureProtection to set.
-     */
-    public void setSignatureProtection(boolean signatureProtection) {
-        this.signatureProtection = signatureProtection;
-    }
+  /**
+   * @param entireHeaderAndBodySignatures The entireHeaderAndBodySignatures to set.
+   */
+  public void setEntireHeadersAndBodySignatures(
+    boolean entireHeaderAndBodySignatures) {
+    this.entireHeadersAndBodySignatures = entireHeaderAndBodySignatures;
+  }
 
-    /**
-     * @return Returns the tokenProtection.
-     */
-    public boolean isTokenProtection() {
-        return tokenProtection;
-    }
+  /**
+   * @return Returns the protectionOrder.
+   */
+  public String getProtectionOrder() {
+    return protectionOrder;
+  }
 
-    /**
-     * @param tokenProtection The tokenProtection to set.
-     */
-    public void setTokenProtection(boolean tokenProtection) {
-        this.tokenProtection = tokenProtection;
+  /**
+   * @param protectionOrder The protectionOrder to set.
+   */
+  public void setProtectionOrder(String protectionOrder) {
+    if(SPConstants.ENCRYPT_BEFORE_SIGNING.equals(protectionOrder) ||
+       SPConstants.SIGN_BEFORE_ENCRYPTING.equals(protectionOrder)) {
+      this.protectionOrder = protectionOrder;
     }
-    
-    
-    
+  }
+
+  /**
+   * @return Returns the signatureProtection.
+   */
+  public boolean isSignatureProtection() {
+    return signatureProtection;
+  }
+
+  /**
+   * @param signatureProtection The signatureProtection to set.
+   */
+  public void setSignatureProtection(boolean signatureProtection) {
+    this.signatureProtection = signatureProtection;
+  }
+
+  /**
+   * @return Returns the tokenProtection.
+   */
+  public boolean isTokenProtection() {
+    return tokenProtection;
+  }
+
+  /**
+   * @param tokenProtection The tokenProtection to set.
+   */
+  public void setTokenProtection(boolean tokenProtection) {
+    this.tokenProtection = tokenProtection;
+  }
+
+
+
 }

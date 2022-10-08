@@ -1,12 +1,12 @@
 /*
  * Copyright 2001-2004 The Apache Software Foundation.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -38,68 +38,70 @@ import org.apache.ws.secpolicy.model.SymmetricBinding;
 
 public class SymmetricBindingBuilder implements AssertionBuilder<OMElement> {
 
-    public Assertion build(OMElement element, AssertionBuilderFactory factory) throws IllegalArgumentException {
-        SymmetricBinding symmetricBinding = new SymmetricBinding(SPConstants.SP_V12); 
-        
-        Policy policy = PolicyEngine.getPolicy(element.getFirstElement());
-        policy = (Policy) policy.normalize(false);
-        
-        for (Iterator<List<Assertion>> iterator = policy.getAlternatives(); iterator.hasNext();) {
-            processAlternatives(iterator.next(), symmetricBinding);
-            
-            /*
-             * since there should be only one alternative ..
-             */
-            break; 
-        }
-        return symmetricBinding;
+  public Assertion build(OMElement element, AssertionBuilderFactory factory) throws IllegalArgumentException {
+
+    final SymmetricBinding symmetricBinding = new SymmetricBinding(SPConstants.SP_V12);
+
+    final Policy policy = PolicyEngine.getPolicy(element.getFirstElement()).normalize(false);
+
+    final Iterator<List<Assertion>> alternatives = policy.getAlternatives();
+
+    if (alternatives.hasNext()) {
+      processAlternatives(alternatives.next(), symmetricBinding);
     }
 
-    public QName[] getKnownElements() {
-        return new QName[] {SP12Constants.SYMMETRIC_BINDING};
-    }
-    
-    private void processAlternatives(List<Assertion> assertions, SymmetricBinding symmetricBinding) {
-        Assertion assertion;
-        QName name;
-        try {
-	        for (Iterator<Assertion> iterator = assertions.iterator(); iterator.hasNext();) {
-	            assertion = iterator.next();
-	            name = assertion.getName();
-	            
-	            if (SP12Constants.ALGORITHM_SUITE.equals(name)) {
-	                symmetricBinding.setAlgorithmSuite((AlgorithmSuite) assertion);
-	                
-	            } else if (SP12Constants.LAYOUT.equals(name)) {
-	                symmetricBinding.setLayout((Layout) assertion);
-	                
-	            } else if (SP12Constants.INCLUDE_TIMESTAMP.equals(name)) {
-	                symmetricBinding.setIncludeTimestamp(true);
-	                
-	            } else if (SP12Constants.PROTECTION_TOKEN.equals(name)) {
-	                symmetricBinding.setProtectionToken((ProtectionToken) assertion);
-	                
-	            } else if (SP12Constants.ENCRYPT_BEFORE_SIGNING.equals(name)) {
-	                symmetricBinding.setProtectionOrder(SPConstants.ENCRYPT_BEFORE_SIGNING);
-	                
-	            } else if (SP12Constants.SIGN_BEFORE_ENCRYPTING.equals(name)) {
-	                symmetricBinding.setProtectionOrder(SPConstants.SIGN_BEFORE_ENCRYPTING);
-	                
-	            } else if (SP12Constants.ONLY_SIGN_ENTIRE_HEADERS_AND_BODY.equals(name)) {
-	                symmetricBinding.setEntireHeadersAndBodySignatures(true);
-	                
-	            } else if (SP12Constants.ENCRYPT_SIGNATURE.equals(name)) {
-	                symmetricBinding.setSignatureProtection(true);
-	                
-	            } else if (SP12Constants.ENCRYPTION_TOKEN.equals(name)) {
-	                symmetricBinding.setEncryptionToken((EncryptionToken) assertion);
-	                
-	            } else if (SP12Constants.SIGNATURE_TOKEN.equals(name)) {
-	                symmetricBinding.setSignatureToken((SignatureToken) assertion);
-	            } 
-	        }
-        } catch (WSSPolicyException e) {
-        	throw new IllegalArgumentException(e);
+    return symmetricBinding;
+
+  }
+
+  public QName[] getKnownElements() {
+
+    return new QName[] { SP12Constants.SYMMETRIC_BINDING };
+
+  }
+
+  private void processAlternatives(List<Assertion> assertions, SymmetricBinding symmetricBinding) {
+
+    try {
+
+      if (assertions != null) {
+
+        for (Assertion assertion : assertions) {
+
+          final QName name = assertion.getName();
+
+          if (SP12Constants.ALGORITHM_SUITE.equals(name)) {
+            symmetricBinding.setAlgorithmSuite((AlgorithmSuite) assertion);
+          } else if (SP12Constants.LAYOUT.equals(name)) {
+            symmetricBinding.setLayout((Layout) assertion);
+          } else if (SP12Constants.INCLUDE_TIMESTAMP.equals(name)) {
+            symmetricBinding.setIncludeTimestamp(true);
+          } else if (SP12Constants.PROTECTION_TOKEN.equals(name)) {
+            symmetricBinding.setProtectionToken((ProtectionToken) assertion);
+          } else if (SP12Constants.ENCRYPT_BEFORE_SIGNING.equals(name)) {
+            symmetricBinding.setProtectionOrder(SPConstants.ENCRYPT_BEFORE_SIGNING);
+          } else if (SP12Constants.SIGN_BEFORE_ENCRYPTING.equals(name)) {
+            symmetricBinding.setProtectionOrder(SPConstants.SIGN_BEFORE_ENCRYPTING);
+          } else if (SP12Constants.ONLY_SIGN_ENTIRE_HEADERS_AND_BODY.equals(name)) {
+            symmetricBinding.setEntireHeadersAndBodySignatures(true);
+          } else if (SP12Constants.ENCRYPT_SIGNATURE.equals(name)) {
+            symmetricBinding.setSignatureProtection(true);
+          } else if (SP12Constants.ENCRYPTION_TOKEN.equals(name)) {
+            symmetricBinding.setEncryptionToken((EncryptionToken) assertion);
+          } else if (SP12Constants.SIGNATURE_TOKEN.equals(name)) {
+            symmetricBinding.setSignatureToken((SignatureToken) assertion);
+          }
+
         }
+
+      }
+
+    } catch (WSSPolicyException e) {
+
+      throw new IllegalArgumentException(e);
+
     }
+
+  }
+
 }

@@ -16,7 +16,6 @@
 
 package org.apache.ws.secpolicy.model;
 
-import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.namespace.QName;
@@ -54,7 +53,7 @@ public class SymmetricBinding extends SymmetricAsymmetricBindingBase {
 
     /**
      * @param encryptionToken The encryptionToken to set.
-     * @throws WSSPolicyException 
+     * @throws WSSPolicyException on error
      */
     public void setEncryptionToken(EncryptionToken encryptionToken) 
     		throws WSSPolicyException  {
@@ -74,7 +73,7 @@ public class SymmetricBinding extends SymmetricAsymmetricBindingBase {
 
     /**
      * @param protectionToken The protectionToken to set.
-     * @throws WSSPolicyException 
+     * @throws WSSPolicyException on error
      */
     public void setProtectionToken(ProtectionToken protectionToken) 
     		throws WSSPolicyException  {
@@ -95,7 +94,7 @@ public class SymmetricBinding extends SymmetricAsymmetricBindingBase {
 
     /**
      * @param signatureToken The signatureToken to set.
-     * @throws WSSPolicyException 
+     * @throws WSSPolicyException on error
      */
     public void setSignatureToken(SignatureToken signatureToken) 
     		throws WSSPolicyException {
@@ -130,29 +129,29 @@ public class SymmetricBinding extends SymmetricAsymmetricBindingBase {
         SymmetricBinding symmetricBinding;
         
         try {
-	        for (Iterator<Assertion> iterator = configurations.iterator(); iterator.hasNext();) {
-	            wrapper = new All();
-	            symmetricBinding = new SymmetricBinding(this.version);
-	            
-	            algorithmSuite = (AlgorithmSuite) iterator.next();
-	            symmetricBinding.setAlgorithmSuite(algorithmSuite);
-	            
-	            symmetricBinding.setEncryptionToken(getEncryptionToken());
-	            symmetricBinding.setEntireHeadersAndBodySignatures(isEntireHeadersAndBodySignatures());
-	            symmetricBinding.setIncludeTimestamp(isIncludeTimestamp());
-	            symmetricBinding.setLayout(getLayout());
-	            symmetricBinding.setProtectionOrder(getProtectionOrder());
-	            symmetricBinding.setProtectionToken(getProtectionToken());
-	            symmetricBinding.setSignatureProtection(isSignatureProtection());
-	            symmetricBinding.setSignatureToken(getSignatureToken());
-	            symmetricBinding.setSignedEndorsingSupportingTokens(getSignedEndorsingSupportingTokens());
-	            symmetricBinding.setSignedSupportingToken(getSignedSupportingToken());
-	            symmetricBinding.setTokenProtection(isTokenProtection());
-	            
-	            symmetricBinding.setNormalized(true);
-	            wrapper.addPolicyComponent(symmetricBinding);
-	            exactlyOne.addPolicyComponent(wrapper);
-	        }
+            for (Assertion configuration : configurations) {
+                wrapper = new All();
+                symmetricBinding = new SymmetricBinding(this.version);
+
+                algorithmSuite = (AlgorithmSuite) configuration;
+                symmetricBinding.setAlgorithmSuite(algorithmSuite);
+
+                symmetricBinding.setEncryptionToken(getEncryptionToken());
+                symmetricBinding.setEntireHeadersAndBodySignatures(isEntireHeadersAndBodySignatures());
+                symmetricBinding.setIncludeTimestamp(isIncludeTimestamp());
+                symmetricBinding.setLayout(getLayout());
+                symmetricBinding.setProtectionOrder(getProtectionOrder());
+                symmetricBinding.setProtectionToken(getProtectionToken());
+                symmetricBinding.setSignatureProtection(isSignatureProtection());
+                symmetricBinding.setSignatureToken(getSignatureToken());
+                symmetricBinding.setSignedEndorsingSupportingTokens(getSignedEndorsingSupportingTokens());
+                symmetricBinding.setSignedSupportingToken(getSignedSupportingToken());
+                symmetricBinding.setTokenProtection(isTokenProtection());
+
+                symmetricBinding.setNormalized(true);
+                wrapper.addPolicyComponent(symmetricBinding);
+                exactlyOne.addPolicyComponent(wrapper);
+            }
         } catch (WSSPolicyException e) {
         	throw new IllegalArgumentException(e);
         }

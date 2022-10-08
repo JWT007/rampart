@@ -20,6 +20,7 @@ import org.apache.axis2.context.MessageContext;
 import org.apache.neethi.Policy;
 import org.apache.ws.security.WSConstants;
 import org.apache.ws.security.conversation.ConversationConstants;
+import org.junit.jupiter.api.Test;
 
 import javax.xml.namespace.QName;
 import java.util.ArrayList;
@@ -27,80 +28,98 @@ import java.util.List;
 
 public class TransportBindingBuilderTest extends MessageBuilderTestBase {
 
-    public void testTransportBinding() throws Exception {
-        MessageContext ctx = getMsgCtx();
+  @Test
+  public void testTransportBinding() throws Exception {
 
-        String policyXml = "test-resources/policy/rampart-transport-binding.xml";
-        Policy policy = this.loadPolicy(policyXml);
+    MessageContext ctx = getMsgCtx();
 
-        ctx.setProperty(RampartMessageData.KEY_RAMPART_POLICY, policy);
+    String policyXml = "test-resources/policy/rampart-transport-binding.xml";
+    Policy policy = this.loadPolicy(policyXml);
 
-        MessageBuilder builder = new MessageBuilder();
-        builder.build(ctx);
+    ctx.setProperty(RampartMessageData.KEY_RAMPART_POLICY, policy);
 
-        List<QName> list = new ArrayList<QName>();
-        list.add(new QName(WSConstants.WSU_NS, WSConstants.TIMESTAMP_TOKEN_LN));
-        list.add(new QName(WSConstants.WSSE_NS, WSConstants.USERNAME_TOKEN_LN));
-        list.add(new QName(WSConstants.WSSE_NS, WSConstants.BINARY_TOKEN_LN));
-        list.add(new QName(WSConstants.SIG_NS, WSConstants.SIG_LN));
-        this.verifySecHeader(list.iterator(), ctx.getEnvelope());
-    }
+    MessageBuilder builder = new MessageBuilder();
+    builder.build(ctx);
 
-    public void testTransportBindingNoBST() throws Exception {
-        MessageContext ctx = getMsgCtx();
+    final List<QName> list = new ArrayList<>();
 
-        String policyXml = "test-resources/policy/rampart-transport-binding-no-bst.xml";
-        Policy policy = this.loadPolicy(policyXml);
+    list.add(new QName(WSConstants.WSU_NS, WSConstants.TIMESTAMP_TOKEN_LN));
+    list.add(new QName(WSConstants.WSSE_NS, WSConstants.USERNAME_TOKEN_LN));
+    list.add(new QName(WSConstants.WSSE_NS, WSConstants.BINARY_TOKEN_LN));
+    list.add(new QName(WSConstants.SIG_NS, WSConstants.SIG_LN));
 
-        ctx.setProperty(RampartMessageData.KEY_RAMPART_POLICY, policy);
+    this.verifySecHeader(list.iterator(), ctx.getEnvelope());
 
-        MessageBuilder builder = new MessageBuilder();
-        builder.build(ctx);
+  }
 
-        List<QName> list = new ArrayList<QName>();
-        list.add(new QName(WSConstants.WSU_NS, WSConstants.TIMESTAMP_TOKEN_LN));
-        list.add(new QName(WSConstants.WSSE_NS, WSConstants.USERNAME_TOKEN_LN));
-        list.add(new QName(WSConstants.SIG_NS, WSConstants.SIG_LN));
-        this.verifySecHeader(list.iterator(), ctx.getEnvelope());
-    }
+  @Test
+  public void testTransportBindingNoBST() throws Exception {
 
-    public void testTransportBindingWithDK() throws Exception {
-        MessageContext ctx = getMsgCtx();
+    MessageContext ctx = getMsgCtx();
 
-        String policyXml = "test-resources/policy/rampart-transport-binding-dk.xml";
-        Policy policy = this.loadPolicy(policyXml);
+    String policyXml = "test-resources/policy/rampart-transport-binding-no-bst.xml";
+    Policy policy = this.loadPolicy(policyXml);
 
-        ctx.setProperty(RampartMessageData.KEY_RAMPART_POLICY, policy);
+    ctx.setProperty(RampartMessageData.KEY_RAMPART_POLICY, policy);
 
-        MessageBuilder builder = new MessageBuilder();
-        builder.build(ctx);
+    MessageBuilder builder = new MessageBuilder();
+    builder.build(ctx);
 
-        List<QName> list = new ArrayList<QName>();
-        list.add(new QName(WSConstants.WSU_NS, WSConstants.TIMESTAMP_TOKEN_LN));
-        list.add(new QName(WSConstants.WSSE_NS, WSConstants.USERNAME_TOKEN_LN));
-        list.add(new QName(WSConstants.ENC_NS, WSConstants.ENC_KEY_LN));
-        list.add(new QName(ConversationConstants.WSC_NS_05_02,
-                           ConversationConstants.DERIVED_KEY_TOKEN_LN));
-        list.add(new QName(WSConstants.SIG_NS, WSConstants.SIG_LN));
-        this.verifySecHeader(list.iterator(), ctx.getEnvelope());
-    }
+    final List<QName> list = new ArrayList<>();
 
-    public void testTransportBindingWithDKServerSide() throws Exception {
-        MessageContext ctx = getMsgCtx();
-        ctx.setServerSide(true);
+    list.add(new QName(WSConstants.WSU_NS, WSConstants.TIMESTAMP_TOKEN_LN));
+    list.add(new QName(WSConstants.WSSE_NS, WSConstants.USERNAME_TOKEN_LN));
+    list.add(new QName(WSConstants.SIG_NS, WSConstants.SIG_LN));
 
-        String policyXml = "test-resources/policy/rampart-transport-binding-dk.xml";
-        Policy policy = this.loadPolicy(policyXml);
+    this.verifySecHeader(list.iterator(), ctx.getEnvelope());
 
-        ctx.setProperty(RampartMessageData.KEY_RAMPART_POLICY, policy);
+  }
 
-        MessageBuilder builder = new MessageBuilder();
-        builder.build(ctx);
+  @Test
+  public void testTransportBindingWithDK() throws Exception {
 
-        List<QName> list = new ArrayList<QName>();
-        list.add(new QName(WSConstants.WSU_NS, WSConstants.TIMESTAMP_TOKEN_LN));
-        this.verifySecHeader(list.iterator(), ctx.getEnvelope());
-    }
+    MessageContext ctx = getMsgCtx();
 
+    String policyXml = "test-resources/policy/rampart-transport-binding-dk.xml";
+    Policy policy = this.loadPolicy(policyXml);
+
+    ctx.setProperty(RampartMessageData.KEY_RAMPART_POLICY, policy);
+
+    MessageBuilder builder = new MessageBuilder();
+    builder.build(ctx);
+
+    final List<QName> list = new ArrayList<>();
+
+    list.add(new QName(WSConstants.WSU_NS, WSConstants.TIMESTAMP_TOKEN_LN));
+    list.add(new QName(WSConstants.WSSE_NS, WSConstants.USERNAME_TOKEN_LN));
+    list.add(new QName(WSConstants.ENC_NS, WSConstants.ENC_KEY_LN));
+    list.add(new QName(ConversationConstants.WSC_NS_05_02, ConversationConstants.DERIVED_KEY_TOKEN_LN));
+    list.add(new QName(WSConstants.SIG_NS, WSConstants.SIG_LN));
+
+    this.verifySecHeader(list.iterator(), ctx.getEnvelope());
+
+  }
+
+  @Test
+  public void testTransportBindingWithDKServerSide() throws Exception {
+
+    MessageContext ctx = getMsgCtx();
+    ctx.setServerSide(true);
+
+    String policyXml = "test-resources/policy/rampart-transport-binding-dk.xml";
+    Policy policy = this.loadPolicy(policyXml);
+
+    ctx.setProperty(RampartMessageData.KEY_RAMPART_POLICY, policy);
+
+    MessageBuilder builder = new MessageBuilder();
+    builder.build(ctx);
+
+    final List<QName> list = new ArrayList<>();
+
+    list.add(new QName(WSConstants.WSU_NS, WSConstants.TIMESTAMP_TOKEN_LN));
+
+    this.verifySecHeader(list.iterator(), ctx.getEnvelope());
+
+  }
 
 }
