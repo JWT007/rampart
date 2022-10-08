@@ -36,130 +36,130 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 /**
- * 
+ *
  */
 public class TokenIssuerUtil {
 
-    public final static String ENCRYPTED_KEY = "EncryptedKey";
-    public final static String BINARY_SECRET = "BinarySecret";
+  public final static String ENCRYPTED_KEY = "EncryptedKey";
+  public final static String BINARY_SECRET = "BinarySecret";
 
-    public static byte[] getSharedSecret(RahasData data,
-                                         int keyComputation,
-                                         int keySize) throws TrustException {
+  public static byte[] getSharedSecret(RahasData data,
+                                       int keyComputation,
+                                       int keySize) throws TrustException {
 
-        boolean requestEntropyPresent = data.getRequestEntropy() != null;
+    boolean requestEntropyPresent = data.getRequestEntropy() != null;
 
-        try {
-            if (requestEntropyPresent &&
-                keyComputation != SAMLTokenIssuerConfig.KeyComputation.KEY_COMP_USE_OWN_KEY) {
-                //If there is requester entropy and if the issuer is not
-                //configured to use its own key
+    try {
+      if (requestEntropyPresent &&
+          keyComputation != SAMLTokenIssuerConfig.KeyComputation.KEY_COMP_USE_OWN_KEY) {
+        //If there is requester entropy and if the issuer is not
+        //configured to use its own key
 
-                if (keyComputation ==
-                    SAMLTokenIssuerConfig.KeyComputation.KEY_COMP_PROVIDE_ENT) {
-                    data.setResponseEntropy(WSSecurityUtil.generateNonce(keySize / 8));
-                    P_SHA1 p_sha1 = new P_SHA1();
-                    return p_sha1.createKey(data.getRequestEntropy(),
-                                            data.getResponseEntropy(),
-                                            0,
-                                            keySize / 8);
-                } else {
-                    //If we reach this it is expected to use the requester entropy
-                    return data.getRequestEntropy();
-                }
-            } else { // need to use a generated key
-                return generateEphemeralKey(keySize);
-            }
-        } catch (WSSecurityException | ConversationException e) {
-            throw new TrustException("errorCreatingEphemeralKey", e);
-        }
-    }
-
-    public static void handleRequestedProofToken(RahasData data,
-                                                 int wstVersion,
-                                                 AbstractIssuerConfig config,
-                                                 OMElement requestedSecurityTokenResponseElement,
-                                                 Token token,
-                                                 Document doc) throws TrustException {
-        OMElement reqProofTokElem =
-                TrustUtil.createRequestedProofTokenElement(wstVersion, requestedSecurityTokenResponseElement);
-
-        if (config.keyComputation == AbstractIssuerConfig.KeyComputation.KEY_COMP_PROVIDE_ENT
-            && data.getRequestEntropy() != null) {
-            //If entropy is requested, and it is configured to provide
-            //entropy then we have to set the entropy value and
-            //set the RPT to include a ComputedKey element
-
-            OMElement responseEntropyElement =
-              TrustUtil.createEntropyElement(wstVersion, requestedSecurityTokenResponseElement);
-
-            final String responseEntropy = Base64.getEncoder().encodeToString(data.getResponseEntropy());
-            OMElement binSecElem = TrustUtil.createBinarySecretElement(wstVersion,
-                                                            responseEntropyElement,
-                                                            RahasConstants.BIN_SEC_TYPE_NONCE);
-            binSecElem.setText(responseEntropy);
-
-            OMElement compKeyElem =
-                    TrustUtil.createComputedKeyElement(wstVersion, reqProofTokElem);
-            compKeyElem.setText(data.getWstNs() + RahasConstants.COMPUTED_KEY_PSHA1);
+        if (keyComputation ==
+            SAMLTokenIssuerConfig.KeyComputation.KEY_COMP_PROVIDE_ENT) {
+          data.setResponseEntropy(WSSecurityUtil.generateNonce(keySize / 8));
+          P_SHA1 p_sha1 = new P_SHA1();
+          return p_sha1.createKey(data.getRequestEntropy(),
+                                  data.getResponseEntropy(),
+                                  0,
+                                  keySize / 8);
         } else {
-            if (TokenIssuerUtil.ENCRYPTED_KEY.equals(config.proofKeyType)) {
-                WSSecEncryptedKey encryptedKeyBuilder = new WSSecEncryptedKey();
-                Crypto crypto;
-
-                ClassLoader classLoader = data.getInMessageContext().getAxisService().getClassLoader();
-
-                if (config.cryptoElement != null) { // crypto props defined as elements
-                    crypto = CommonUtil.getCrypto(TrustUtil.toProperties(config.cryptoElement),classLoader);
-                } else { // crypto props defined in a properties file
-                    crypto = CommonUtil.getCrypto(config.cryptoPropertiesFile, classLoader);
-                }
-
-                encryptedKeyBuilder.setKeyIdentifierType(WSConstants.THUMBPRINT_IDENTIFIER);
-                try {
-                    encryptedKeyBuilder.setUseThisCert(data.getClientCert());
-                    encryptedKeyBuilder.prepare(doc, crypto);
-                } catch (WSSecurityException e) {
-                    throw new TrustException("errorInBuildingTheEncryptedKeyForPrincipal",
-                                             new String[]{data.
-                                                     getClientCert().getSubjectDN().getName()});
-                }
-                Element encryptedKeyElem = encryptedKeyBuilder.getEncryptedKeyElement();
-                Element bstElem = encryptedKeyBuilder.getBinarySecurityTokenElement();
-                if (bstElem != null) {
-                    reqProofTokElem.addChild((OMElement) bstElem);
-                }
-
-                reqProofTokElem.addChild((OMElement) encryptedKeyElem);
-
-                token.setSecret(encryptedKeyBuilder.getEphemeralKey());
-            } else if (TokenIssuerUtil.BINARY_SECRET.equals(config.proofKeyType)) {
-                byte[] secret = TokenIssuerUtil.getSharedSecret(data,
-                                                                config.keyComputation,
-                                                                config.keySize);
-                OMElement binSecElem = TrustUtil.createBinarySecretElement(wstVersion,
-                                                                           reqProofTokElem,
-                                                                           null);
-
-                final String encodedSecretText = Base64.getEncoder().encodeToString(secret);
-
-                binSecElem.setText(encodedSecretText);
-                token.setSecret(secret);
-            } else {
-                throw new IllegalArgumentException(config.proofKeyType);
-            }
+          //If we reach this it is expected to use the requester entropy
+          return data.getRequestEntropy();
         }
+      } else { // need to use a generated key
+        return generateEphemeralKey(keySize);
+      }
+    } catch (WSSecurityException | ConversationException e) {
+      throw new TrustException("errorCreatingEphemeralKey", e);
     }
+  }
 
-    private static byte[] generateEphemeralKey(int keySize) throws TrustException {
+  public static void handleRequestedProofToken(RahasData data,
+                                               int wstVersion,
+                                               AbstractIssuerConfig config,
+                                               OMElement requestedSecurityTokenResponseElement,
+                                               Token token,
+                                               Document doc) throws TrustException {
+    OMElement reqProofTokElem =
+      TrustUtil.createRequestedProofTokenElement(wstVersion, requestedSecurityTokenResponseElement);
+
+    if (config.keyComputation == AbstractIssuerConfig.KeyComputation.KEY_COMP_PROVIDE_ENT
+        && data.getRequestEntropy() != null) {
+      //If entropy is requested, and it is configured to provide
+      //entropy then we have to set the entropy value and
+      //set the RPT to include a ComputedKey element
+
+      OMElement responseEntropyElement =
+        TrustUtil.createEntropyElement(wstVersion, requestedSecurityTokenResponseElement);
+
+      final String responseEntropy = Base64.getEncoder().encodeToString(data.getResponseEntropy());
+      OMElement binSecElem = TrustUtil.createBinarySecretElement(wstVersion,
+                                                                 responseEntropyElement,
+                                                                 RahasConstants.BIN_SEC_TYPE_NONCE);
+      binSecElem.setText(responseEntropy);
+
+      OMElement compKeyElem =
+        TrustUtil.createComputedKeyElement(wstVersion, reqProofTokElem);
+      compKeyElem.setText(data.getWstNs() + RahasConstants.COMPUTED_KEY_PSHA1);
+    } else {
+      if (TokenIssuerUtil.ENCRYPTED_KEY.equals(config.proofKeyType)) {
+        WSSecEncryptedKey encryptedKeyBuilder = new WSSecEncryptedKey();
+        Crypto crypto;
+
+        ClassLoader classLoader = data.getInMessageContext().getAxisService().getClassLoader();
+
+        if (config.cryptoElement != null) { // crypto props defined as elements
+          crypto = CommonUtil.getCrypto(TrustUtil.toProperties(config.cryptoElement),classLoader);
+        } else { // crypto props defined in a properties file
+          crypto = CommonUtil.getCrypto(config.cryptoPropertiesFile, classLoader);
+        }
+
+        encryptedKeyBuilder.setKeyIdentifierType(WSConstants.THUMBPRINT_IDENTIFIER);
         try {
-            SecureRandom random = SecureRandom.getInstance("SHA1PRNG");
-            byte[] temp = new byte[keySize / 8];
-            random.nextBytes(temp);
-            return temp;
-        } catch (Exception e) {
-            throw new TrustException("errorCreatingEphemeralKey", e);
+          encryptedKeyBuilder.setUseThisCert(data.getClientCert());
+          encryptedKeyBuilder.prepare(doc, crypto);
+        } catch (WSSecurityException e) {
+          throw new TrustException("errorInBuildingTheEncryptedKeyForPrincipal",
+                                   new String[]{data.
+                                                  getClientCert().getSubjectDN().getName()});
         }
+        Element encryptedKeyElem = encryptedKeyBuilder.getEncryptedKeyElement();
+        Element bstElem = encryptedKeyBuilder.getBinarySecurityTokenElement();
+        if (bstElem != null) {
+          reqProofTokElem.addChild((OMElement) bstElem);
+        }
+
+        reqProofTokElem.addChild((OMElement) encryptedKeyElem);
+
+        token.setSecret(encryptedKeyBuilder.getEphemeralKey());
+      } else if (TokenIssuerUtil.BINARY_SECRET.equals(config.proofKeyType)) {
+        byte[] secret = TokenIssuerUtil.getSharedSecret(data,
+                                                        config.keyComputation,
+                                                        config.keySize);
+        OMElement binSecElem = TrustUtil.createBinarySecretElement(wstVersion,
+                                                                   reqProofTokElem,
+                                                                   null);
+
+        final String encodedSecretText = Base64.getEncoder().encodeToString(secret);
+
+        binSecElem.setText(encodedSecretText);
+        token.setSecret(secret);
+      } else {
+        throw new IllegalArgumentException(config.proofKeyType);
+      }
     }
+  }
+
+  private static byte[] generateEphemeralKey(int keySize) throws TrustException {
+    try {
+      SecureRandom random = SecureRandom.getInstance("SHA1PRNG");
+      byte[] temp = new byte[keySize / 8];
+      random.nextBytes(temp);
+      return temp;
+    } catch (Exception e) {
+      throw new TrustException("errorCreatingEphemeralKey", e);
+    }
+  }
 
 }

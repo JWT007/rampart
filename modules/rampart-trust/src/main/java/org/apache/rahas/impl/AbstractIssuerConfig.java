@@ -24,96 +24,96 @@ import javax.xml.namespace.QName;
  */
 public abstract class AbstractIssuerConfig {
 
-    /**
-     * The key computation policy when clien't entropy is provided
-     */
-    public static class KeyComputation {
-        public static final QName KEY_COMPUTATION = new QName("keyComputation");
-        public final static int KEY_COMP_USE_REQ_ENT = 1;
-        public final static int KEY_COMP_PROVIDE_ENT = 2;
-        public final static int KEY_COMP_USE_OWN_KEY = 3;
-    }
+  /**
+   * The key computation policy when clien't entropy is provided
+   */
+  public static class KeyComputation {
+    public static final QName KEY_COMPUTATION = new QName("keyComputation");
+    public final static int KEY_COMP_USE_REQ_ENT = 1;
+    public final static int KEY_COMP_PROVIDE_ENT = 2;
+    public final static int KEY_COMP_USE_OWN_KEY = 3;
+  }
 
-    public final static QName ADD_REQUESTED_ATTACHED_REF = new QName("addRequestedAttachedRef");
-    public final static QName ADD_REQUESTED_UNATTACHED_REF = new QName("addRequestedUnattachedRef");
-    public static final QName PROOF_KEY_TYPE = new QName("proofKeyType");
+  public final static QName ADD_REQUESTED_ATTACHED_REF = new QName("addRequestedAttachedRef");
+  public final static QName ADD_REQUESTED_UNATTACHED_REF = new QName("addRequestedUnattachedRef");
+  public static final QName PROOF_KEY_TYPE = new QName("proofKeyType");
 
-    /**
-     * Element name to include the crypto properties used to load the
-     * information used securing the response
-     */
-    public final static QName CRYPTO_PROPERTIES = new QName("cryptoProperties");
-    public static final QName CRYPTO = new QName("crypto");
-    public static final QName PROVIDER = new QName("provider");
-    public static final QName PROPERTY = new QName("property");
+  /**
+   * Element name to include the crypto properties used to load the
+   * information used securing the response
+   */
+  public final static QName CRYPTO_PROPERTIES = new QName("cryptoProperties");
+  public static final QName CRYPTO = new QName("crypto");
+  public static final QName PROVIDER = new QName("provider");
+  public static final QName PROPERTY = new QName("property");
 
-    protected int keyComputation = KeyComputation.KEY_COMP_PROVIDE_ENT;
-    protected String proofKeyType = TokenIssuerUtil.ENCRYPTED_KEY;
-    protected boolean addRequestedAttachedRef;
-    protected boolean addRequestedUnattachedRef;
-    protected long ttl = 300000;
-    protected String cryptoPropertiesFile;
-    protected OMElement cryptoPropertiesElement;
-    protected OMElement cryptoElement;
-    protected int keySize = 256;
-    
-    public void setAddRequestedAttachedRef(boolean addRequestedAttachedRef) {
-        this.addRequestedAttachedRef = addRequestedAttachedRef;
-    }
+  protected int keyComputation = KeyComputation.KEY_COMP_PROVIDE_ENT;
+  protected String proofKeyType = TokenIssuerUtil.ENCRYPTED_KEY;
+  protected boolean addRequestedAttachedRef;
+  protected boolean addRequestedUnattachedRef;
+  protected long ttl = 300000;
+  protected String cryptoPropertiesFile;
+  protected OMElement cryptoPropertiesElement;
+  protected OMElement cryptoElement;
+  protected int keySize = 256;
 
-    public void setAddRequestedUnattachedRef(boolean addRequestedUnattachedRef) {
-        this.addRequestedUnattachedRef = addRequestedUnattachedRef;
-    }
+  public void setAddRequestedAttachedRef(boolean addRequestedAttachedRef) {
+    this.addRequestedAttachedRef = addRequestedAttachedRef;
+  }
 
-    public void setKeyComputation(int keyComputation) {
-        this.keyComputation = keyComputation;
-    }
+  public void setAddRequestedUnattachedRef(boolean addRequestedUnattachedRef) {
+    this.addRequestedUnattachedRef = addRequestedUnattachedRef;
+  }
 
-    public int getKeyComputation() {
-        return keyComputation;
-    }
+  public void setKeyComputation(int keyComputation) {
+    this.keyComputation = keyComputation;
+  }
 
-    public void setProofKeyType(String proofKeyType) {
-        this.proofKeyType = proofKeyType;
-    }
+  public int getKeyComputation() {
+    return keyComputation;
+  }
 
-    public void setTtl(long ttl) {
-        this.ttl = ttl;
-    }
+  public void setProofKeyType(String proofKeyType) {
+    this.proofKeyType = proofKeyType;
+  }
 
-    public void setKeySize(int keySize) {
-        this.keySize = keySize;
-    }
+  public void setTtl(long ttl) {
+    this.ttl = ttl;
+  }
 
-    public int getKeySize() {
-        return keySize;
-    }
+  public void setKeySize(int keySize) {
+    this.keySize = keySize;
+  }
 
-    public String getProofKeyType() {
-        return proofKeyType;
-    }
+  public int getKeySize() {
+    return keySize;
+  }
 
-    public boolean isAddRequestedAttachedRef() {
-        return addRequestedAttachedRef;
-    }
+  public String getProofKeyType() {
+    return proofKeyType;
+  }
 
-    public boolean isAddRequestedUnattachedRef() {
-        return addRequestedUnattachedRef;
-    }
+  public boolean isAddRequestedAttachedRef() {
+    return addRequestedAttachedRef;
+  }
 
-    public long getTtl() {
-        return ttl;
-    }
+  public boolean isAddRequestedUnattachedRef() {
+    return addRequestedUnattachedRef;
+  }
 
-    public String getCryptoPropertiesFile() {
-        return cryptoPropertiesFile;
-    }
+  public long getTtl() {
+    return ttl;
+  }
 
-    public OMElement getCryptoPropertiesElement() {
-        return cryptoPropertiesElement;
-    }
+  public String getCryptoPropertiesFile() {
+    return cryptoPropertiesFile;
+  }
 
-    public OMElement getCryptoElement() {
-        return cryptoElement;
-    }
+  public OMElement getCryptoPropertiesElement() {
+    return cryptoPropertiesElement;
+  }
+
+  public OMElement getCryptoElement() {
+    return cryptoElement;
+  }
 }
