@@ -18,47 +18,46 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
   -->
-
-
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-    <parent>
-        <groupId>org.apache.rampart</groupId>
-        <artifactId>rampart-project</artifactId>
-        <version>1.8.0-SNAPSHOT</version>
-        <relativePath>../../pom.xml</relativePath>
-    </parent>
-    
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>org.apache.rampart</groupId>
-    <artifactId>rahas</artifactId>
-    <packaging>mar</packaging>
-    <name>Rampart - Trust-Mar</name>
+  <modelVersion>4.0.0</modelVersion>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.axis2</groupId>
-                <artifactId>axis2-mar-maven-plugin</artifactId>
-                <extensions>true</extensions>
-                <configuration>
-                    <includeDependencies>false</includeDependencies>
-                    <moduleXmlFile>module.xml</moduleXmlFile>
-                </configuration>
-            </plugin> 
-        </plugins>
-    </build>
-    
-    <dependencies>
-        <dependency>
-            <groupId>org.apache.rampart</groupId>
-            <artifactId>rampart-policy</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.rampart</groupId>
-            <artifactId>rampart-trust</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-    </dependencies>
+  <parent>
+    <groupId>org.apache.rampart</groupId>
+    <artifactId>rampart-project</artifactId>
+    <version>1.8.0-SNAPSHOT</version>
+    <relativePath>../../pom.xml</relativePath>
+  </parent>
+
+  <artifactId>rahas</artifactId>
+  <packaging>mar</packaging>
+  <name>Rampart - Trust-Mar</name>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.axis2</groupId>
+        <artifactId>axis2-mar-maven-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+          <includeDependencies>false</includeDependencies>
+          <moduleXmlFile>module.xml</moduleXmlFile>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.rampart</groupId>
+      <artifactId>rampart-policy</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.rampart</groupId>
+      <artifactId>rampart-trust</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
+
 </project>
