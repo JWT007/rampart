@@ -21,8 +21,8 @@ import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.description.HandlerDescription;
 import org.apache.axis2.description.Parameter;
 import org.apache.axis2.engine.Handler;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.rampart.MessageBuilder;
 import org.apache.rampart.RampartConstants;
 import org.apache.rampart.RampartException;
@@ -34,11 +34,10 @@ import org.apache.ws.security.WSSecurityException;
  * This constructs the secured message according to the effective policy.
  */
 public class RampartSender implements Handler {
-	
-	private static Log mlog = LogFactory.getLog(RampartConstants.MESSAGE_LOG);
 
-    private static HandlerDescription EMPTY_HANDLER_METADATA =
-        new HandlerDescription("default Handler");
+    private static final Logger MESSAGE_LOGGER = LogManager.getLogger(RampartConstants.MESSAGE_LOG);
+
+    private static final HandlerDescription EMPTY_HANDLER_METADATA = new HandlerDescription("default Handler");
 
     private HandlerDescription handlerDesc;
     
@@ -63,9 +62,7 @@ public class RampartSender implements Handler {
         MessageBuilder builder = new MessageBuilder();
         try {
             builder.build(msgContext);
-        } catch (WSSecurityException e) {
-            throw new AxisFault(e.getMessage(), e);
-        } catch (WSSPolicyException e) {
+        } catch (WSSecurityException | WSSPolicyException e) {
             throw new AxisFault(e.getMessage(), e);
         } catch (RampartException e) {
             // If a framework exception is occurred while processing a security fault
@@ -77,12 +74,10 @@ public class RampartSender implements Handler {
             }
         }
         
-        if(mlog.isDebugEnabled()){
-        	mlog.debug("*********************** RampartSender sent out \n" + 
-        	        msgContext.getEnvelope());
-        }
-        
-        return InvocationResponse.CONTINUE;        
+      	MESSAGE_LOGGER.debug("*********************** RampartSender sent out \n{}", msgContext::getEnvelope);
+
+        return InvocationResponse.CONTINUE;
+
     }
 
     public void flowComplete(MessageContext msgContext)

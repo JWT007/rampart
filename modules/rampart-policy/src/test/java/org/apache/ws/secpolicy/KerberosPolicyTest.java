@@ -127,7 +127,7 @@ public class KerberosPolicyTest extends TestCase {
         SupportingToken endorsingSupportingTokens = (SupportingToken) findAssertion(assertions, endSuppTokens);
         assertNotNull(String.format("Cannot find any '%s' assertion in policy: %s", endSuppTokens, printPolicy(policy)), endorsingSupportingTokens);
         
-        ArrayList<Token> supportingTokens = endorsingSupportingTokens.getTokens();
+        List<Token> supportingTokens = endorsingSupportingTokens.getTokens();
         assertTrue(String.format("Cannot find any supporting tokens in policy: %s", printPolicy(policy)), supportingTokens.size() > 0);
 
         KerberosToken kerberosToken = findKerberosToken(supportingTokens);
@@ -200,7 +200,7 @@ public class KerberosPolicyTest extends TestCase {
         return null;
     }
     
-    private KerberosToken findKerberosToken(ArrayList<Token> tokens) {
+    private KerberosToken findKerberosToken(List<Token> tokens) {
         for (Token token : tokens) {
             if (token instanceof KerberosToken) {
                 return (KerberosToken)token;

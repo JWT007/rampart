@@ -16,6 +16,7 @@
 
 package org.apache.rampart.handler;
 
+import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMException;
 import org.apache.axiom.soap.SOAP11Constants;
 import org.apache.axiom.soap.SOAP12Constants;
@@ -27,8 +28,8 @@ import org.apache.axis2.description.HandlerDescription;
 import org.apache.axis2.description.Parameter;
 import org.apache.axis2.engine.Handler;
 import org.apache.axis2.namespace.Constants;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.rampart.RampartConstants;
 import org.apache.rampart.RampartEngine;
 import org.apache.rampart.RampartException;
@@ -51,11 +52,10 @@ import javax.xml.namespace.QName;
  * policy.
  */
 public class RampartReceiver implements Handler {
-	
-    private static Log mlog = LogFactory.getLog(RampartConstants.MESSAGE_LOG);
-	
-    private static HandlerDescription EMPTY_HANDLER_METADATA =
-        new HandlerDescription("default Handler");
+
+    private static final Logger MESSAGE_LOGGER = LogManager.getLogger(RampartConstants.MESSAGE_LOG);
+
+    private static final HandlerDescription EMPTY_HANDLER_METADATA = new HandlerDescription("default Handler");
 
     private HandlerDescription handlerDesc;
     
@@ -81,38 +81,30 @@ public class RampartReceiver implements Handler {
           return InvocationResponse.CONTINUE;        
         }
         
-        if(mlog.isDebugEnabled()){
-        	mlog.debug("*********************** RampartReceiver received \n"
-                    + msgContext.getEnvelope());
-        }
+        MESSAGE_LOGGER.debug("*********************** RampartReceiver received \n{}", msgContext::getEnvelope);
         
         RampartEngine engine = new RampartEngine();
         List<WSSecurityEngineResult> wsResult = null;
         try {
             wsResult = engine.process(msgContext);
             
-        } catch (WSSecurityException e) {
+        } catch (WSSecurityException | WSSPolicyException | RampartException e) {
             setFaultCodeAndThrowAxisFault(msgContext, e);
-        } catch (WSSPolicyException e) {
-            setFaultCodeAndThrowAxisFault(msgContext, e);
-        } catch (RampartException e) {
-            setFaultCodeAndThrowAxisFault(msgContext, e);
-        } 
-        
+        }
+
         if(wsResult == null) {
           return InvocationResponse.CONTINUE;        
         }
         
-        List<WSHandlerResult> results = null;
-        if ((results = (List<WSHandlerResult>) msgContext
-                .getProperty(WSHandlerConstants.RECV_RESULTS)) == null) {
-            results = new ArrayList<WSHandlerResult>();
+        List<WSHandlerResult> results = (List<WSHandlerResult>) msgContext.getProperty(WSHandlerConstants.RECV_RESULTS);
+        if (results == null) {
+            results = new ArrayList<>();
             msgContext.setProperty(WSHandlerConstants.RECV_RESULTS, results);
         }
         WSHandlerResult rResult = new WSHandlerResult("", wsResult);
         results.add(0, rResult);
         
-        SOAPHeader header = null;
+        final SOAPHeader header;
         try {
             header = msgContext.getEnvelope().getHeader();
         } catch (OMException ex) {
@@ -121,7 +113,7 @@ public class RampartReceiver implements Handler {
                     ex);
         }
 
-        Iterator headers = header.getChildElements();
+        Iterator<OMElement> headers = header.getChildElements();
 
         SOAPHeaderBlock headerBlock = null;
 
@@ -181,7 +173,7 @@ public class RampartReceiver implements Handler {
                             
         } else if (soapVersionURI.equals(SOAP12Constants.SOAP_ENVELOPE_NAMESPACE_URI)) {
             
-            List subfaultCodes = new ArrayList();
+            List<QName> subfaultCodes = new ArrayList<>();
             subfaultCodes.add(faultCode);
             throw new AxisFault(Constants.FAULT_SOAP12_SENDER,subfaultCodes,e.getMessage(),e);
         

@@ -20,42 +20,42 @@ package org.apache.rampart;
  */
 public abstract class AbstractUniqueMessageAttributeCache implements UniqueMessageAttributeCache {
 
-    /**
-     * Maximum lift time of a cached value. If cached value exceeds this value it will be discarded.
-     */
-    private int maximumLifeTimeOfNonce = 60 * 5;
+  /**
+   * Maximum lift time of a cached value. If cached value exceeds this value it will be discarded.
+   */
+  private int maximumLifeTimeOfNonce = 60 * 5;
 
-    /**
-     * Default constructor.
-     */
-    public AbstractUniqueMessageAttributeCache()
-    {
-    }
+  /**
+   * Default constructor.
+   */
+  public AbstractUniqueMessageAttributeCache()
+  {
+  }
 
-    /**
-     * Constructor with maximum life time as a parameter.
-     * @param maxTime Maximum life time in seconds.
-     */
-    public AbstractUniqueMessageAttributeCache(int maxTime)
-    {
-        maximumLifeTimeOfNonce = maxTime;
-    }
+  /**
+   * Constructor with maximum lifetime as a parameter.
+   * @param maxTime Maximum lifetime in seconds.
+   */
+  public AbstractUniqueMessageAttributeCache(int maxTime)
+  {
+    maximumLifeTimeOfNonce = maxTime;
+  }
 
-    /**
-     * Sets the maximum life time of a message id.
-     * @param maxTime Maximum life time in seconds.
-     */
-    public void setMaximumLifeTimeOfAnAttribute(int maxTime)
-    {
-        maximumLifeTimeOfNonce = maxTime;
-    }
+  /**
+   * Sets the maximum lifetime of a message id.
+   * @param maxTime Maximum lifetime in seconds.
+   */
+  public void setMaximumLifeTimeOfAnAttribute(int maxTime)
+  {
+    maximumLifeTimeOfNonce = maxTime;
+  }
 
-    /**
-     * Gets the maximum life time of a message id.
-     * @return Gets message id life time in seconds.
-     */
-    public int getMaximumLifeTimeOfAnAttribute()
-    {
-        return maximumLifeTimeOfNonce;
-    }
+  /**
+   * Gets the maximum lifetime of a message id.
+   * @return Gets message id lifetime in seconds.
+   */
+  public int getMaximumLifeTimeOfAnAttribute()
+  {
+    return maximumLifeTimeOfNonce;
+  }
 }

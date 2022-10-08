@@ -20,132 +20,129 @@ import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * This is a basic implementation of UniqueMessageAttributeCache. In this implementation we will cache incomming
- * nonce value for a period of time. The life time can be defined in the services.xml. If not defined
+ * nonce value for a period of time. The lifetime can be defined in the services.xml. If not defined
  * the default value will be 5 minutes.
  */
 public class NonceCache extends AbstractUniqueMessageAttributeCache {
 
-    class Nonce
+  static class Nonce
+  {
+    String nonceValue;
+    String userName;
+
+    public Nonce(String nonce, String user)
     {
-        String nonceValue;
-        String userName;
-
-        public Nonce(String nonce, String user)
-        {
-            this.nonceValue = nonce;
-            this.userName = user;
-        }
-
-        @Override
-        public boolean equals(Object another)
-        {
-        	if (another == null){
-        		return false;
-        	} 
-        	
-        	if (another == this) {
-        		return true;
-        	}
-        	
-        	if (!(another instanceof Nonce)){
-        		return false;
-        	} 
-        	
-        	
-            Nonce otherNonce = (Nonce)another;
-            if (this.userName.equals(otherNonce.userName) && this.nonceValue.equals(otherNonce.nonceValue))
-            {
-                return true;
-            }
-            return false;
-        }
-
-        @Override
-        public int hashCode()
-        {
-            return (this.userName.hashCode() * 13 +  this.nonceValue.hashCode() * 7);
-        }
+      this.nonceValue = nonce;
+      this.userName = user;
     }
 
-    private Map<Nonce, Calendar> mapIdNonce = new HashMap<Nonce, Calendar>();
-
-    private final ReentrantLock lock = new ReentrantLock();
-
-    public NonceCache()
+    @Override
+    public boolean equals(Object another)
     {
-        super();
+      if (another == null){
+        return false;
+      }
+
+      if (another == this) {
+        return true;
+      }
+
+      if (!(another instanceof Nonce)){
+        return false;
+      }
+
+
+      Nonce otherNonce = (Nonce)another;
+      return this.userName.equals(otherNonce.userName) && this.nonceValue.equals(otherNonce.nonceValue);
+
     }
-    
-    public NonceCache(int maxLifeTime)
+
+    @Override
+    public int hashCode()
     {
-        super(maxLifeTime);
+      return (this.userName.hashCode() * 13 +  this.nonceValue.hashCode() * 7);
+    }
+  }
+
+  private final Map<Nonce, Calendar> mapIdNonce = new HashMap<>();
+
+  private final ReentrantLock lock = new ReentrantLock();
+
+  public NonceCache()
+  {
+    super();
+  }
+
+  public NonceCache(int maxLifeTime)
+  {
+    super(maxLifeTime);
+  }
+
+  public void addToCache(String id, String userName) {
+
+    Nonce nonce = new Nonce(id, userName);
+    Calendar rightNow = Calendar.getInstance();
+
+    lock.lock();
+    try {
+      mapIdNonce.put(nonce, rightNow);
+    } finally {
+      lock.unlock();
     }
 
-    public void addToCache(String id, String userName) {
+  }
 
-        Nonce nonce = new Nonce(id, userName);
-        Calendar rightNow = Calendar.getInstance();
+  public boolean valueExistsInCache(String id, String userName) {
 
-        lock.lock();
-        try {
-            mapIdNonce.put(nonce, rightNow);
-        } finally {
-            lock.unlock();
-        }
+    lock.lock();
 
+    try {
+      clearStaleNonceIds();
+    } finally {
+      lock.unlock();
     }
 
-    public boolean valueExistsInCache(String id, String userName) {
+    Nonce nonce = new Nonce(id, userName);
+    return mapIdNonce.containsKey(nonce);
+  }
 
-        lock.lock();
+  public void clearCache() {
 
-        try {
-            clearStaleNonceIds();
-        } finally {
-            lock.unlock();
-        }
-        
-        Nonce nonce = new Nonce(id, userName);
-        return mapIdNonce.containsKey(nonce);
+    lock.lock();
+    try {
+      mapIdNonce.clear();
+    } finally {
+      lock.unlock();
+    }
+  }
+
+  /**
+   * This method will clear stale nonce ids from the map.
+   */
+  private void clearStaleNonceIds()
+  {
+    Calendar rightNow = Calendar.getInstance();
+
+    int maxLifeTime = getMaximumLifeTimeOfAnAttribute();
+
+    rightNow.add(Calendar.SECOND, -(maxLifeTime));
+    long timeBeforeMaxLifeTime = rightNow.getTimeInMillis();
+
+    Iterator<Map.Entry<Nonce, Calendar>> iterator = mapIdNonce.entrySet().iterator();
+
+    while (iterator.hasNext()) {
+
+      Map.Entry<Nonce, Calendar> pair = iterator.next();
+      Calendar itemDate = pair.getValue();
+
+      long itemAddedTime = itemDate.getTimeInMillis();
+
+      if (timeBeforeMaxLifeTime > itemAddedTime)
+      {
+        iterator.remove();
+      }
     }
 
-    public void clearCache() {
 
-        lock.lock();
-        try {
-            mapIdNonce.clear();
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    /**
-     * This method will clear stale nonce ids from the map.
-     */
-    private void clearStaleNonceIds()
-    {
-        Calendar rightNow = Calendar.getInstance();
-
-        int maxLifeTime = getMaximumLifeTimeOfAnAttribute();
-
-        rightNow.add(Calendar.SECOND, -(maxLifeTime));
-        long timeBeforeMaxLifeTime = rightNow.getTimeInMillis();
-        
-        Iterator<Map.Entry<Nonce, Calendar>> iterator = mapIdNonce.entrySet().iterator();
-
-        while (iterator.hasNext()) {
-
-            Map.Entry<Nonce, Calendar> pair = iterator.next();
-            Calendar itemDate = pair.getValue();
-
-            long itemAddedTime = itemDate.getTimeInMillis();
-
-            if (timeBeforeMaxLifeTime > itemAddedTime)
-            {
-                iterator.remove();
-            }
-        }
-
-
-    }
+  }
 }

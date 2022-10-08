@@ -15,7 +15,9 @@
  */
 package org.apache.rampart;
 
-import java.util.Vector;
+import java.util.List;
+
+import org.apache.ws.security.WSSecurityEngineResult;
 
 /**
  * Callback handler interface to allow different implementations of policy based results validation.
@@ -32,6 +34,7 @@ import java.util.Vector;
  */
 
 public interface PolicyValidatorCallbackHandler {
+
    /**
     * Validate policy based results.
     * 
@@ -39,6 +42,7 @@ public interface PolicyValidatorCallbackHandler {
     * @param results policy based ws-security results 
     * @throws RampartException Rampart exception
     */ 
-   public abstract void validate(ValidatorData data, Vector results) throws RampartException;
+   void validate(ValidatorData data, List<WSSecurityEngineResult> results) throws RampartException;
+
 
 }

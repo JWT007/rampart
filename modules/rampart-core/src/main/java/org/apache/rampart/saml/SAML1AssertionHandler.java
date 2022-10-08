@@ -36,57 +36,57 @@ import org.opensaml.saml1.core.Conditions;
  */
 public class SAML1AssertionHandler extends SAMLAssertionHandler{
 
-    private Assertion assertion;
+  private final Assertion assertion;
 
-    public SAML1AssertionHandler(Assertion saml1Assertion) {
-        this.assertion = saml1Assertion;
-        this.processSAMLAssertion();
+  public SAML1AssertionHandler(Assertion saml1Assertion) {
+    this.assertion = saml1Assertion;
+    this.processSAMLAssertion();
+  }
+
+  @Override
+  public boolean isBearerAssertion() {
+    return RahasConstants.SAML11_SUBJECT_CONFIRMATION_BEARER.equals(
+      SAMLUtils.getSAML11SubjectConfirmationMethod(assertion));
+  }
+
+  @Override
+  protected void processSAMLAssertion() {
+
+    this.setAssertionId(assertion.getID());
+
+    //Read the validity period from the 'Conditions' element, else read it from SC Data
+    if (assertion.getConditions() != null) {
+      Conditions conditions = assertion.getConditions();
+      if (conditions.getNotBefore() != null) {
+        this.setDateNotBefore(conditions.getNotBefore().toDate());
+      }
+      if (conditions.getNotOnOrAfter() != null) {
+        this.setDateNotOnOrAfter(conditions.getNotOnOrAfter().toDate());
+      }
     }
+  }
 
-    @Override
-    public boolean isBearerAssertion() {
-        return RahasConstants.SAML11_SUBJECT_CONFIRMATION_BEARER.equals(
-                            SAMLUtils.getSAML11SubjectConfirmationMethod(assertion));
-    }
+  @Override
+  public byte[] getAssertionKeyInfoSecret(Crypto signatureCrypto, TokenCallbackHandler tokenCallbackHandler)
+    throws WSSecurityException {
 
-    @Override
-    protected void processSAMLAssertion() {
+    RequestData requestData = new RequestData();
+    requestData.setCallbackHandler(tokenCallbackHandler);
+    requestData.setSigCrypto(signatureCrypto);
 
-        this.setAssertionId(assertion.getID());
+    WSDocInfo docInfo = new WSDocInfo(assertion.getDOM().getOwnerDocument()); // TODO Improve ..
 
-        //Read the validity period from the 'Conditions' element, else read it from SC Data
-        if (assertion.getConditions() != null) {
-            Conditions conditions = assertion.getConditions();
-            if (conditions.getNotBefore() != null) {
-                this.setDateNotBefore(conditions.getNotBefore().toDate());
-            }
-            if (conditions.getNotOnOrAfter() != null) {
-                this.setDateNotOnOrAfter(conditions.getNotOnOrAfter().toDate());
-            }
-        }
-    }
-
-    @Override
-    public byte[] getAssertionKeyInfoSecret(Crypto signatureCrypto, TokenCallbackHandler tokenCallbackHandler)
-            throws WSSecurityException {
-
-        RequestData requestData = new RequestData();
-        requestData.setCallbackHandler(tokenCallbackHandler);
-        requestData.setSigCrypto(signatureCrypto);
-
-        WSDocInfo docInfo = new WSDocInfo(assertion.getDOM().getOwnerDocument()); // TODO Improve ..
-
-        // TODO change this to use SAMLAssertion parameter once wss4j conversion is done ....
-        SAMLKeyInfo samlKi = SAMLUtil.getCredentialFromSubject(assertion,
-                requestData, docInfo, true);
-        return samlKi.getSecret();
-    }
+    // TODO change this to use SAMLAssertion parameter once wss4j conversion is done ....
+    SAMLKeyInfo samlKi = SAMLUtil.getCredentialFromSubject(assertion,
+                                                           requestData, docInfo, true);
+    return samlKi.getSecret();
+  }
 
 
-    @Override
-    public OMElement getAssertionElement() throws TrustException {
-        return (OMElement)this.assertion.getDOM();
-    }
+  @Override
+  public OMElement getAssertionElement() throws TrustException {
+    return (OMElement)this.assertion.getDOM();
+  }
 
 
 }

@@ -18,6 +18,7 @@ package org.apache.ws.secpolicy.model;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
@@ -84,7 +85,7 @@ public class SupportingToken extends AbstractSecurityAssertion implements
     /**
      * @return Returns the token.
      */
-    public ArrayList<Token> getTokens() {
+    public List<Token> getTokens() {
         return tokens;
     }
 

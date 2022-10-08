@@ -117,13 +117,13 @@ public class RampartMessageData {
 
     public final static String X509_CERT ="X509Certificate";
     
-    private MessageContext msgContext = null;
+    private final MessageContext msgContext;
 
     private RampartPolicyData policyData = null;
 
     private WSSecHeader secHeader = null;
 
-    private WSSConfig config = null;
+    private WSSConfig config;
     
     private int timeToLive = 300;
     
@@ -161,10 +161,8 @@ public class RampartMessageData {
      */
     private Policy servicePolicy;
 
-    private boolean isInitiator;
-    
-    private boolean sender;
-    
+    private final boolean isInitiator;
+
     private ClassLoader customClassLoader;
     
     private SOAPConstants soapConstants;
@@ -318,13 +316,11 @@ public class RampartMessageData {
                     setTrustParameters();
                 }
             }
-            
-            
-            this.sender = sender;
-            
+
+
             OperationContext opCtx = this.msgContext.getOperationContext();
             
-            if(!this.isInitiator && this.sender) {
+            if(!this.isInitiator && sender) {
                 //Get hold of the incoming msg ctx
                 MessageContext inMsgCtx;
                 if (opCtx != null
@@ -339,7 +335,7 @@ public class RampartMessageData {
                 }
             }
             
-            if(this.isInitiator && !this.sender) {
+            if(this.isInitiator && !sender) {
                 MessageContext outMsgCtx;
                 if (opCtx != null
                         && (outMsgCtx = opCtx
@@ -372,19 +368,15 @@ public class RampartMessageData {
                 this.customClassLoader = axisService.getClassLoader(); 
             } 
             
-            if(this.sender && this.policyData != null) {
+            if(sender && this.policyData != null) {
                 this.secHeader = new WSSecHeader();
                 secHeader.insertSecurityHeader(this.document);
             }
             
-        } catch (AxisFault e) {
-            throw new RampartException("errorInExtractingMsgProps", e);
-        } catch (WSSPolicyException e) {
-            throw new RampartException("errorInExtractingMsgProps", e);
-        } catch (WSSecurityException e) {
+        } catch (AxisFault | WSSPolicyException | WSSecurityException e) {
             throw new RampartException("errorInExtractingMsgProps", e);
         }
-        
+
     }
 
     private void setWSSecurityVersions(String namespace) throws RampartException {
@@ -546,7 +538,7 @@ public class RampartMessageData {
             //TODO : This is a hack , MUST FIX
             //get the sec context id from the req msg ctx
             List<WSHandlerResult> results
-                    = (List<WSHandlerResult>)this.msgContext.getProperty(WSHandlerConstants.RECV_RESULTS);
+                    = (List<WSHandlerResult>) this.msgContext.getProperty(WSHandlerConstants.RECV_RESULTS);
             for (WSHandlerResult result : results) {
                 List<WSSecurityEngineResult> wsSecEngineResults = result.getResults();
 
@@ -583,10 +575,11 @@ public class RampartMessageData {
         
         if(this.isInitiator) {
             String contextIdentifierKey = RampartUtil.getContextIdentifierKey(this.msgContext);
-            id = (String) RampartUtil.getContextMap(this.msgContext).get(contextIdentifierKey);
+            id = RampartUtil.getContextMap(this.msgContext).get(contextIdentifierKey);
         } else {
             //get the sec context id from the req msg ctx
-            List<WSHandlerResult> results = (List<WSHandlerResult>)this.msgContext.getProperty(WSHandlerConstants.RECV_RESULTS);
+            List<WSHandlerResult> results =
+              (List<WSHandlerResult>) this.msgContext.getProperty(WSHandlerConstants.RECV_RESULTS);
             for (WSHandlerResult result : results) {
                 List<WSSecurityEngineResult> wsSecEngineResults = result.getResults();
 
@@ -642,7 +635,7 @@ public class RampartMessageData {
         } else {
             if (this.policyData.getRampartConfig() != null &&
                     this.policyData.getRampartConfig().getTokenStoreClass() != null) {
-                Class stClass = null;
+                Class<?> stClass = null;
                 String storageClass = this.policyData.getRampartConfig()
                         .getTokenStoreClass();
                 try {
@@ -653,7 +646,7 @@ public class RampartMessageData {
                                     + storageClass, e);
                 }
                 try {
-                    this.tokenStorage = (TokenStorage) stClass.newInstance();
+                    this.tokenStorage = (TokenStorage) stClass.getDeclaredConstructor().newInstance();
                 } catch (java.lang.Exception e) {
                     throw new RampartException(
                             "Cannot create instance of token storage: "

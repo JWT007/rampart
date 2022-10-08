@@ -58,11 +58,7 @@ public class Rampart implements Module /* , ModulePolicyExtension */  {
         String ns = assertion.getName().getNamespaceURI();
 
         // Rampart module can handle WS-SecurityPolicy 1.1 & 1.2 and RampartConfig assertions 
-        if (SP11Constants.SP_NS.equals(ns) || SP12Constants.SP_NS.equals(ns) || RampartConfig.NS.equals(ns)) {
-            return true;
-        } else {
-            return false;
-        }
+        return SP11Constants.SP_NS.equals(ns) || SP12Constants.SP_NS.equals(ns) || RampartConfig.NS.equals(ns);
 
     }
 }

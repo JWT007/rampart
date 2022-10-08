@@ -1,12 +1,12 @@
 /*
  * Copyright 2001-2004 The Apache Software Foundation.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -28,56 +28,56 @@ import org.apache.rampart.policy.model.RampartConfig;
 
 /**
  * OptimizePartsBuilder creates the OptimizePartsConfig
- * 
- * This clase deserialize the following XML fragment inside the RampartConfig.
+ * <p>
+ * This class deserializes the following XML fragment inside the RampartConfig.
+ * </p>
  * Example
-<pre>
-&lt;ramp:optimizeParts&gt;
-&lt;ramp:expressions&gt;
-&lt;ramp:expression&gt;//ns1:data1&lt;/ramp:expression&gt;
-&lt;ramp:expression&gt;//ns2:data2&lt;/ramp:expression&gt;
-&lt;/ramp:expressions&gt;
-&nbsp;&lt;ramp:namespaces&gt;
-&lt;nampespace uri="http://test1.com" prefix="ns1"/&gt;
-&lt;nampespace uri="http://test2.com" prefix="ns2"/&gt;
-&lt;/ramp:namespaces&gt;
-&lt;/ramp:optimizeParts&gt;
-</pre>
+ <pre>
+ &lt;ramp:optimizeParts&gt;
+ &lt;ramp:expressions&gt;
+ &lt;ramp:expression&gt;//ns1:data1&lt;/ramp:expression&gt;
+ &lt;ramp:expression&gt;//ns2:data2&lt;/ramp:expression&gt;
+ &lt;/ramp:expressions&gt;
+ &nbsp;&lt;ramp:namespaces&gt;
+ &lt;nampespace uri="http://test1.com" prefix="ns1"/&gt;
+ &lt;nampespace uri="http://test2.com" prefix="ns2"/&gt;
+ &lt;/ramp:namespaces&gt;
+ &lt;/ramp:optimizeParts&gt;
+ </pre>
  * @see OptimizePartsConfig
  */
 public class OptimizePartsBuilder implements AssertionBuilder<OMElement> {
 
-	public Assertion build(OMElement element, AssertionBuilderFactory factory) throws IllegalArgumentException {
-		OptimizePartsConfig assertion = new OptimizePartsConfig();
-		OMElement expressionsElem = element.getFirstChildWithName(new QName(RampartConfig.NS, OptimizePartsConfig.EXPRESSIONS_LN));
-		
-		if(expressionsElem != null){
-			Iterator iterator = expressionsElem.getChildElements();
-			while(iterator.hasNext()){
-				OMElement elem = (OMElement)iterator.next();
-				String expression = elem.getText();
-				assertion.addExpression(expression);
-			}
-			
-		}
-		
-		OMElement nsElem = element.getFirstChildWithName(new QName(RampartConfig.NS, OptimizePartsConfig.NAMESPACES_LN));
-		if(nsElem != null){
-			Iterator iterator = nsElem.getChildElements();
-			while(iterator.hasNext()){
-				OMElement elem = (OMElement)iterator.next();
-				String namespace = elem.getText();
-				String prefix = elem.getAttributeValue(new QName("", OptimizePartsConfig.PREFIX_ATTR));
-				String uri = elem.getAttributeValue(new QName("", OptimizePartsConfig.URI_ATTR));
-				assertion.addNamespaces(prefix, uri);
-			}
-			
-		}
-		return assertion;
-	}
+  public Assertion build(OMElement element, AssertionBuilderFactory factory) throws IllegalArgumentException {
+    OptimizePartsConfig assertion = new OptimizePartsConfig();
+    OMElement expressionsElem = element.getFirstChildWithName(new QName(RampartConfig.NS, OptimizePartsConfig.EXPRESSIONS_LN));
 
-	public QName[] getKnownElements() {
-		return new QName[] {new QName(RampartConfig.NS, OptimizePartsConfig.OPTIMIZE_PARTS_LN)};
-	}
-	
+    if(expressionsElem != null){
+      Iterator<OMElement> iterator = expressionsElem.getChildElements();
+      while(iterator.hasNext()){
+        OMElement elem = iterator.next();
+        String expression = elem.getText();
+        assertion.addExpression(expression);
+      }
+
+    }
+
+    OMElement nsElem = element.getFirstChildWithName(new QName(RampartConfig.NS, OptimizePartsConfig.NAMESPACES_LN));
+    if(nsElem != null){
+      Iterator<OMElement> iterator = nsElem.getChildElements();
+      while(iterator.hasNext()){
+        OMElement elem = iterator.next();
+        String prefix = elem.getAttributeValue(new QName("", OptimizePartsConfig.PREFIX_ATTR));
+        String uri = elem.getAttributeValue(new QName("", OptimizePartsConfig.URI_ATTR));
+        assertion.addNamespaces(prefix, uri);
+      }
+
+    }
+    return assertion;
+  }
+
+  public QName[] getKnownElements() {
+    return new QName[] {new QName(RampartConfig.NS, OptimizePartsConfig.OPTIMIZE_PARTS_LN)};
+  }
+
 }

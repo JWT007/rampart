@@ -31,70 +31,71 @@ import org.apache.rampart.policy.model.RampartConfig;
  * Builder for {@link KerberosConfig} assertion.
  */
 public class KerberosConfigBuilder implements AssertionBuilder<OMElement> {
-    public Assertion build(OMElement element, AssertionBuilderFactory factory) 
-        throws IllegalArgumentException {
 
-        KerberosConfig kerberosConfig = new KerberosConfig();
+  public Assertion build(OMElement element, AssertionBuilderFactory factory)
+    throws IllegalArgumentException {
 
-        OMElement childElement;
+    KerberosConfig kerberosConfig = new KerberosConfig();
 
-        childElement = element.getFirstChildWithName(
-              new QName(RampartConfig.NS, KerberosConfig.JAAS_CONTEXT_LN));
-        if (childElement != null) {
-            if (null == kerberosConfig.getJaasContext()) {
-                kerberosConfig.setJaasContext(childElement.getText().trim());
-            }
-        }
+    OMElement childElement;
 
-        childElement = element.getFirstChildWithName(
-              new QName(RampartConfig.NS, KerberosConfig.PRINCIPAL_NAME_LN));
-        if (childElement != null) {
-            if (null == kerberosConfig.getPrincipalName()) {
-                kerberosConfig.setPrincipalName(childElement.getText().trim());
-            }
-        }
-
-        childElement = element.getFirstChildWithName(
-            new QName(RampartConfig.NS, KerberosConfig.PRINCIPAL_PASSWORD_LN));
-        if (childElement != null) {
-            if (null == kerberosConfig.getPrincipalPassword()) {
-                kerberosConfig.setPrincipalPassword(childElement.getText().trim());
-            }
-        }
-
-        childElement = element.getFirstChildWithName(new QName(RampartConfig.NS,
-            KerberosConfig.SERVICE_PRINCIPAL_NAME_LN));
-        if (childElement != null) {
-            kerberosConfig.setServicePrincipalName(childElement.getText().trim());
-        }
-
-        childElement = element.getFirstChildWithName(new QName(RampartConfig.NS,
-            KerberosConfig.SERVICE_PRINCIPAL_NAME_FORM_LN));
-        if (childElement != null) {
-            kerberosConfig.setServicePrincipalNameForm(
-                 childElement.getText().trim());
-        }
-        
-        childElement = element.getFirstChildWithName(new QName(RampartConfig.NS,
-            KerberosConfig.KERBEROS_TOKEN_DECODER_CLASS_LN));
-        if (childElement != null) {
-            kerberosConfig.setKerberosTokenDecoderClass(
-                 childElement.getText().trim());
-        }
-        
-        childElement = element.getFirstChildWithName(new QName(
-            RampartConfig.NS, KerberosConfig.REQUEST_CREDENTIAL_DELEGATION_LN));
-        if (childElement != null) {
-            kerberosConfig.setRequstCredentialDelegation(Boolean.valueOf(childElement.getText().trim()));
-        }    
-
-        return kerberosConfig;
+    childElement = element.getFirstChildWithName(
+      new QName(RampartConfig.NS, KerberosConfig.JAAS_CONTEXT_LN));
+    if (childElement != null) {
+      if (null == kerberosConfig.getJaasContext()) {
+        kerberosConfig.setJaasContext(childElement.getText().trim());
+      }
     }
 
-    public QName[] getKnownElements() {
-        return new QName[] {
-            new QName(RampartConfig.NS, KerberosConfig.KERBEROS_LN) 
-        };
+    childElement = element.getFirstChildWithName(
+      new QName(RampartConfig.NS, KerberosConfig.PRINCIPAL_NAME_LN));
+    if (childElement != null) {
+      if (null == kerberosConfig.getPrincipalName()) {
+        kerberosConfig.setPrincipalName(childElement.getText().trim());
+      }
     }
+
+    childElement = element.getFirstChildWithName(
+      new QName(RampartConfig.NS, KerberosConfig.PRINCIPAL_PASSWORD_LN));
+    if (childElement != null) {
+      if (null == kerberosConfig.getPrincipalPassword()) {
+        kerberosConfig.setPrincipalPassword(childElement.getText().trim());
+      }
+    }
+
+    childElement = element.getFirstChildWithName(new QName(RampartConfig.NS,
+                                                           KerberosConfig.SERVICE_PRINCIPAL_NAME_LN));
+    if (childElement != null) {
+      kerberosConfig.setServicePrincipalName(childElement.getText().trim());
+    }
+
+    childElement = element.getFirstChildWithName(new QName(RampartConfig.NS,
+                                                           KerberosConfig.SERVICE_PRINCIPAL_NAME_FORM_LN));
+    if (childElement != null) {
+      kerberosConfig.setServicePrincipalNameForm(
+        childElement.getText().trim());
+    }
+
+    childElement = element.getFirstChildWithName(new QName(RampartConfig.NS,
+                                                           KerberosConfig.KERBEROS_TOKEN_DECODER_CLASS_LN));
+    if (childElement != null) {
+      kerberosConfig.setKerberosTokenDecoderClass(
+        childElement.getText().trim());
+    }
+
+    childElement = element.getFirstChildWithName(new QName(
+      RampartConfig.NS, KerberosConfig.REQUEST_CREDENTIAL_DELEGATION_LN));
+    if (childElement != null) {
+      kerberosConfig.setRequestCredentialDelegation(Boolean.parseBoolean(childElement.getText().trim()));
+    }
+
+    return kerberosConfig;
+  }
+
+  public QName[] getKnownElements() {
+    return new QName[] {
+      new QName(RampartConfig.NS, KerberosConfig.KERBEROS_LN)
+    };
+  }
 }
 

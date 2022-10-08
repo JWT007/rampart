@@ -32,8 +32,8 @@ import java.io.IOException;
 
 public class TokenCallbackHandler implements CallbackHandler {
 
-    private TokenStorage store;
-    private CallbackHandler handler;
+    private final TokenStorage store;
+    private final CallbackHandler handler;
     private String tokenIdentifier;
 
     public TokenCallbackHandler(TokenStorage store, CallbackHandler handler) {
@@ -42,68 +42,66 @@ public class TokenCallbackHandler implements CallbackHandler {
         this.tokenIdentifier = null;
     }
 
-
-    
     public void handle(Callback[] callbacks) 
     throws IOException, UnsupportedCallbackException {
 
-        for (int i = 0; i < callbacks.length; i++) {
+      for (Callback callback : callbacks) {
 
-            if (callbacks[i] instanceof WSPasswordCallback) {
-                WSPasswordCallback pc = (WSPasswordCallback) callbacks[i];
-                String id = pc.getIdentifier();
-                
-                if((pc.getUsage() == WSPasswordCallback.SECURITY_CONTEXT_TOKEN || 
-                        pc.getUsage() == WSPasswordCallback.CUSTOM_TOKEN) &&
-                        this.store != null) {
-                    Token tok;
-                    try {
-                        //Pick up the token from the token store
-                        tok = this.store.getToken(id);
-                        if(tok != null) {
-                            //Get the secret and set it in the callback object
-                            pc.setKey(tok.getSecret());
-                            pc.setCustomToken((Element)tok.getToken());
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        throw new IOException(e.getMessage());
-                    }
-                } else if (pc.getUsage() == WSPasswordCallback.SECRET_KEY){
-                	try {
+        if (callback instanceof WSPasswordCallback) {
+          WSPasswordCallback pc = (WSPasswordCallback) callback;
+          String id = pc.getIdentifier();
 
-                        String[] tokenIdentifiers = this.store.getTokenIdentifiers();
-            			Token tok;
-
-            			for (int j = 0 ; j < tokenIdentifiers.length ; j++) {
-            				
-            					tok = this.store.getToken(tokenIdentifiers[j]);
-            					
-            					if (tok instanceof EncryptedKeyToken &&
-            							((EncryptedKeyToken)tok).getSHA1().equals(id)){            						
-            					    pc.setKey(tok.getSecret());
-            					    pc.setCustomToken((Element)tok.getToken());
-
-                                    tokenIdentifier = tokenIdentifiers[j];
-            					}
-            			}
-            			
-            		} catch (TrustException e) {
-            			e.printStackTrace();
-            			throw new IOException(e.getMessage());
-            		}
-                } else {
-                    //Handle other types of callbacks with the usual handler
-                    if(this.handler != null) {
-                        handler.handle(new Callback[]{pc});
-                    }
-                }
-
-            } else {
-                throw new UnsupportedCallbackException(callbacks[i],
-                        "Unrecognized Callback");
+          if ((pc.getUsage() == WSPasswordCallback.SECURITY_CONTEXT_TOKEN ||
+               pc.getUsage() == WSPasswordCallback.CUSTOM_TOKEN) &&
+              this.store != null) {
+            Token tok;
+            try {
+              //Pick up the token from the token store
+              tok = this.store.getToken(id);
+              if (tok != null) {
+                //Get the secret and set it in the callback object
+                pc.setKey(tok.getSecret());
+                pc.setCustomToken((Element) tok.getToken());
+              }
+            } catch (Exception e) {
+              e.printStackTrace();
+              throw new IOException(e.getMessage());
             }
+          } else if (pc.getUsage() == WSPasswordCallback.SECRET_KEY && this.store != null) {
+            try {
+
+              String[] tokenIdentifiers = this.store.getTokenIdentifiers();
+              Token tok;
+
+              for (String identifier : tokenIdentifiers) {
+
+                tok = this.store.getToken(identifier);
+
+                if (tok instanceof EncryptedKeyToken &&
+                    ((EncryptedKeyToken) tok).getSHA1().equals(id)) {
+                  pc.setKey(tok.getSecret());
+                  pc.setCustomToken((Element) tok.getToken());
+
+                  tokenIdentifier = identifier;
+                }
+              }
+
+            } catch (TrustException e) {
+              e.printStackTrace();
+              throw new IOException(e.getMessage());
+            }
+          } else {
+            //Handle other types of callbacks with the usual handler
+            if (this.handler != null) {
+              handler.handle(new Callback[]{pc});
+            }
+          }
+
+        } else {
+          throw new UnsupportedCallbackException(callback,
+                                                 "Unrecognized Callback");
         }
+      }
     }
 
     public void removeEncryptedToken() {

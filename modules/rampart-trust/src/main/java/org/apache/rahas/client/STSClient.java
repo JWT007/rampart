@@ -19,7 +19,6 @@ package org.apache.rahas.client;
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMException;
-import org.apache.axiom.om.OMNode;
 import org.apache.axiom.om.OMXMLBuilderFactory;
 import org.apache.axiom.soap.SOAP12Constants;
 import org.apache.axiom.util.base64.Base64Utils;
@@ -67,6 +66,7 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -718,10 +718,12 @@ public class STSClient {
                     this.requestorEntropy =
                             WSSecurityUtil.generateNonce(this.algorithmSuite.
                                     getMaximumSymmetricKeyLength()/8);
-                    binSec.setText(Base64Utils.encode(this.requestorEntropy));
+                    final String clientEntropy = Base64.getEncoder().encodeToString(this.requestorEntropy);
+                    binSec.setText(clientEntropy);
+
 
                     if (log.isDebugEnabled()) {
-                        log.debug("Clien entropy : " + Base64Utils.encode(this.requestorEntropy));
+                        log.debug("Client entropy : " + clientEntropy);
                     }
 
                     // Add the ComputedKey element
@@ -741,13 +743,16 @@ public class STSClient {
                             TrustUtil.createBinarySecretElement(this.version,
                                                                 ent,
                                                                 RahasConstants.BIN_SEC_TYPE_NONCE);
+
                     this.requestorEntropy =
                             WSSecurityUtil.generateNonce(this.algorithmSuite.
                                     getMaximumSymmetricKeyLength()/8);
-                    binSec.setText(Base64Utils.encode(this.requestorEntropy));
+
+                    final String clientEntropy = Base64.getEncoder().encodeToString(this.requestorEntropy);
+                    binSec.setText(clientEntropy);
 
                     if (log.isDebugEnabled()) {
-                        log.debug("Clien entropy : " + Base64Utils.encode(this.requestorEntropy));
+                        log.debug("Client entropy : " + clientEntropy);
                     }
 
                     // Add the ComputedKey element

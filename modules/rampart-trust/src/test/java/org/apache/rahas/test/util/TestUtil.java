@@ -15,7 +15,7 @@
  */
 package org.apache.rahas.test.util;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.apache.axiom.om.*;
 import org.apache.axiom.soap.*;
 import org.apache.axis2.addressing.AddressingConstants;
@@ -40,7 +40,6 @@ import org.apache.ws.security.components.crypto.CryptoFactory;
 import org.apache.ws.security.components.crypto.CryptoType;
 import org.apache.ws.security.handler.WSHandlerConstants;
 import org.apache.ws.security.handler.WSHandlerResult;
-import org.apache.ws.security.saml.ext.builder.SAML1Constants;
 import org.apache.xml.security.utils.XMLUtils;
 import org.opensaml.common.xml.SAMLConstants;
 import org.w3c.dom.DOMConfiguration;
@@ -52,6 +51,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
 import java.io.*;
 import java.security.Principal;
 import java.security.cert.X509Certificate;
@@ -428,7 +428,7 @@ public class TestUtil {
             } else {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 env.build();
-                env.serialize(baos);
+                env.serialize(baos, new OMOutputFormat(), true);
                 ByteArrayInputStream bais = new ByteArrayInputStream(baos
                         .toByteArray());
                 DocumentBuilderFactory factory = DocumentBuilderFactory

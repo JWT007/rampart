@@ -196,7 +196,7 @@ public class RampartKerberosTest {
         rampartConfig.setKerberosConfig(kerberosConfig);
 
         kerberosConfig.setJaasContext(serviceName + "Client");  
-        kerberosConfig.setRequstCredentialDelegation(true);
+        kerberosConfig.setRequestCredentialDelegation(true);
 
         Policy policy = new Policy();
         policy.addAssertion(rampartConfig);                

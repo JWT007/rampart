@@ -24,11 +24,12 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ValidatorData {
 
-    private RampartMessageData rmd;
-    ArrayList encryptedDataRefIds = new ArrayList();
+    private final RampartMessageData rmd;
+    final List<String> encryptedDataRefIds = new ArrayList<>();
     private String bodyEncrDataId;
     
     public ValidatorData(RampartMessageData rmd) {
@@ -72,7 +73,7 @@ public class ValidatorData {
         }
     }
 
-    public ArrayList getEncryptedDataRefIds() {
+    public List<String> getEncryptedDataRefIds() {
         return encryptedDataRefIds;
     }
 

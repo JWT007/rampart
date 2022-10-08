@@ -1,12 +1,12 @@
 /*
  * Copyright 2001-2004 The Apache Software Foundation.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,39 +30,39 @@ import java.util.Properties;
 
 public class SSLConfigBuilder implements AssertionBuilder<OMElement> {
 
-    public Assertion build(OMElement element, AssertionBuilderFactory factory)
-            throws IllegalArgumentException {
-        
-    	SSLConfig sslCofig = new SSLConfig();       	      
-		Properties properties = new Properties();
-        OMElement childElement;
-        OMAttribute name;
-        String value;     
-        
-        for (Iterator iterator = element.getChildElements(); iterator.hasNext();) {            
+  public Assertion build(OMElement element, AssertionBuilderFactory factory)
+    throws IllegalArgumentException {
 
-            childElement = (OMElement) iterator.next();
+    SSLConfig sslConfig = new SSLConfig();
+    Properties properties = new Properties();
+    OMElement childElement;
+    OMAttribute name;
+    String value;
 
-            QName prop = new QName(RampartConfig.NS, SSLConfig.PROPERTY_LN);
-            
-            if (prop.equals(childElement.getQName())) {
-                name = childElement.getAttribute(new QName(SSLConfig.PROPERTY_NAME_ATTR));
-                value = childElement.getText();
-                
-                //setting the jsse properties to the vm
-                System.setProperty(name.getAttributeValue(), value);
+    for (Iterator<OMElement> iterator = element.getChildElements(); iterator.hasNext();) {
 
-                properties.put(name.getAttributeValue(), value.trim());
-            }
+      childElement = iterator.next();
 
-        }            
-        sslCofig.setProp(properties);
-              
-        return sslCofig;
+      QName prop = new QName(RampartConfig.NS, SSLConfig.PROPERTY_LN);
+
+      if (prop.equals(childElement.getQName())) {
+        name = childElement.getAttribute(new QName(SSLConfig.PROPERTY_NAME_ATTR));
+        value = childElement.getText();
+
+        //setting the jsse properties to the vm
+        System.setProperty(name.getAttributeValue(), value);
+
+        properties.put(name.getAttributeValue(), value.trim());
+      }
+
     }
+    sslConfig.setProp(properties);
 
-    public QName[] getKnownElements() {
-    	return new QName[] {new QName(RampartConfig.NS, SSLConfig.SSL_LN)};
-    }
+    return sslConfig;
+  }
+
+  public QName[] getKnownElements() {
+    return new QName[] {new QName(RampartConfig.NS, SSLConfig.SSL_LN)};
+  }
 
 }

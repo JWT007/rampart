@@ -16,25 +16,16 @@
 
 package org.apache.rahas.impl;
 
-import junit.framework.Assert;
-import junit.framework.TestCase;
-import org.apache.axiom.om.OMElement;
+import org.junit.Assert;
 import org.apache.axiom.om.util.AXIOMUtil;
 import org.apache.axiom.soap.SOAPEnvelope;
-import org.apache.axis2.context.MessageContext;
 import org.apache.rahas.RahasConstants;
 import org.apache.rahas.RahasData;
 import org.apache.rahas.Token;
-import org.apache.rahas.client.STSClient;
 import org.apache.rahas.test.util.AbstractTestCase;
 import org.apache.rahas.test.util.TestSTSClient;
 import org.apache.rahas.test.util.TestUtil;
-import org.apache.ws.security.components.crypto.Crypto;
-import org.joda.time.DateTime;
 import org.opensaml.common.xml.SAMLConstants;
-import org.w3c.dom.Document;
-
-import java.io.File;
 
 /**
  * Test class for SAML2 token issuer.

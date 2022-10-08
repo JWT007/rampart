@@ -16,9 +16,9 @@
 package org.apache.rahas.impl;
 
 import java.security.SecureRandom;
+import java.util.Base64;
 
 import org.apache.axiom.om.OMElement;
-import org.apache.axiom.util.base64.Base64Utils;
 import org.apache.rahas.RahasConstants;
 import org.apache.rahas.RahasData;
 import org.apache.rahas.Token;
@@ -71,9 +71,7 @@ public class TokenIssuerUtil {
             } else { // need to use a generated key
                 return generateEphemeralKey(keySize);
             }
-        } catch (WSSecurityException e) {
-            throw new TrustException("errorCreatingSymmKey", e);
-        } catch (ConversationException e) {
+        } catch (WSSecurityException | ConversationException e) {
             throw new TrustException("errorCreatingSymmKey", e);
         }
     }
@@ -93,12 +91,12 @@ public class TokenIssuerUtil {
             //entropy then we have to set the entropy value and
             //set the RPT to include a ComputedKey element
 
-            OMElement respEntrElem = TrustUtil.createEntropyElement(wstVersion, rstrElem);
-            String entr = Base64Utils.encode(data.getResponseEntropy());
+            OMElement respEntrElem = TrustUtil.createEntropyElement(wstVersion, rstrElem);;
+            final String responseEntropy = Base64.getEncoder().encodeToString(data.getResponseEntropy());
             OMElement binSecElem = TrustUtil.createBinarySecretElement(wstVersion,
                                                             respEntrElem,
                                                             RahasConstants.BIN_SEC_TYPE_NONCE);
-            binSecElem.setText(entr);
+            binSecElem.setText(responseEntropy);
 
             OMElement compKeyElem =
                     TrustUtil.createComputedKeyElement(wstVersion, reqProofTokElem);
@@ -141,7 +139,10 @@ public class TokenIssuerUtil {
                 OMElement binSecElem = TrustUtil.createBinarySecretElement(wstVersion,
                                                                            reqProofTokElem,
                                                                            null);
-                binSecElem.setText(Base64Utils.encode(secret));
+
+                final String encodedSecretText = Base64.getEncoder().encodeToString(secret);
+
+                binSecElem.setText(encodedSecretText);
                 token.setSecret(secret);
             } else {
                 throw new IllegalArgumentException(config.proofKeyType);

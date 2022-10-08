@@ -21,8 +21,8 @@ import java.io.IOException;
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.UnsupportedCallbackException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.rampart.RampartConstants;
 import org.apache.ws.security.WSPasswordCallback;
 import org.apache.ws.security.WSSecurityException;
@@ -38,7 +38,7 @@ import org.apache.ws.security.validate.UsernameTokenValidator;
  */
 public class RampartUsernameTokenValidator extends UsernameTokenValidator {
 
-	private static Log mlog = LogFactory.getLog(RampartConstants.MESSAGE_LOG);
+	private static final Logger MESSAGE_LOGGER = LogManager.getLogger(RampartConstants.MESSAGE_LOG);
 
 	@Override
 	protected void verifyPlaintextPassword(UsernameToken usernameToken,
@@ -53,18 +53,9 @@ public class RampartUsernameTokenValidator extends UsernameTokenValidator {
 				pwType, WSPasswordCallback.USERNAME_TOKEN, data);
 		try {
 			data.getCallbackHandler().handle(new Callback[] { pwCb });
-		} catch (IOException e) {
-			if (mlog.isDebugEnabled()) {
-				mlog.debug(e);
-			}
-			throw new WSSecurityException(
-					WSSecurityException.FAILED_AUTHENTICATION);
-		} catch (UnsupportedCallbackException e) {
-			if (mlog.isDebugEnabled()) {
-				mlog.debug(e);
-			}
-			throw new WSSecurityException(
-					WSSecurityException.FAILED_AUTHENTICATION);
+		} catch (IOException | UnsupportedCallbackException e) {
+			MESSAGE_LOGGER.debug("{}", () -> e);
+			throw new WSSecurityException(WSSecurityException.FAILED_AUTHENTICATION);
 		}
 
 	}

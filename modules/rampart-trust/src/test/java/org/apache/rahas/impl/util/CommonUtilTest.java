@@ -18,7 +18,6 @@
 
 package org.apache.rahas.impl.util;
 
-import junit.framework.Assert;
 import org.apache.axiom.om.OMAttribute;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.util.AXIOMUtil;
@@ -38,7 +37,7 @@ import org.apache.ws.security.WSEncryptionPart;
 import org.apache.ws.security.components.crypto.Crypto;
 import org.apache.ws.security.message.WSSecEncrypt;
 import org.apache.ws.security.message.WSSecHeader;
-import org.opensaml.Configuration;
+import org.junit.Assert;
 import org.opensaml.xml.signature.KeyInfo;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -81,8 +80,8 @@ public class CommonUtilTest extends AbstractTestCase {
         Assert.assertEquals("password", tokenIssuerConfig.getIssuerKeyPassword());
         Assert.assertEquals(300000, tokenIssuerConfig.getTtl());
         Assert.assertEquals(256, tokenIssuerConfig.getKeySize());
-        Assert.assertEquals(true, tokenIssuerConfig.isAddRequestedAttachedRef());
-        Assert.assertEquals(true, tokenIssuerConfig.isAddRequestedUnattachedRef());
+        Assert.assertTrue(tokenIssuerConfig.isAddRequestedAttachedRef());
+        Assert.assertTrue(tokenIssuerConfig.isAddRequestedUnattachedRef());
         Assert.assertEquals(2, tokenIssuerConfig.getKeyComputation());
         Assert.assertEquals("BinarySecret", tokenIssuerConfig.getProofKeyType());
 

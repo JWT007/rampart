@@ -24,10 +24,10 @@ public class RampartException extends Exception {
     
     private static final long serialVersionUID = 8674795537585339704L;
 
-    private static ResourceBundle resources;
+    private static final ResourceBundle resources;
 
-    private String faultCode;
-    private String faultString;
+    private final String faultCode;
+    private final String faultString;
     
     static {
         try {
@@ -46,7 +46,7 @@ public class RampartException extends Exception {
     /**
      * Construct the fault properly code for the standard faults
      * @param code code as definfed in property file under
-     * @return
+     * @return the fault code
      */
     private String getFaultCode(String code) {
         //TODO check for spec specific error codes

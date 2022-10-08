@@ -105,15 +105,14 @@ public class PostDispatchVerificationHandler implements Handler {
         boolean securityPolicyPresent = false;
         if(alternatives.hasNext()) {
             List<Assertion> assertions = alternatives.next();
-            for (Iterator<Assertion> iterator = assertions.iterator(); iterator.hasNext();) {
-                Assertion assertion = iterator.next();
+            for (Assertion assertion : assertions) {
                 //Check for any *Binding assertion
                 if (assertion instanceof Binding) {
                     securityPolicyPresent = true;
                     break;
-                // There can be  security policies containing only supporting tokens    
+                    // There can be  security policies containing only supporting tokens
                 } else if (assertion instanceof SupportingToken) {
-                    securityPolicyPresent = true; 
+                    securityPolicyPresent = true;
                     break;
                 }
             }
@@ -162,7 +161,7 @@ public class PostDispatchVerificationHandler implements Handler {
         
         SOAPHeaderBlock secHeader = getSecurityHeader(msgContext);
         
-        if (secHeader != null && (secHeader.isProcessed() == false)) {
+        if (secHeader != null && (!secHeader.isProcessed())) {
             throw new AxisFault("InvalidSecurity - Security policy not found");
         }
         
@@ -185,7 +184,7 @@ public class PostDispatchVerificationHandler implements Handler {
             return null;
         }
 
-        Iterator headers = header.getChildElements();
+        Iterator<OMElement> headers = header.getChildElements();
 
         SOAPHeaderBlock headerBlock = null;
 

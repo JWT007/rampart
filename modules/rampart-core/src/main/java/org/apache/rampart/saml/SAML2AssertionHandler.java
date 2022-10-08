@@ -17,8 +17,8 @@
 package org.apache.rampart.saml;
 
 import org.apache.axiom.om.OMElement;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.rahas.RahasConstants;
 import org.apache.rahas.TrustException;
 import org.apache.rahas.impl.util.SAML2KeyInfo;
@@ -38,73 +38,73 @@ import org.opensaml.saml2.core.SubjectConfirmationData;
  */
 public class SAML2AssertionHandler extends SAMLAssertionHandler{
 
-    private static final Log log = LogFactory.getLog(SAML2AssertionHandler.class);
+  private static final Logger LOGGER = LogManager.getLogger(SAML2AssertionHandler.class);
 
-    private Assertion assertion;
+  private final Assertion assertion;
 
 
-    public SAML2AssertionHandler(Assertion samlAssertion) {
-        this.assertion = samlAssertion;
-        this.processSAMLAssertion();
+  public SAML2AssertionHandler(Assertion samlAssertion) {
+    this.assertion = samlAssertion;
+    this.processSAMLAssertion();
+  }
+
+  /**
+   * Checks whether SAML assertion is bearer - urn:oasis:names:tc:SAML:2.0:cm:bearer
+   *
+   * @return true if assertion is bearer else false.
+   */
+  public boolean isBearerAssertion() {
+
+    // if the subject confirmation method is Bearer, do not try to get the KeyInfo
+    return SAML2Utils.getSAML2SubjectConfirmationMethod(assertion).equals(
+      RahasConstants.SAML20_SUBJECT_CONFIRMATION_BEARER);
+  }
+
+  protected void processSAMLAssertion() {
+
+    this.setAssertionId(assertion.getID());
+
+    Subject subject = assertion.getSubject();
+
+    //Read the validity period from the 'Conditions' element, else read it from SC Data
+    if (assertion.getConditions() != null) {
+      Conditions conditions = assertion.getConditions();
+      if (conditions.getNotBefore() != null) {
+        this.setDateNotBefore(conditions.getNotBefore().toDate());
+      }
+      if (conditions.getNotOnOrAfter() != null) {
+        this.setDateNotOnOrAfter(conditions.getNotOnOrAfter().toDate());
+      }
+    } else {
+      SubjectConfirmationData scData = subject.getSubjectConfirmations()
+                                              .get(0).getSubjectConfirmationData();
+      if (scData.getNotBefore() != null) {
+        this.setDateNotBefore(scData.getNotBefore().toDate());
+      }
+      if (scData.getNotOnOrAfter() != null) {
+        this.setDateNotOnOrAfter(scData.getNotOnOrAfter().toDate());
+      }
     }
 
-    /**
-     * Checks whether SAML assertion is bearer - urn:oasis:names:tc:SAML:2.0:cm:bearer
-     *
-     * @return true if assertion is bearer else false.
-     */
-    public boolean isBearerAssertion() {
+  }
 
-        // if the subject confirmation method is Bearer, do not try to get the KeyInfo
-        return SAML2Utils.getSAML2SubjectConfirmationMethod(assertion).equals(
-                RahasConstants.SAML20_SUBJECT_CONFIRMATION_BEARER);
+  public byte[] getAssertionKeyInfoSecret(Crypto signatureCrypto, TokenCallbackHandler tokenCallbackHandler)
+    throws WSSecurityException {
+    // TODO : SAML2KeyInfo element needs to be moved to WSS4J.
+    SAML2KeyInfo saml2KeyInfo = SAML2Utils.
+      getSAML2KeyInfo(assertion, signatureCrypto, tokenCallbackHandler);
+
+    return saml2KeyInfo.getSecret();
+  }
+
+  public OMElement getAssertionElement() throws TrustException{
+    try {
+      return (OMElement) SAML2Utils.getElementFromAssertion(assertion);
+    } catch (TrustException e) {
+      LOGGER.error("Error getting Axiom representation of SAML2 assertion.", e);
+      throw e;
     }
-
-    protected void processSAMLAssertion() {
-
-        this.setAssertionId(assertion.getID());
-
-        Subject subject = assertion.getSubject();
-
-        //Read the validity period from the 'Conditions' element, else read it from SC Data
-        if (assertion.getConditions() != null) {
-            Conditions conditions = assertion.getConditions();
-            if (conditions.getNotBefore() != null) {
-                this.setDateNotBefore(conditions.getNotBefore().toDate());
-            }
-            if (conditions.getNotOnOrAfter() != null) {
-                this.setDateNotOnOrAfter(conditions.getNotOnOrAfter().toDate());
-            }
-        } else {
-            SubjectConfirmationData scData = subject.getSubjectConfirmations()
-                    .get(0).getSubjectConfirmationData();
-            if (scData.getNotBefore() != null) {
-                this.setDateNotBefore(scData.getNotBefore().toDate());
-            }
-            if (scData.getNotOnOrAfter() != null) {
-                this.setDateNotOnOrAfter(scData.getNotOnOrAfter().toDate());
-            }
-        }
-
-    }
-
-    public byte[] getAssertionKeyInfoSecret(Crypto signatureCrypto, TokenCallbackHandler tokenCallbackHandler)
-            throws WSSecurityException {
-        // TODO : SAML2KeyInfo element needs to be moved to WSS4J.
-        SAML2KeyInfo saml2KeyInfo = SAML2Utils.
-                getSAML2KeyInfo(assertion, signatureCrypto, tokenCallbackHandler);
-
-        return saml2KeyInfo.getSecret();
-    }
-
-    public OMElement getAssertionElement() throws TrustException{
-        try {
-            return (OMElement) SAML2Utils.getElementFromAssertion(assertion);
-        } catch (TrustException e) {
-            log.error("Error getting Axiom representation of SAML2 assertion.", e);
-            throw e;
-        }
-    }
+  }
 
 
 

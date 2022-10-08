@@ -27,19 +27,19 @@ import java.security.cert.X509Certificate;
  */
 public class CertificateValidator extends SignatureTrustValidator {
 
-    CertificateValidator() {
+  CertificateValidator() {
 
-    }
+  }
 
-    /**
-     * Checks the validity of the given certificate. For more info see SignatureTrustValidator.verifyTrustInCert.
-     * @param certificate Certificate to be validated.
-     * @param signatureCrypto Signature crypto instance.
-     * @return true if certificate used in signature is valid. False if it is not valid.
-     * @throws WSSecurityException If an error occurred while trying to access Crypto and Certificate properties.
-     */
-    boolean validateCertificate(X509Certificate certificate, Crypto signatureCrypto) throws WSSecurityException {
-        return verifyTrustInCert(certificate, signatureCrypto, false);
-    }
+  /**
+   * Checks the validity of the given certificate. For more info see SignatureTrustValidator.verifyTrustInCert.
+   * @param certificate Certificate to be validated.
+   * @param signatureCrypto Signature crypto instance.
+   * @return true if certificate used in signature is valid. False if it is not valid.
+   * @throws WSSecurityException If an error occurred while trying to access Crypto and Certificate properties.
+   */
+  boolean validateCertificate(X509Certificate certificate, Crypto signatureCrypto) throws WSSecurityException {
+    return verifyTrustInCert(certificate, signatureCrypto, false);
+  }
 
 }

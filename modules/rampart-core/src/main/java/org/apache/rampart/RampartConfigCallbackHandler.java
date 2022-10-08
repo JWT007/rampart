@@ -32,6 +32,6 @@ import org.apache.rampart.policy.model.RampartConfig;
 
 public interface RampartConfigCallbackHandler {
     
-    public void update(RampartConfig rampartConfig);        
+    void update(RampartConfig rampartConfig);
     
 }

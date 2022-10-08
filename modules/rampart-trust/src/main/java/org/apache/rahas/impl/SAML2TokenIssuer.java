@@ -47,6 +47,7 @@ import java.security.cert.X509Certificate;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.List;
 
 /**
@@ -502,9 +503,8 @@ public class SAML2TokenIssuer implements TokenIssuer {
             org.opensaml.xml.signature.X509Certificate cert
                     = (org.opensaml.xml.signature.X509Certificate) CommonUtil.buildXMLObject
                     (org.opensaml.xml.signature.X509Certificate.DEFAULT_ELEMENT_NAME);
-            String value
-                    = org.apache.xml.security.utils.Base64.encode(signKeyHolder.getEntityCertificate().getEncoded());
-
+            String value =
+              Base64.getEncoder().encodeToString(signKeyHolder.getEntityCertificate().getEncoded());
             cert.setValue(value);
             x509Data.getX509Certificates().add(cert);
             keyInfo.getX509Datas().add(x509Data);

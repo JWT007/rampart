@@ -27,7 +27,6 @@ import org.jaxen.JaxenException;
 import org.jaxen.SimpleNamespaceContext;
 import org.jaxen.XPath;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -39,7 +38,7 @@ public class MessageOptimizer {
 	
 	private static final String CIPHER_ELEMENT = "//xenc:EncryptedData/xenc:CipherData/xenc:CipherValue";
 
-	public static void optimize(SOAPEnvelope env, List<String> expressions, Map namespaces) throws RampartException {
+	public static void optimize(SOAPEnvelope env, List<String> expressions, Map<String, String> namespaces) throws RampartException {
 		
 		SimpleNamespaceContext nsCtx = new SimpleNamespaceContext();
 		nsCtx.addNamespace(WSConstants.ENC_PREFIX,WSConstants.ENC_NS);
@@ -47,20 +46,17 @@ public class MessageOptimizer {
 		nsCtx.addNamespace(WSConstants.WSSE_PREFIX,WSConstants.WSSE_NS);
 		nsCtx.addNamespace(WSConstants.WSU_PREFIX,WSConstants.WSU_NS);
 
-		Iterator keys = namespaces.keySet().iterator();
-		while(keys.hasNext()){
-			String strPrefix =  (String)keys.next();
-			String strNS = (String)namespaces.get(strPrefix);
-			nsCtx.addNamespace(strPrefix,strNS);
+		for (String strPrefix : namespaces.keySet()) {
+			String strNS = namespaces.get(strPrefix);
+			nsCtx.addNamespace(strPrefix, strNS);
 		}
 
 		try {
             for (String exp : expressions) {
                 XPath xp = new AXIOMXPath(exp);
                 xp.setNamespaceContext(nsCtx);
-                List list = xp.selectNodes(env);
-                for (Object aList : list) {
-                    OMElement element = (OMElement) aList;
+                List<OMElement> elements = xp.selectNodes(env);
+                for (OMElement element : elements) {
                     OMText text = (OMText) element.getFirstOMChild();
                     text.setOptimize(true);
                 }
@@ -73,11 +69,10 @@ public class MessageOptimizer {
 
 
 	/**
-	 * Mark the requied Base64 text values as optimized
-	 * @param env
+	 * Mark the required Base64 text values as optimized
+	 * @param env the SOAP envelope
 	 * @param optimizeParts This is a set of xPath expressions
-	 *  
-	 * @throws WSSecurityException
+	 * @throws WSSecurityException on error
 	 */
 	public static void optimize(SOAPEnvelope env, String optimizeParts) throws WSSecurityException {
 		String separater = "<>";
@@ -88,20 +83,17 @@ public class MessageOptimizer {
 			String xpathExpr = tokenizer.nextToken(); 
 
 			//Find binary content
-			List list = findElements(env,xpathExpr);
+			List<OMElement> list = findElements(env,xpathExpr);
 
-			Iterator cipherValueElements = list.iterator();
-
-			while (cipherValueElements.hasNext()) {
-				OMElement element = (OMElement) cipherValueElements.next();
-				OMText text = (OMText)element.getFirstOMChild();
+			for (OMElement element : list) {
+				OMText text = (OMText) element.getFirstOMChild();
 				text.setOptimize(true);
 			}
 		}
 	}
 
 
-	private static List findElements(OMElement elem, String expression) throws WSSecurityException {
+	private static List<OMElement> findElements(OMElement elem, String expression) throws WSSecurityException {
 		try {
 			XPath xp = new AXIOMXPath(expression);
 

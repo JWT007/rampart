@@ -32,8 +32,8 @@ import javax.xml.stream.XMLStreamWriter;
 
 import junit.framework.TestCase;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.neethi.Assertion;
 import org.apache.neethi.Policy;
 import org.apache.neethi.PolicyBuilder;
@@ -46,9 +46,9 @@ import org.apache.ws.secpolicy.WSSPolicyException;
 public class KerberosConfigBuilderTest extends TestCase {
 
     public static final String KERBEROS_CONFIG_POLICY_FILE = "kerberosConfig.policy";
-    
-    private static final Log log = LogFactory.getLog(KerberosConfigBuilderTest.class);
-    
+
+    private static final Logger LOGGER = LogManager.getLogger(KerberosConfigBuilderTest.class);
+
     public void testBuildKerberosConfig() throws WSSPolicyException {
         Policy kerberosConfigPolicy = loadKerberosConfigPolicy();
         assertNotNull(String.format("Failed to parse policy file: %s", KERBEROS_CONFIG_POLICY_FILE), kerberosConfigPolicy);
@@ -114,7 +114,7 @@ public class KerberosConfigBuilderTest extends TestCase {
                 in.close();
             }
             catch (IOException e) {
-                log.error("Failed to close input stream.", e);
+                LOGGER.error("Failed to close input stream.", e);
             }
         }
     }

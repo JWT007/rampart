@@ -24,12 +24,13 @@ import java.util.Map;
  */
 public class ServiceNonceCache {
 
-    private Map<String, UniqueMessageAttributeCache> mapServiceNonceCache = Collections.synchronizedMap(new HashMap<String, UniqueMessageAttributeCache>());
+    private final Map<String, UniqueMessageAttributeCache> mapServiceNonceCache =
+      Collections.synchronizedMap(new HashMap<>());
 
     /**
      * This method will add a nonce value for a given service.
      * @param service The service url.
-     * @param userName Given user name.
+     * @param userName Given username.
      * @param nonceValue Passed nonce value.
      * @param nonceLifeTime Maximum life span of a nonce value.
      */

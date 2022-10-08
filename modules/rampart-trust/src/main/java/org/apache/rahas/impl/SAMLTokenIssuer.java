@@ -104,7 +104,7 @@ public class SAMLTokenIssuer implements TokenIssuer {
         Document doc = ((Element) env).getOwnerDocument();
 
         // Get the key size and create a new byte array of that size
-        int keySize = data.getKeysize();
+        int keySize = data.getKeySize();
 
         keySize = (keySize == -1) ? tokenIssuerConfiguration.getKeySize() : keySize;
 
@@ -263,7 +263,7 @@ public class SAMLTokenIssuer implements TokenIssuer {
                     nameIdentifier =SAMLUtils.createNamedIdentifier(subjectNameId, NameIdentifier.EMAIL);
                 }
 
-                /**
+                /*
                  * In this case we need to create a KeyInfo similar to following,
                  * *  <KeyInfo xmlns="http://www.w3.org/2000/09/xmldsig#">
                  *     <xenc:EncryptedKey xmlns:xenc="http://www.w3.org/2001/04/xmlenc#"
@@ -278,7 +278,7 @@ public class SAMLTokenIssuer implements TokenIssuer {
                         .getAppliesToAddress());
 
                 // set keySize
-                int keySize = data.getKeysize();
+                int keySize = data.getKeySize();
                 keySize = (keySize != -1) ? keySize : config.getKeySize();
 
                 // Create the encrypted key
@@ -308,7 +308,7 @@ public class SAMLTokenIssuer implements TokenIssuer {
         } else {
             try {
 
-                /**
+                /*
                  * In this case we need to create KeyInfo as follows,
                  * <KeyInfo xmlns="http://www.w3.org/2000/09/xmldsig#">
                  *   <X509Data xmlns:xenc="http://www.w3.org/2001/04/xmlenc#"
@@ -328,7 +328,7 @@ public class SAMLTokenIssuer implements TokenIssuer {
                 X509Certificate clientCert = data.getClientCert();
 
                 if(clientCert == null) {
-                    clientCert = CommonUtil.getCertificateByAlias(crypto,data.getPrincipal().getName());;
+                    clientCert = CommonUtil.getCertificateByAlias(crypto,data.getPrincipal().getName());
                 }
 
                 KeyInfo keyInfo = CommonUtil.getCertificateBasedKeyInfo(clientCert);
@@ -411,7 +411,7 @@ public class SAMLTokenIssuer implements TokenIssuer {
             AttributeStatement attributeStatement = SAMLUtils.createAttributeStatement(subject, Arrays.asList(attributes));
 
 
-            List<Statement> attributeStatements = new ArrayList<Statement>();
+            List<Statement> attributeStatements = new ArrayList<>();
             attributeStatements.add(attributeStatement);
 
             Assertion assertion = SAMLUtils.createAssertion(config.getIssuerName(), notBefore,
@@ -450,7 +450,7 @@ public class SAMLTokenIssuer implements TokenIssuer {
                     = SAMLUtils.createAuthenticationStatement(subject, RahasConstants.AUTHENTICATION_METHOD_PASSWORD,
                     notBefore);
 
-            List<Statement> statements = new ArrayList<Statement>();
+            List<Statement> statements = new ArrayList<>();
             if (data.getClaimDialect() != null && data.getClaimElem() != null) {
                 Statement attrStatement = createSAMLAttributeStatement(
                         SAMLUtils.createSubject(subject.getNameIdentifier(),
@@ -486,7 +486,7 @@ public class SAMLTokenIssuer implements TokenIssuer {
      * Create an ephemeral key
      * 
      * @return The generated key as a byte array
-     * @throws TrustException
+     * @throws TrustException on error
      */
     protected byte[] generateEphemeralKey(int keySize) throws TrustException {
         try {

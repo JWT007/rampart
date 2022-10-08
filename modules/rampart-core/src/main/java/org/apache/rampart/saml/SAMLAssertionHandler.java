@@ -32,61 +32,61 @@ import java.util.Date;
  */
 public abstract class SAMLAssertionHandler {
 
+  private String assertionId;
 
-    private String assertionId;
+  private Date dateNotBefore;
 
-    private Date dateNotBefore;
+  private Date dateNotOnOrAfter;
 
-    private Date dateNotOnOrAfter;
+  public String getAssertionId() {
+    return assertionId;
+  }
 
-    public String getAssertionId() {
-        return assertionId;
-    }
+  protected void setAssertionId(String assertionId) {
+    this.assertionId = assertionId;
+  }
 
-    protected void setAssertionId(String assertionId) {
-        this.assertionId = assertionId;
-    }
+  public Date getDateNotBefore() {
+    return dateNotBefore;
+  }
 
-    public Date getDateNotBefore() {
-        return dateNotBefore;
-    }
+  protected void setDateNotBefore(Date dateNotBefore) {
+    this.dateNotBefore = dateNotBefore;
+  }
 
-    protected void setDateNotBefore(Date dateNotBefore) {
-        this.dateNotBefore = dateNotBefore;
-    }
+  public Date getDateNotOnOrAfter() {
+    return dateNotOnOrAfter;
+  }
 
-    public Date getDateNotOnOrAfter() {
-        return dateNotOnOrAfter;
-    }
+  protected void setDateNotOnOrAfter(Date dateNotOnOrAfter) {
+    this.dateNotOnOrAfter = dateNotOnOrAfter;
+  }
 
-    protected void setDateNotOnOrAfter(Date dateNotOnOrAfter) {
-        this.dateNotOnOrAfter = dateNotOnOrAfter;
-    }
+  /**
+   * Checks whether SAML assertion is bearer - urn:oasis:names:tc:SAML:2.0:cm:bearer
+   *
+   * @return true if assertion is bearer else false.
+   */
+  public abstract boolean isBearerAssertion();
 
-     /**
-     * Checks whether SAML assertion is bearer - urn:oasis:names:tc:SAML:2.0:cm:bearer
-     *
-     * @return true if assertion is bearer else false.
-     */
-    public abstract boolean isBearerAssertion();
-
-    protected abstract void processSAMLAssertion();
+  protected abstract void processSAMLAssertion();
 
 
-    /**
-     * Gets the secret in assertion.
-     * @param signatureCrypto Signature crypto info, private,public keys.
-     * @param tokenCallbackHandler The token callback class. TODO Why ?
-     * @return Secret as a byte array
-     * @throws WSSecurityException If an error occurred while validating the signature.
-     */
-    public abstract byte[] getAssertionKeyInfoSecret(Crypto signatureCrypto, TokenCallbackHandler tokenCallbackHandler)
-            throws WSSecurityException;
+  /**
+   * Gets the secret in assertion.
+   * @param signatureCrypto Signature crypto info, private,public keys.
+   * @param tokenCallbackHandler The token callback class. TODO Why ?
+   * @return Secret as a byte array
+   * @throws WSSecurityException If an error occurred while validating the signature.
+   */
+  public abstract byte[] getAssertionKeyInfoSecret(Crypto signatureCrypto, TokenCallbackHandler tokenCallbackHandler)
+    throws WSSecurityException;
 
-    /**
-     * Gets the assertion element as an Axiom OMElement.
-     * @return OMElement representation of assertion.
-     * @throws TrustException if an error occurred while converting Assertion to an OMElement.
-     */
-    public abstract OMElement getAssertionElement() throws TrustException;
+  /**
+   * Gets the assertion element as an Axiom OMElement.
+   * @return OMElement representation of assertion.
+   * @throws TrustException if an error occurred while converting Assertion to an OMElement.
+   */
+  public abstract OMElement getAssertionElement() throws TrustException;
+
 }

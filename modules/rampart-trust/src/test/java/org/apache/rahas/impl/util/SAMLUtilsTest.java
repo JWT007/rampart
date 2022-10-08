@@ -16,14 +16,11 @@
 
 package org.apache.rahas.impl.util;
 
-import junit.framework.Assert;
-import junit.framework.TestCase;
+import org.junit.Assert;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.soap.SOAPEnvelope;
-import org.apache.axis2.AxisFault;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.rahas.Rahas;
 import org.apache.rahas.TrustException;
 import org.apache.rahas.TrustUtil;
 import org.apache.rahas.test.util.AbstractTestCase;
@@ -33,9 +30,7 @@ import org.apache.ws.security.components.crypto.Crypto;
 import org.apache.ws.security.message.WSSecEncryptedKey;
 import org.apache.ws.security.util.Base64;
 import org.joda.time.DateTime;
-import org.opensaml.Configuration;
 import org.opensaml.saml1.core.*;
-import org.opensaml.xml.io.MarshallerFactory;
 import org.opensaml.xml.io.MarshallingException;
 import org.opensaml.xml.signature.X509Data;
 import org.w3c.dom.Document;
@@ -46,12 +41,7 @@ import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 import java.io.*;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
