@@ -18,22 +18,25 @@
   ~ under the License.
   -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>org.apache.rampart</groupId>
-        <artifactId>rampart-project</artifactId>
-        <version>1.8.0-SNAPSHOT</version>
-        <relativePath>../../pom.xml</relativePath>
-    </parent>
+  <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>rampart-testutils</artifactId>
-    <packaging>jar</packaging>
+  <parent>
+    <groupId>org.apache.rampart</groupId>
+    <artifactId>rampart-project</artifactId>
+    <version>1.8.0-SNAPSHOT</version>
+    <relativePath>../../pom.xml</relativePath>
+  </parent>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.aspectj</groupId>
-            <artifactId>aspectjrt</artifactId>
-        </dependency>
-    </dependencies>
+  <artifactId>rampart-testutils</artifactId>
+  <packaging>jar</packaging>
+  <name>Rampart - Test Utilities</name>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.aspectj</groupId>
+      <artifactId>aspectjrt</artifactId>
+    </dependency>
+  </dependencies>
+
 </project>

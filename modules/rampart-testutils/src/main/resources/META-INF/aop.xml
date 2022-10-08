@@ -18,11 +18,11 @@
   ~ under the License.
   -->
 <aspectj>
-    <aspects>
-        <aspect name="org.apache.rampart.testutils.FakeValidationDateAspect"/>
-    </aspects>
-    <weaver options="-showWeaveInfo">
-        <include within="org.apache.rampart..*"/>
-        <include within="org.apache.ws.security..*"/>
-    </weaver>
+  <aspects>
+    <aspect name="org.apache.rampart.testutils.FakeValidationDateAspect"/>
+  </aspects>
+  <weaver options="-Xset:weaveJavaxPackages=true -showWeaveInfo">
+    <include within="org.apache.rampart..*"/>
+    <include within="org.apache.ws.security..*"/>
+  </weaver>
 </aspectj>
