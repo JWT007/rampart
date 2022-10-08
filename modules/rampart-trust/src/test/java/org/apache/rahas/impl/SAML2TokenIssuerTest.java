@@ -16,7 +16,6 @@
 
 package org.apache.rahas.impl;
 
-import org.junit.Assert;
 import org.apache.axiom.om.util.AXIOMUtil;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.rahas.RahasConstants;
@@ -25,14 +24,18 @@ import org.apache.rahas.Token;
 import org.apache.rahas.test.util.AbstractTestCase;
 import org.apache.rahas.test.util.TestSTSClient;
 import org.apache.rahas.test.util.TestUtil;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.opensaml.common.xml.SAMLConstants;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Test class for SAML2 token issuer.
  */
 public class SAML2TokenIssuerTest extends AbstractTestCase {
 
-    private String configurationElement = "<configuration><saml-issuer-config>" +
+    private final String configurationElement = "<configuration><saml-issuer-config>" +
             "<issuerName>Test_STS</issuerName>" +
             "<issuerKeyAlias>apache</issuerKeyAlias>" +
             "<issuerKeyPassword>password</issuerKeyPassword>" +
@@ -50,6 +53,7 @@ public class SAML2TokenIssuerTest extends AbstractTestCase {
             "<service alias=\"apache\">http://10.100.3.196:9768/services/echo/</service>" +
             "</trusted-services></saml-issuer-config></configuration>";
 
+    @Test
     public void testCreateSubjectWithHolderOfKeySubjectConfirmation() throws Exception {
 
         RahasData rahasData = TestUtil.createTestRahasData("http://10.100.3.196:9768/services/echo/");
@@ -64,7 +68,7 @@ public class SAML2TokenIssuerTest extends AbstractTestCase {
         Token token = stsClient.processResponse(RahasConstants.VERSION_05_02,
                 envelope.getBody().getFirstElement(), "http://10.100.3.196:9768/services/echo/");
 
-        Assert.assertNotNull(token.getToken());
+        assertNotNull(token.getToken());
     }
 
     public void testCreateSubjectWithBearerSubjectConfirmation() {

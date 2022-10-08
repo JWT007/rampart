@@ -37,201 +37,201 @@ import java.util.Date;
 
 public class SCTIssuer implements TokenIssuer {
 
-    public final static String COMPUTED_KEY = "ComputedKey";
+  public final static String COMPUTED_KEY = "ComputedKey";
 
-    private String configFile;
+  private String configFile;
 
-    private OMElement configElement;
+  private OMElement configElement;
 
-    private String configParamName;
+  private String configParamName;
 
-    /**
-     * Issue a {@link SecurityContextToken} based on the wsse:Signature or
-     * wsse:UsernameToken
-     * <p>
-     * This will support returning the SecurityContextToken with the following
-     * types of wst:RequestedProof tokens:
-     * <ul>
-     * <li>xenc:EncryptedKey</li>
-     * <li>wst:ComputedKey</li>
-     * <li>wst:BinarySecret (for secure transport)</li>
-     * </ul>
-     */
-    public SOAPEnvelope issue(RahasData data) throws TrustException {
+  /**
+   * Issue a {@link SecurityContextToken} based on the wsse:Signature or
+   * wsse:UsernameToken
+   * <p>
+   * This will support returning the SecurityContextToken with the following
+   * types of wst:RequestedProof tokens:
+   * <ul>
+   * <li>xenc:EncryptedKey</li>
+   * <li>wst:ComputedKey</li>
+   * <li>wst:BinarySecret (for secure transport)</li>
+   * </ul>
+   */
+  public SOAPEnvelope issue(RahasData data) throws TrustException {
 
-        SCTIssuerConfig config = null;
-        if (this.configElement != null) {
-            config = SCTIssuerConfig
-                    .load(configElement
-                            .getFirstChildWithName(SCTIssuerConfig.SCT_ISSUER_CONFIG));
-        }
-
-        // Look for the file
-        if (config == null && this.configFile != null) {
-            config = SCTIssuerConfig.load(this.configFile);
-        }
-
-        // Look for the param
-        if (config == null && this.configParamName != null) {
-            Parameter param = data.getInMessageContext().getParameter(this.configParamName);
-            if (param != null && param.getParameterElement() != null) {
-                config = SCTIssuerConfig.load(param.getParameterElement()
-                        .getFirstChildWithName(
-                        SCTIssuerConfig.SCT_ISSUER_CONFIG));
-            } else {
-                throw new TrustException("expectedParameterMissing",
-                                         new String[]{this.configParamName});
-            }
-        }
-
-        if (config == null) {
-            throw new TrustException("missingConfiguration",
-                                     new String[]{SCTIssuerConfig.SCT_ISSUER_CONFIG
-                                             .getLocalPart()});
-        }
-
-        // Env
-        return createEnvelope(data, config);
+    SCTIssuerConfig config = null;
+    if (this.configElement != null) {
+      config = SCTIssuerConfig
+        .load(configElement
+                .getFirstChildWithName(SCTIssuerConfig.SCT_ISSUER_CONFIG));
     }
 
-    private SOAPEnvelope createEnvelope(RahasData data,
-                                        SCTIssuerConfig config) throws TrustException {
-        try {
-            SOAPEnvelope env = TrustUtil.createSOAPEnvelope(data.getSoapNs());
-            int wstVersion = data.getVersion();
-
-            // Get the document
-            Document doc = ((Element) env).getOwnerDocument();
-
-            SecurityContextToken sct =
-                    new SecurityContextToken(this.getWSCVersion(data.getTokenType()), doc);
-
-            OMElement rstrElem;
-            if (wstVersion == RahasConstants.VERSION_05_12) {
-                /**
-                 * If secure conversation version is http://docs.oasis-open.org/ws-sx/ws-trust/200512
-                 * We have to wrap "request security token response" in a "request security token response
-                 * collection".
-                 * See WS-SecureConversation 1.3 spec's Section 3 - Establishing Security Contexts
-                 * for more details.
-                 */
-                OMElement requestedSecurityTokenResponseCollection = TrustUtil
-                        .createRequestSecurityTokenResponseCollectionElement(wstVersion, env.getBody());
-                rstrElem =
-                        TrustUtil.createRequestSecurityTokenResponseElement(wstVersion,
-                                requestedSecurityTokenResponseCollection);
-            } else {
-                rstrElem =
-                        TrustUtil.createRequestSecurityTokenResponseElement(wstVersion,
-                                env.getBody());
-            }
-
-
-            OMElement rstElem =
-                    TrustUtil.createRequestedSecurityTokenElement(wstVersion, rstrElem);
-
-            rstElem.addChild((OMElement) sct.getElement());
-
-            String tokenType = data.getTokenType();
-
-            OMElement reqAttachedRef = null;
-            OMElement reqUnattachedRef = null;
-            if (config.isAddRequestedAttachedRef()) {
-                reqAttachedRef = TrustUtil.createRequestedAttachedRef(wstVersion,
-                                                         rstrElem,
-                                                         "#" + sct.getID(),
-                                                         tokenType);
-            }
-
-            if (config.isAddRequestedUnattachedRef()) {
-                reqUnattachedRef = TrustUtil.createRequestedUnattachedRef(wstVersion,
-                                                           rstrElem,
-                                                           sct.getIdentifier(),
-                                                           tokenType);
-            }
-
-            //Creation and expiration times
-            Date creationTime = new Date();
-            Date expirationTime = new Date();
-
-            expirationTime.setTime(creationTime.getTime() + config.getTtl());
-
-            // Use GMT time in milliseconds
-            DateFormat zulu = new XmlSchemaDateFormat();
-
-            // Add the Lifetime element
-            TrustUtil.createLifetimeElement(wstVersion,
-                                            rstrElem,
-                                            zulu.format(creationTime),
-                                            zulu.format(expirationTime));
-
-            // Store the tokens
-            Token sctToken = new Token(sct.getIdentifier(),
-                                       (OMElement) sct.getElement(),
-                                       creationTime,
-                                       expirationTime);
-            
-            if(config.isAddRequestedAttachedRef()) {
-                sctToken.setAttachedReference(reqAttachedRef.getFirstElement());
-            }
-            
-            if(config.isAddRequestedUnattachedRef()) {
-                sctToken.setUnattachedReference(reqUnattachedRef.getFirstElement());
-            }
-
-            byte[] secret = TokenIssuerUtil.getSharedSecret(data, config.getKeyComputation(), config.getKeySize());
-            sctToken.setSecret(secret);
-            
-            //Add the RequestedProofToken
-            TokenIssuerUtil.handleRequestedProofToken(data,
-                                                      wstVersion,
-                                                      config,
-                                                      rstrElem,
-                                                      sctToken,
-                                                      doc);
-            
-            sctToken.setState(Token.ISSUED);
-            TrustUtil.getTokenStore(data.getInMessageContext()).add(sctToken);
-            return env;
-        } catch (ConversationException e) {
-            throw new TrustException(e.getMessage(), e);
-        }
+    // Look for the file
+    if (config == null && this.configFile != null) {
+      config = SCTIssuerConfig.load(this.configFile);
     }
 
-    public String getResponseAction(RahasData data) throws TrustException {
-        return TrustUtil.getActionValue(data.getVersion(), RahasConstants.RSTR_ACTION_SCT);
+    // Look for the param
+    if (config == null && this.configParamName != null) {
+      Parameter param = data.getInMessageContext().getParameter(this.configParamName);
+      if (param != null && param.getParameterElement() != null) {
+        config = SCTIssuerConfig.load(param.getParameterElement()
+                                           .getFirstChildWithName(
+                                             SCTIssuerConfig.SCT_ISSUER_CONFIG));
+      } else {
+        throw new TrustException("expectedParameterMissing",
+                                 new String[]{this.configParamName});
+      }
     }
 
-    /**
-     * @see org.apache.rahas.TokenIssuer#setConfigurationFile(java.lang.String)
-     */
-    public void setConfigurationFile(String configFile) {
-        this.configFile = configFile;
+    if (config == null) {
+      throw new TrustException("missingConfiguration",
+                               new String[]{SCTIssuerConfig.SCT_ISSUER_CONFIG
+                                              .getLocalPart()});
     }
 
-    /**
-     * @see org.apache.rahas.TokenIssuer#setConfigurationElement(OMElement)
-     */
-    public void setConfigurationElement(OMElement configElement) {
-        this.configElement = configElement;
+    // Env
+    return createEnvelope(data, config);
+  }
+
+  private SOAPEnvelope createEnvelope(RahasData data,
+                                      SCTIssuerConfig config) throws TrustException {
+    try {
+      SOAPEnvelope env = TrustUtil.createSOAPEnvelope(data.getSoapNs());
+      int wstVersion = data.getVersion();
+
+      // Get the document
+      Document doc = ((Element) env).getOwnerDocument();
+
+      SecurityContextToken sct =
+        new SecurityContextToken(this.getWSCVersion(data.getTokenType()), doc);
+
+      OMElement rstrElem;
+      if (wstVersion == RahasConstants.VERSION_05_12) {
+        /*
+         * If secure conversation version is http://docs.oasis-open.org/ws-sx/ws-trust/200512
+         * We have to wrap "request security token response" in a "request security token response
+         * collection".
+         * See WS-SecureConversation 1.3 spec's Section 3 - Establishing Security Contexts
+         * for more details.
+         */
+        OMElement requestedSecurityTokenResponseCollection = TrustUtil
+          .createRequestSecurityTokenResponseCollectionElement(wstVersion, env.getBody());
+        rstrElem =
+          TrustUtil.createRequestSecurityTokenResponseElement(wstVersion,
+                                                              requestedSecurityTokenResponseCollection);
+      } else {
+        rstrElem =
+          TrustUtil.createRequestSecurityTokenResponseElement(wstVersion,
+                                                              env.getBody());
+      }
+
+
+      OMElement rstElem =
+        TrustUtil.createRequestedSecurityTokenElement(wstVersion, rstrElem);
+
+      rstElem.addChild((OMElement) sct.getElement());
+
+      String tokenType = data.getTokenType();
+
+      OMElement reqAttachedRef = null;
+      OMElement reqUnattachedRef = null;
+      if (config.isAddRequestedAttachedRef()) {
+        reqAttachedRef = TrustUtil.createRequestedAttachedRef(wstVersion,
+                                                              rstrElem,
+                                                              "#" + sct.getID(),
+                                                              tokenType);
+      }
+
+      if (config.isAddRequestedUnattachedRef()) {
+        reqUnattachedRef = TrustUtil.createRequestedUnattachedRef(wstVersion,
+                                                                  rstrElem,
+                                                                  sct.getIdentifier(),
+                                                                  tokenType);
+      }
+
+      //Creation and expiration times
+      Date creationTime = new Date();
+      Date expirationTime = new Date();
+
+      expirationTime.setTime(creationTime.getTime() + config.getTtl());
+
+      // Use GMT time in milliseconds
+      DateFormat zulu = new XmlSchemaDateFormat();
+
+      // Add the Lifetime element
+      TrustUtil.createLifetimeElement(wstVersion,
+                                      rstrElem,
+                                      zulu.format(creationTime),
+                                      zulu.format(expirationTime));
+
+      // Store the tokens
+      Token sctToken = new Token(sct.getIdentifier(),
+                                 (OMElement) sct.getElement(),
+                                 creationTime,
+                                 expirationTime);
+
+      if (config.isAddRequestedAttachedRef() && reqAttachedRef != null) {
+        sctToken.setAttachedReference(reqAttachedRef.getFirstElement());
+      }
+
+      if (config.isAddRequestedUnattachedRef() && reqUnattachedRef != null) {
+        sctToken.setUnattachedReference(reqUnattachedRef.getFirstElement());
+      }
+
+      byte[] secret = TokenIssuerUtil.getSharedSecret(data, config.getKeyComputation(), config.getKeySize());
+      sctToken.setSecret(secret);
+
+      //Add the RequestedProofToken
+      TokenIssuerUtil.handleRequestedProofToken(data,
+                                                wstVersion,
+                                                config,
+                                                rstrElem,
+                                                sctToken,
+                                                doc);
+
+      sctToken.setState(Token.ISSUED);
+      TrustUtil.getTokenStore(data.getInMessageContext()).add(sctToken);
+      return env;
+    } catch (ConversationException e) {
+      throw new TrustException(e.getMessage(), e);
+    }
+  }
+
+  public String getResponseAction(RahasData data) throws TrustException {
+    return TrustUtil.getActionValue(data.getVersion(), RahasConstants.RSTR_ACTION_SCT);
+  }
+
+  /**
+   * @see org.apache.rahas.TokenIssuer#setConfigurationFile(java.lang.String)
+   */
+  public void setConfigurationFile(String configFile) {
+    this.configFile = configFile;
+  }
+
+  /**
+   * @see org.apache.rahas.TokenIssuer#setConfigurationElement(OMElement)
+   */
+  public void setConfigurationElement(OMElement configElement) {
+    this.configElement = configElement;
+  }
+
+  public void setConfigurationParamName(String configParamName) {
+    this.configParamName = configParamName;
+  }
+
+  private int getWSCVersion(String tokenTypeValue) throws ConversationException {
+
+    if (tokenTypeValue == null) {
+      return ConversationConstants.DEFAULT_VERSION;
     }
 
-    public void setConfigurationParamName(String configParamName) {
-        this.configParamName = configParamName;
+    if (tokenTypeValue.startsWith(ConversationConstants.WSC_NS_05_02)) {
+      return ConversationConstants.getWSTVersion(ConversationConstants.WSC_NS_05_02);
+    } else if (tokenTypeValue.startsWith(ConversationConstants.WSC_NS_05_12)) {
+      return ConversationConstants.getWSTVersion(ConversationConstants.WSC_NS_05_12);
+    } else {
+      throw new ConversationException("unsupportedSecConvVersion");
     }
-
-    private int getWSCVersion(String tokenTypeValue) throws ConversationException {
-
-        if (tokenTypeValue == null) {
-            return ConversationConstants.DEFAULT_VERSION;
-        }
-
-        if (tokenTypeValue.startsWith(ConversationConstants.WSC_NS_05_02)) {
-            return ConversationConstants.getWSTVersion(ConversationConstants.WSC_NS_05_02);
-        } else if (tokenTypeValue.startsWith(ConversationConstants.WSC_NS_05_12)) {
-            return ConversationConstants.getWSTVersion(ConversationConstants.WSC_NS_05_12);
-        } else {
-            throw new ConversationException("unsupportedSecConvVersion");
-        }
-    }
+  }
 }

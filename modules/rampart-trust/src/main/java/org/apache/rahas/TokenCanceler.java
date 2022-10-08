@@ -26,7 +26,7 @@ public interface TokenCanceler {
      *
      * @param data A populated <code>RahasData</code> instance
      * @return Response SOAPEnveloper
-     * @throws TrustException
+     * @throws TrustException on error
      */
     SOAPEnvelope cancel(RahasData data) throws TrustException;
 
@@ -36,7 +36,7 @@ public interface TokenCanceler {
      * This is the text value of the &lt;configuration-file&gt; element of the
      * token-dispatcher-configuration
      *
-     * @param configFile
+     * @param configFile the configuration file
      */
     void setConfigurationFile(String configFile);
 
@@ -57,7 +57,7 @@ public interface TokenCanceler {
      * <code>org.apache.axis2.description.Parameter</code> object available in
      * the via the messageContext when the <code>TokenIssuer</code> is called.
      *
-     * @param configParamName
+     * @param configParamName the configuration parameter name
      * @see org.apache.axis2.description.Parameter
      */
     void setConfigurationParamName(String configParamName);
@@ -67,7 +67,7 @@ public interface TokenCanceler {
      *
      * @param data A populated <code>RahasData</code> instance
      * @return Returns the <code>wsa:Action</code> of the response
-     * @throws TrustException
+     * @throws TrustException on error
      */
     String getResponseAction(RahasData data) throws TrustException;
 }

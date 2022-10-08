@@ -20,8 +20,8 @@ import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMNode;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axis2.context.MessageContext;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.rahas.*;
 import org.apache.rahas.impl.util.*;
 import org.apache.ws.security.components.crypto.Crypto;
@@ -56,19 +56,19 @@ import java.util.List;
  */
 public class SAML2TokenIssuer implements TokenIssuer {
 
+    private static final Logger LOGGER = LogManager.getLogger(SAML2TokenIssuer.class);
+
     private String configParamName;
 
     private OMElement configElement;
 
     private String configFile;
 
-    protected List<Signature> signatureList = new ArrayList<Signature>();
+    protected List<Signature> signatureList = new ArrayList<>();
 
     private boolean isSymmetricKeyBasedHoK = false;
 
     private SAMLTokenIssuerConfig tokenIssuerConfiguration;
-
-    private static Log log = LogFactory.getLog(SAML2TokenIssuer.class);
 
     /**
      * This is the main method which issues SAML2 assertions as security token responses. This method will
@@ -87,10 +87,10 @@ public class SAML2TokenIssuer implements TokenIssuer {
 
         if (tokenIssuerConfiguration == null) {
 
-            if (log.isDebugEnabled()) {
+            if (LOGGER.isDebugEnabled()) {
                 String parameterName;
                 if (this.configElement != null) {
-                    parameterName = "OMElement - " + this.configElement.toString();
+                    parameterName = "OMElement - " + this.configElement;
                 } else if (this.configFile != null) {
                     parameterName = "File - " + this.configFile;
                 } else if (this.configParamName != null) {
@@ -99,7 +99,7 @@ public class SAML2TokenIssuer implements TokenIssuer {
                     parameterName = "No method to build configurations";
                 }
 
-                log.debug("Unable to build token configurations, " + parameterName);
+                LOGGER.debug("Unable to build token configurations, " + parameterName);
             }
 
             throw new TrustException("configurationIsNull");
@@ -422,7 +422,7 @@ public class SAML2TokenIssuer implements TokenIssuer {
         //set the subject confirmation
         subject.getSubjectConfirmations().add(subjectConfirmation);
 
-        log.debug("SAML2.0 subject is constructed successfully.");
+        LOGGER.debug("SAML2.0 subject is constructed successfully.");
         return subject;
     }
 
@@ -529,7 +529,7 @@ public class SAML2TokenIssuer implements TokenIssuer {
             throw new TrustException("errorMarshallingAssertion", e);
         }
 
-        log.debug("SAML2.0 assertion is marshalled and signed..");
+        LOGGER.debug("SAML2.0 assertion is marshalled and signed..");
 
         return assertion;
     }
@@ -555,19 +555,19 @@ public class SAML2TokenIssuer implements TokenIssuer {
                 sigAlgo = XMLSignature.ALGO_ID_SIGNATURE_DSA;
             }
 
-            java.security.Key issuerPK = crypto.getPrivateKey(
+            PrivateKey issuerPK = crypto.getPrivateKey(
                     this.tokenIssuerConfiguration.getIssuerKeyAlias(),
                     this.tokenIssuerConfiguration.getIssuerKeyPassword());
 
             signKeyHolder.setIssuerCerts(issuerCerts);
-            signKeyHolder.setIssuerPK((PrivateKey) issuerPK);
+            signKeyHolder.setIssuerPK(issuerPK);
             signKeyHolder.setSignatureAlgorithm(sigAlgo);
 
         } catch (Exception e) {
             throw new TrustException("Error creating issuer signature");
         }
 
-        log.debug("SignKeyHolder object is created with the credentials..");
+        LOGGER.debug("SignKeyHolder object is created with the credentials..");
 
         return signKeyHolder;
     }
@@ -615,7 +615,7 @@ public class SAML2TokenIssuer implements TokenIssuer {
             attributes = cb.getSAML2Attributes();
         } else { //else add the attribute with a default value
 
-            log.debug("No callback registered to get attributes ... Using default attributes");
+            LOGGER.debug("No callback registered to get attributes ... Using default attributes");
 
             // TODO do we need to remove this ?
             Attribute attribute = (Attribute) CommonUtil.buildXMLObject(Attribute.DEFAULT_ELEMENT_NAME);
@@ -637,7 +637,7 @@ public class SAML2TokenIssuer implements TokenIssuer {
         //add attributes to the attribute statement
         attributeStatement.getAttributes().addAll(Arrays.asList(attributes));
 
-        log.debug("SAML2.0 attribute statement is constructed successfully.");
+        LOGGER.debug("SAML2.0 attribute statement is constructed successfully.");
 
         return attributeStatement;
     }
@@ -686,7 +686,7 @@ public class SAML2TokenIssuer implements TokenIssuer {
         authContext.setAuthnContextClassRef(authCtxClassRef);
         authenticationStatement.setAuthnContext(authContext);
 
-        log.debug("SAML2.0 authentication statement is constructed successfully.");
+        LOGGER.debug("SAML2.0 authentication statement is constructed successfully.");
 
         return authenticationStatement;
     }
@@ -767,7 +767,7 @@ public class SAML2TokenIssuer implements TokenIssuer {
                 throw new TrustException("samlAssertionCreationError", e);
             }
         } else {
-            log.error("Unidentified key type " + data.getKeyType());
+            LOGGER.error("Unidentified key type " + data.getKeyType());
             throw new TrustException(
                             "unidentifiedKeyType",
                             new String[]{data.getKeyType()});

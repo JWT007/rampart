@@ -27,40 +27,44 @@ public interface TokenRenewer {
      * @param data
      *            A populated <code>RahasData</code> instance
      * @return Response SOAPEnveloper
-     * @throws TrustException
+     * @throws TrustException on error
      */
-    public SOAPEnvelope renew(RahasData data) throws TrustException;
+    SOAPEnvelope renew(RahasData data) throws TrustException;
 
     /**
      * Set the configuration file of this TokenRenewer.
-     * 
+     * <p>
      * This is the text value of the &lt;configuration-file&gt; element of the
      * token-dispatcher-configuration
+     * </p>
      * 
-     * @param configFile
+     * @param configFile the configuration file
      */
-    public void setConfigurationFile(String configFile);
+    void setConfigurationFile(String configFile);
     
     /**
      * Set the configuration element of TokenRenewer.
-     * 
+     * <p>
      * This is the &lt;configuration&gt; element of the
      * token-dispatcher-configuration
+     * </p>
      * 
      * @param configElement
      *                <code>OMElement</code> representing the configuration
      */
-    public void setConfigurationElement(OMElement configElement);
+    void setConfigurationElement(OMElement configElement);
 
     /**
      * Set the name of the configuration parameter.
-     * 
+     * <p>
      * If this is used then there must be a
      * <code>org.apache.axis2.description.Parameter</code> object available in
      * the via the messageContext when the <code>TokenIssuer</code> is called.
+     * </p>
      * 
      * @see org.apache.axis2.description.Parameter
-     * @param configParamName
+     * @param configParamName the configuration parameter name
      */
-    public void setConfigurationParamName(String configParamName);
+    void setConfigurationParamName(String configParamName);
+
 }

@@ -25,10 +25,8 @@ import javax.xml.namespace.QName;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -38,7 +36,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  */
 public class SimpleTokenStore implements TokenStorage, Serializable {
 
-    protected Map tokens = new Hashtable();
+    protected Map<String, Token> tokens = new Hashtable<>();
     
     /**
      * We use a read write lock to improve concurrency while avoiding concurrent modification 
@@ -58,13 +56,10 @@ public class SimpleTokenStore implements TokenStorage, Serializable {
             writeLock.lock();
             
             try {
-                if (this.tokens.keySet().size() == 0
-                    || (this.tokens.keySet().size() > 0 && !this.tokens
-                        .keySet().contains(token.getId()))) {
+                if (this.tokens.keySet().size() == 0 || !this.tokens.containsKey(token.getId())) {
                     tokens.put(token.getId(), token);
                 } else {
-                    throw new TrustException("tokenAlreadyExists",
-                                            new String[]{token.getId()});
+                    throw new TrustException("tokenAlreadyExists", new String[]{token.getId()});
                 }
             } finally {
                 writeLock.unlock();
@@ -79,7 +74,7 @@ public class SimpleTokenStore implements TokenStorage, Serializable {
             writeLock.lock();    
             
             try {
-                if (!this.tokens.keySet().contains(token.getId())) {
+                if (!this.tokens.containsKey(token.getId())) {
                     throw new TrustException("noTokenToUpdate", new String[]{token.getId()});
                 }
                 this.tokens.put(token.getId(), token);
@@ -93,15 +88,14 @@ public class SimpleTokenStore implements TokenStorage, Serializable {
     public String[] getTokenIdentifiers() throws TrustException {       
         readLock.lock();
         try {
-            Set identifiers = tokens.keySet();
-            return (String[]) identifiers.toArray(new String[identifiers.size()]);
+            return tokens.keySet().toArray(new String[0]);
         } finally {
             readLock.unlock();
         }
     }
 
     public Token[] getValidTokens() throws TrustException {
-        return getTokens(new int[]{Token.ISSUED, Token.RENEWED});
+        return getTokens(Token.ISSUED, Token.RENEWED);
     }
 
     public Token[] getRenewedTokens() throws TrustException {
@@ -118,16 +112,15 @@ public class SimpleTokenStore implements TokenStorage, Serializable {
     }
 
     private Token[] getTokens(int... states) throws TrustException {
-        List tokens = new ArrayList();
+        List<Token> tokens = new ArrayList<>();
         
         readLock.lock();
         
         try {
-            for (Iterator iterator = this.tokens.values().iterator(); iterator.hasNext();) {
-                Token token = (Token) iterator.next();
+            for (Token token : this.tokens.values()) {
                 processTokenExpiry(token);
-                for (int i = 0; i < states.length; i++) {
-                    if (token.getState() == states[i]) {
+                for (int state : states) {
+                    if (token.getState() == state) {
                         tokens.add(token);
                         break;
                     }
@@ -136,7 +129,7 @@ public class SimpleTokenStore implements TokenStorage, Serializable {
         } finally {
             readLock.unlock();
         }
-        return (Token[]) tokens.toArray(new Token[tokens.size()]);
+        return tokens.toArray(new Token[0]);
     }
 
     public Token getToken(String id) throws TrustException {
@@ -146,22 +139,21 @@ public class SimpleTokenStore implements TokenStorage, Serializable {
         
         try {
             
-            token = (Token) this.tokens.get(id);
+            token = this.tokens.get(id);
             
-            if(token == null) {
+            if (token == null) {
                 //Try to find the token using attached refs & unattached refs
-                for (Iterator iterator = this.tokens.values().iterator(); iterator.hasNext();) {
-                    Token tempToken = (Token) iterator.next();
+                for (Token tempToken : this.tokens.values()) {
                     processTokenExpiry(tempToken);
                     OMElement elem = tempToken.getAttachedReference();
-                    if(elem != null && id.equals(this.getIdFromSTR(elem))) {
+                    if (elem != null && id.equals(getIdFromSTR(elem))) {
                         token = tempToken;
                     }
                     elem = tempToken.getUnattachedReference();
-                    if(elem != null && id.equals(this.getIdFromSTR(elem))) {
+                    if (elem != null && id.equals(getIdFromSTR(elem))) {
                         token = tempToken;
                     }
-                    
+
                 }
             } else {
                 processTokenExpiry(token);

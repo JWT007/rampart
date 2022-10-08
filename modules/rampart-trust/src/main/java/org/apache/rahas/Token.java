@@ -40,8 +40,8 @@ import org.apache.axiom.om.OMMetaFactory;
 import org.apache.axiom.om.OMXMLBuilderFactory;
 import org.apache.axiom.om.OMXMLParserWrapper;
 import org.apache.axiom.om.OMXMLStreamReaderConfiguration;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.ws.security.WSConstants;
 import org.apache.ws.security.util.XmlSchemaDateFormat;
 
@@ -56,7 +56,7 @@ import org.apache.ws.security.util.XmlSchemaDateFormat;
  */
 public class Token implements Externalizable {
 
-    private static Log log = LogFactory.getLog(Token.class);
+    private static final Logger LOGGER = LogManager.getLogger(Token.class);
 
     public final static int ISSUED = 1;
 
@@ -165,8 +165,8 @@ public class Token implements Externalizable {
     }
 
     /**
-     * @param lifetimeElem
-     * @throws TrustException
+     * @param lifetimeElem the lifetime OM-element
+     * @throws TrustException on error
      */
     private void processLifeTime(OMElement lifetimeElem)
         throws TrustException {
@@ -179,9 +179,7 @@ public class Token implements Externalizable {
             OMElement expiresElem =
                 lifetimeElem.getFirstChildWithName(new QName(WSConstants.WSU_NS, WSConstants.EXPIRES_LN));
             this.expires = zulu.parse(expiresElem.getText());
-        } catch (OMException e) {
-            throw new TrustException("lifeTimeProcessingError", new String[]{lifetimeElem.toString()}, e);
-        } catch (ParseException e) {
+        } catch (OMException | ParseException e) {
             throw new TrustException("lifeTimeProcessingError", new String[]{lifetimeElem.toString()}, e);
         }
     }
@@ -401,7 +399,7 @@ public class Token implements Externalizable {
      * Implementing de-serialization logic in accordance with the serialization logic.
      * @param in Stream which used to read data.
      * @throws IOException If unable to de-serialize particular data member.
-     * @throws ClassNotFoundException 
+     * @throws ClassNotFoundException on error
      */
     public void readExternal(ObjectInput in)
         throws IOException, ClassNotFoundException {
@@ -485,11 +483,9 @@ public class Token implements Externalizable {
             return doomBuilder.getDocumentElement();
             
         } catch (XMLStreamException e) {
-            log.error("Cannot convert de-serialized string to OMElement. Could not create XML stream.", e);
+            LOGGER.error("Cannot convert de-serialized string to OMElement. Could not create XML stream.", e);
             // IOException only has a constructor supporting exception chaining starting with Java 1.6
-            IOException ex = new IOException("Cannot convert de-serialized string to OMElement. Could not create XML stream.");
-            ex.initCause(e);
-            throw ex;
+            throw new IOException("Cannot convert de-serialized string to OMElement. Could not create XML stream.", e);
         }
     }
 }

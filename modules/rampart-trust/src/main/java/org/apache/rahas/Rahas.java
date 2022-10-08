@@ -29,33 +29,33 @@ import org.opensaml.xml.ConfigurationException;
 
 public class Rahas implements Module {
 
-    public void init(ConfigurationContext configContext, AxisModule module)
-            throws AxisFault {
-        // Set up OpenSAML to use a DOM aware Axiom implementation
-        // Axiom Parser pool is also set within the RampartSAMLBootstrap class.
+  public void init(ConfigurationContext configContext, AxisModule module)
+    throws AxisFault {
+    // Set up OpenSAML to use a DOM aware Axiom implementation
+    // Axiom Parser pool is also set within the RampartSAMLBootstrap class.
 
-        try {
-            RampartSAMLBootstrap.bootstrap();
+    try {
+      RampartSAMLBootstrap.bootstrap();
 
-            // Initialize XML security
-            org.apache.xml.security.Init.init();
-        } catch (ConfigurationException ex) {
-            throw new AxisFault("Failed to bootstrap OpenSAML", ex);
-        }
+      // Initialize XML security
+      org.apache.xml.security.Init.init();
+    } catch (ConfigurationException ex) {
+      throw new AxisFault("Failed to bootstrap OpenSAML", ex);
     }
+  }
 
-    public void engageNotify(AxisDescription axisDescription) throws AxisFault {
-    }
+  public void engageNotify(AxisDescription axisDescription) throws AxisFault {
+  }
 
-    public boolean canSupportAssertion(Assertion assertion) {
-        return false;
-    }
+  public boolean canSupportAssertion(Assertion assertion) {
+    return false;
+  }
 
-    public void applyPolicy(Policy policy, AxisDescription axisDescription)
-            throws AxisFault {
-    }
+  public void applyPolicy(Policy policy, AxisDescription axisDescription)
+    throws AxisFault {
+  }
 
-    public void shutdown(ConfigurationContext configurationContext)
-            throws AxisFault {
-    }
+  public void shutdown(ConfigurationContext configurationContext)
+    throws AxisFault {
+  }
 }

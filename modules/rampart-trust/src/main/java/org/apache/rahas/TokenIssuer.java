@@ -24,56 +24,56 @@ import org.apache.axiom.soap.SOAPEnvelope;
  */
 public interface TokenIssuer {
 
-    /**
-     * Create the response <code>soap:Envelope</code> for the given issue
-     * request.
-     *
-     * @param data A populated <code>RahasData</code> instance
-     * @return The response <code>soap:Envelope</code> for the given issue
-     *         request.
-     * @throws TrustException If an error occurred while creating the token.
-     */
-    SOAPEnvelope issue(RahasData data) throws TrustException;
+  /**
+   * Create the response <code>soap:Envelope</code> for the given issue
+   * request.
+   *
+   * @param data A populated <code>RahasData</code> instance
+   * @return The response <code>soap:Envelope</code> for the given issue
+   *         request.
+   * @throws TrustException If an error occurred while creating the token.
+   */
+  SOAPEnvelope issue(RahasData data) throws TrustException;
 
-    /**
-     * Returns the <code>wsa:Action</code> of the response.
-     *
-     * @param data A populated <code>RahasData</code> instance
-     * @return Returns the <code>wsa:Action</code> of the response
-     * @throws TrustException If an error occurred while during operation.
-     */
-    String getResponseAction(RahasData data) throws TrustException;
+  /**
+   * Returns the <code>wsa:Action</code> of the response.
+   *
+   * @param data A populated <code>RahasData</code> instance
+   * @return Returns the <code>wsa:Action</code> of the response
+   * @throws TrustException If an error occurred while during operation.
+   */
+  String getResponseAction(RahasData data) throws TrustException;
 
-    /**
-     * Set the configuration file of this TokenIssuer.
-     * <p>
-     * This is the text value of the &lt;configuration-file&gt; element of the
-     * token-dispatcher-configuration
-     *
-     * @param configFile Sets the token issuer configuration file.
-     */
-    void setConfigurationFile(String configFile);
+  /**
+   * Set the configuration file of this TokenIssuer.
+   * <p>
+   * This is the text value of the &lt;configuration-file&gt; element of the
+   * token-dispatcher-configuration
+   *
+   * @param configFile Sets the token issuer configuration file.
+   */
+  void setConfigurationFile(String configFile);
 
-    /**
-     * Set the configuration element of this TokenIssuer.
-     * <p>
-     * This is the &lt;configuration&gt; element of the
-     * token-dispatcher-configuration
-     *
-     * @param configElement <code>OMElement</code> representing the configuration
-     */
-    void setConfigurationElement(OMElement configElement);
+  /**
+   * Set the configuration element of this TokenIssuer.
+   * <p>
+   * This is the &lt;configuration&gt; element of the
+   * token-dispatcher-configuration
+   *
+   * @param configElement <code>OMElement</code> representing the configuration
+   */
+  void setConfigurationElement(OMElement configElement);
 
-    /**
-     * Set the name of the configuration parameter.
-     * <p>
-     * If this is used then there must be a
-     * <code>org.apache.axis2.description.Parameter</code> object available in
-     * the via the messageContext when the <code>TokenIssuer</code> is called.
-     *
-     * @param configParamName  The configuration parameter to be set.
-     * @see org.apache.axis2.description.Parameter
-     */
-    void setConfigurationParamName(String configParamName);
+  /**
+   * Set the name of the configuration parameter.
+   * <p>
+   * If this is used then there must be a
+   * <code>org.apache.axis2.description.Parameter</code> object available in
+   * the via the messageContext when the <code>TokenIssuer</code> is called.
+   *
+   * @param configParamName  The configuration parameter to be set.
+   * @see org.apache.axis2.description.Parameter
+   */
+  void setConfigurationParamName(String configParamName);
 
 }

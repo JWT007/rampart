@@ -18,10 +18,10 @@
 
 package org.apache.rahas.test.util;
 
-import junit.framework.TestCase;
 import org.apache.axiom.om.OMElement;
 import org.apache.rahas.Rahas;
 import org.apache.ws.security.WSSConfig;
+import org.junit.jupiter.api.BeforeAll;
 import org.opensaml.Configuration;
 import org.opensaml.xml.io.MarshallerFactory;
 import org.w3c.dom.Element;
@@ -37,16 +37,17 @@ import java.io.StringWriter;
 /**
  * An abstract class for tests
  */
-public class AbstractTestCase extends TestCase {
+public class AbstractTestCase {
 
     protected static MarshallerFactory marshallerFactory;
 
     private static final boolean PRINT = false;
 
-    public void setUp() throws Exception {
+    @BeforeAll
+    public static void setUp() throws Exception {
 
         Rahas rahas = new Rahas();
-        //noinspection NullableProblems
+
         rahas.init(null, null);
 
         WSSConfig.init();

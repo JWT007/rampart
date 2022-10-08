@@ -30,54 +30,55 @@ import java.io.FileInputStream;
  */
 public class SCTIssuerConfig extends AbstractIssuerConfig{
 
-    public final static QName SCT_ISSUER_CONFIG = new QName("sct-issuer-config");
-    protected byte[] requesterEntropy;
+  public final static QName SCT_ISSUER_CONFIG = new QName("sct-issuer-config");
 
-    private SCTIssuerConfig(OMElement elem) throws TrustException {
-        OMElement proofKeyElem = elem.getFirstChildWithName(PROOF_KEY_TYPE);
-        if (proofKeyElem != null) {
-            this.proofKeyType = proofKeyElem.getText().trim();
-        }
+  protected byte[] requesterEntropy;
 
-        OMElement cryptoPropertiesElem = elem
-                .getFirstChildWithName(new QName("cryptoProperties"));
-
-        if (!TokenIssuerUtil.BINARY_SECRET.equals(proofKeyType) && cryptoPropertiesElem == null) {
-            throw new TrustException("sctIssuerCryptoPropertiesMissing");
-        }
-
-        this.addRequestedAttachedRef =
-                elem.getFirstChildWithName(ADD_REQUESTED_ATTACHED_REF) != null;
-        this.addRequestedUnattachedRef =
-                elem.getFirstChildWithName(ADD_REQUESTED_UNATTACHED_REF) != null;
-        if ((cryptoElement =
-                cryptoPropertiesElem.getFirstChildWithName(CRYPTO)) == null) { // no children. Hence, prop file should have been defined
-            this.cryptoPropertiesFile = cryptoPropertiesElem.getText().trim();
-        }
-        // else Props should be defined as children of a crypto element
-        
-        OMElement keyCompElem = elem.getFirstChildWithName(KeyComputation.KEY_COMPUTATION);
-        if (keyCompElem != null && keyCompElem.getText() != null && !"".equals(keyCompElem.getText())) {
-            this.keyComputation = Integer.parseInt(keyCompElem.getText());
-        }
+  private SCTIssuerConfig(OMElement elem) throws TrustException {
+    OMElement proofKeyElem = elem.getFirstChildWithName(PROOF_KEY_TYPE);
+    if (proofKeyElem != null) {
+      this.proofKeyType = proofKeyElem.getText().trim();
     }
 
-    public static SCTIssuerConfig load(OMElement elem) throws TrustException {
-        return new SCTIssuerConfig(elem);
+    OMElement cryptoPropertiesElem = elem
+      .getFirstChildWithName(new QName("cryptoProperties"));
+
+    if (!TokenIssuerUtil.BINARY_SECRET.equals(proofKeyType) && cryptoPropertiesElem == null) {
+      throw new TrustException("sctIssuerCryptoPropertiesMissing");
     }
 
-    public static SCTIssuerConfig load(String configFilePath)
-            throws TrustException {
-        FileInputStream fis;
-        OMXMLParserWrapper builder;
-        try {
-            fis = new FileInputStream(configFilePath);
-            builder = OMXMLBuilderFactory.createOMBuilder(fis);
-        } catch (Exception e) {
-            throw new TrustException("errorLoadingConfigFile",
-                    new String[] { configFilePath });
-        }
-
-        return load(builder.getDocumentElement());
+    this.addRequestedAttachedRef =
+      elem.getFirstChildWithName(ADD_REQUESTED_ATTACHED_REF) != null;
+    this.addRequestedUnattachedRef =
+      elem.getFirstChildWithName(ADD_REQUESTED_UNATTACHED_REF) != null;
+    if ((cryptoElement =
+           cryptoPropertiesElem.getFirstChildWithName(CRYPTO)) == null) { // no children. Hence, prop file should have been defined
+      this.cryptoPropertiesFile = cryptoPropertiesElem.getText().trim();
     }
+    // else Props should be defined as children of a crypto element
+
+    OMElement keyCompElem = elem.getFirstChildWithName(KeyComputation.KEY_COMPUTATION);
+    if (keyCompElem != null && keyCompElem.getText() != null && !"".equals(keyCompElem.getText())) {
+      this.keyComputation = Integer.parseInt(keyCompElem.getText());
+    }
+  }
+
+  public static SCTIssuerConfig load(OMElement elem) throws TrustException {
+    return new SCTIssuerConfig(elem);
+  }
+
+  public static SCTIssuerConfig load(String configFilePath)
+    throws TrustException {
+    FileInputStream fis;
+    OMXMLParserWrapper builder;
+    try {
+      fis = new FileInputStream(configFilePath);
+      builder = OMXMLBuilderFactory.createOMBuilder(fis);
+    } catch (Exception e) {
+      throw new TrustException("errorLoadingConfigFile",
+                               new String[] { configFilePath });
+    }
+
+    return load(builder.getDocumentElement());
+  }
 }

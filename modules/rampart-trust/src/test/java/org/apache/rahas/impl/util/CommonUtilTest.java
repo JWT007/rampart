@@ -1,20 +1,20 @@
 /*
-*  Copyright (c) 2005-2010, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
-*
-*  WSO2 Inc. licenses this file to you under the Apache License,
-*  Version 2.0 (the "License"); you may not use this file except
-*  in compliance with the License.
-*  You may obtain a copy of the License at
-*
-*    http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing,
-* software distributed under the License is distributed on an
-* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-* KIND, either express or implied.  See the License for the
-* specific language governing permissions and limitations
-* under the License.
-*/
+ *  Copyright (c) 2005-2010, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ *  WSO2 Inc. licenses this file to you under the Apache License,
+ *  Version 2.0 (the "License"); you may not use this file except
+ *  in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 
 package org.apache.rahas.impl.util;
 
@@ -37,7 +37,8 @@ import org.apache.ws.security.WSEncryptionPart;
 import org.apache.ws.security.components.crypto.Crypto;
 import org.apache.ws.security.message.WSSecEncrypt;
 import org.apache.ws.security.message.WSSecHeader;
-import org.junit.Assert;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.opensaml.xml.signature.KeyInfo;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -46,243 +47,258 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import java.util.*;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 /**
  * A test class for common util.
  */
+@DisplayName("CommonUtilTest")
 public class CommonUtilTest extends AbstractTestCase {
 
-    private boolean isConfigFromFile = false;
+  private boolean isConfigFromFile = false;
 
-    private String configurationElement = "<configuration><saml-issuer-config>" +
-            "<issuerName>Test_STS</issuerName>" +
-            "<issuerKeyAlias>ip</issuerKeyAlias>" +
-            "<issuerKeyPassword>password</issuerKeyPassword>" +
-            "<cryptoProperties><crypto provider=\"org.apache.ws.security.components.crypto.Merlin\">" +
-            "<property name=\"org.apache.ws.security.crypto.merlin.keystore.type\">JKS</property>" +
-            "<property name=\"org.apache.ws.security.crypto.merlin.file\">src/test/resources/keystore.jks</property>" +
-            "<property name=\"org.apache.ws.security.crypto.merlin.keystore.password\">password</property></crypto>" +
-            "</cryptoProperties>" +
-            "<timeToLive>300000</timeToLive>" +
-            "<keySize>256</keySize>" +
-            "<addRequestedAttachedRef /><addRequestedUnattachedRef />" +
-            "<keyComputation>2</keyComputation>" +
-            "<proofKeyType>BinarySecret</proofKeyType>" +
-            "<trusted-services>" +
-            "<service alias=\"bob\">http://localhost:8080/axis2/services/STS</service>" +
-            "</trusted-services></saml-issuer-config></configuration>";
+  private final String configurationElement = "<configuration><saml-issuer-config>" +
+                                              "<issuerName>Test_STS</issuerName>" +
+                                              "<issuerKeyAlias>ip</issuerKeyAlias>" +
+                                              "<issuerKeyPassword>password</issuerKeyPassword>" +
+                                              "<cryptoProperties><crypto provider=\"org.apache.ws.security.components.crypto.Merlin\">" +
+                                              "<property name=\"org.apache.ws.security.crypto.merlin.keystore.type\">JKS</property>" +
+                                              "<property name=\"org.apache.ws.security.crypto.merlin.file\">src/test/resources/keystore.jks</property>" +
+                                              "<property name=\"org.apache.ws.security.crypto.merlin.keystore.password\">password</property></crypto>" +
+                                              "</cryptoProperties>" +
+                                              "<timeToLive>300000</timeToLive>" +
+                                              "<keySize>256</keySize>" +
+                                              "<addRequestedAttachedRef /><addRequestedUnattachedRef />" +
+                                              "<keyComputation>2</keyComputation>" +
+                                              "<proofKeyType>BinarySecret</proofKeyType>" +
+                                              "<trusted-services>" +
+                                              "<service alias=\"bob\">http://localhost:8080/axis2/services/STS</service>" +
+                                              "</trusted-services></saml-issuer-config></configuration>";
 
-    private String configurationFileName = "sts-aar-resources/saml-issuer-config.xml";
+  private final String configurationFileName = "sts-aar-resources/saml-issuer-config.xml";
 
-    private void checkConfigurations(SAMLTokenIssuerConfig tokenIssuerConfig) throws TrustException {
+  private void checkConfigurations(SAMLTokenIssuerConfig tokenIssuerConfig) throws TrustException {
 
-        Assert.assertEquals("Test_STS", tokenIssuerConfig.getIssuerName());
-        Assert.assertEquals("ip", tokenIssuerConfig.getIssuerKeyAlias());
-        Assert.assertEquals("password", tokenIssuerConfig.getIssuerKeyPassword());
-        Assert.assertEquals(300000, tokenIssuerConfig.getTtl());
-        Assert.assertEquals(256, tokenIssuerConfig.getKeySize());
-        Assert.assertTrue(tokenIssuerConfig.isAddRequestedAttachedRef());
-        Assert.assertTrue(tokenIssuerConfig.isAddRequestedUnattachedRef());
-        Assert.assertEquals(2, tokenIssuerConfig.getKeyComputation());
-        Assert.assertEquals("BinarySecret", tokenIssuerConfig.getProofKeyType());
+    assertEquals("Test_STS", tokenIssuerConfig.getIssuerName());
+    assertEquals("ip", tokenIssuerConfig.getIssuerKeyAlias());
+    assertEquals("password", tokenIssuerConfig.getIssuerKeyPassword());
+    assertEquals(300000, tokenIssuerConfig.getTtl());
+    assertEquals(256, tokenIssuerConfig.getKeySize());
+    assertTrue(tokenIssuerConfig.isAddRequestedAttachedRef());
+    assertTrue(tokenIssuerConfig.isAddRequestedUnattachedRef());
+    assertEquals(2, tokenIssuerConfig.getKeyComputation());
+    assertEquals("BinarySecret", tokenIssuerConfig.getProofKeyType());
 
-        Map trustedServices = tokenIssuerConfig.getTrustedServices();
-        Set trustedServiceSet = trustedServices.entrySet();
-        for (Object aTrustedServiceSet : trustedServiceSet) {
-            Map.Entry pairs = (Map.Entry) aTrustedServiceSet;
-            Assert.assertEquals("http://localhost:8080/axis2/services/STS", (String)pairs.getKey());
-            Assert.assertEquals("bob", (String) pairs.getValue());
+    Map<String, String> trustedServices = tokenIssuerConfig.getTrustedServices();
+    for (String key : trustedServices.keySet()) {
+      assertEquals("http://localhost:8080/axis2/services/STS", key);
+      assertEquals("bob", trustedServices.get(key));
+    }
+
+    OMElement cryptoPropertiesElement = tokenIssuerConfig.getCryptoPropertiesElement();
+    assertNotNull(cryptoPropertiesElement);
+
+    OMElement crypto = cryptoPropertiesElement.getFirstChildWithName(SAMLTokenIssuerConfig.CRYPTO);
+    assertNotNull(crypto);
+
+    Iterator<OMElement> children = crypto.getChildElements();
+    while (children.hasNext()) {
+      OMElement child = children.next();
+      OMAttribute attribute = child.getAttribute(new QName("name"));
+
+      if (attribute.getAttributeValue().equals("org.apache.ws.security.crypto.merlin.keystore.type")) {
+        assertEquals(child.getText(), "JKS");
+        continue;
+      }
+
+      if (attribute.getAttributeValue().equals("org.apache.ws.security.crypto.merlin.file")) {
+
+        if (!this.isConfigFromFile) {
+          assertEquals(child.getText(), "src/test/resources/keystore.jks");
+        } else {
+          assertEquals(child.getText(), "META-INF/rahas-sts.jks");
         }
+        continue;
+      }
 
-        OMElement cryptoPropertiesElement = tokenIssuerConfig.getCryptoPropertiesElement();
-        Assert.assertNotNull(cryptoPropertiesElement);
+      if (attribute.getAttributeValue().equals("org.apache.ws.security.crypto.merlin.keystore.password")) {
+        assertEquals(child.getText(), "password");
+        continue;
+      }
 
-        OMElement crypto = cryptoPropertiesElement.getFirstChildWithName(SAMLTokenIssuerConfig.CRYPTO);
-        Assert.assertNotNull(crypto);
-
-        Iterator children = crypto.getChildElements();
-        while (children.hasNext()) {
-            OMElement child = (OMElement)children.next();
-            OMAttribute attribute = child.getAttribute(new QName("name"));
-
-            if (attribute.getAttributeValue().equals("org.apache.ws.security.crypto.merlin.keystore.type")) {
-                Assert.assertEquals(child.getText(), "JKS");
-                continue;
-            }
-
-            if (attribute.getAttributeValue().equals("org.apache.ws.security.crypto.merlin.file")) {
-
-                if (!this.isConfigFromFile) {
-                    Assert.assertEquals(child.getText(), "src/test/resources/keystore.jks");
-                } else {
-                    Assert.assertEquals(child.getText(), "META-INF/rahas-sts.jks");
-                }
-                continue;
-            }
-
-            if (attribute.getAttributeValue().equals("org.apache.ws.security.crypto.merlin.keystore.password")) {
-                Assert.assertEquals(child.getText(), "password");
-                continue;
-            }
-
-            Assert.fail("Unexpected values returned - " + attribute.getAttributeValue());
-        }
-
+      fail("Unexpected values returned - " + attribute.getAttributeValue());
     }
 
-    public void testTokenIssuerConfigurationsUsingOMElement() throws XMLStreamException, TrustException {
+  }
 
-        this.isConfigFromFile = false;
-        OMElement element = AXIOMUtil.stringToOM(this.configurationElement);
-        SAMLTokenIssuerConfig tokenIssuerConfig = CommonUtil.createTokenIssuerConfiguration(element);
-        Assert.assertNotNull(tokenIssuerConfig);
-        checkConfigurations(tokenIssuerConfig);
+  @DisplayName("token-issuer configuration using OMElement")
+  @Test
+  public void testTokenIssuerConfigurationsUsingOMElement() throws XMLStreamException, TrustException {
 
-        Crypto signatureCrypto = tokenIssuerConfig.getIssuerCrypto(this.getClass().getClassLoader());
-        Assert.assertEquals(signatureCrypto.getClass().getName(), "org.apache.ws.security.components.crypto.Merlin");
+    this.isConfigFromFile = false;
+    OMElement element = AXIOMUtil.stringToOM(this.configurationElement);
+    SAMLTokenIssuerConfig tokenIssuerConfig = CommonUtil.createTokenIssuerConfiguration(element);
+    assertNotNull(tokenIssuerConfig);
+    checkConfigurations(tokenIssuerConfig);
 
-    }
+    Crypto signatureCrypto = tokenIssuerConfig.getIssuerCrypto(this.getClass().getClassLoader());
+    assertEquals(signatureCrypto.getClass().getName(), "org.apache.ws.security.components.crypto.Merlin");
 
-    public void testTokenIssuerConfigurationsUsingFile() throws XMLStreamException, TrustException {
+  }
 
-        this.isConfigFromFile = true;
-        SAMLTokenIssuerConfig tokenIssuerConfig = CommonUtil.createTokenIssuerConfiguration(configurationFileName);
-        Assert.assertNotNull(tokenIssuerConfig);
-        checkConfigurations(tokenIssuerConfig);
-    }
+  @Test
+  public void testTokenIssuerConfigurationsUsingFile() throws XMLStreamException, TrustException {
 
-    public void testTokenIssuerConfigurationsUsingParameter() throws XMLStreamException, TrustException {
+    this.isConfigFromFile = true;
+    SAMLTokenIssuerConfig tokenIssuerConfig = CommonUtil.createTokenIssuerConfiguration(configurationFileName);
+    assertNotNull(tokenIssuerConfig);
+    checkConfigurations(tokenIssuerConfig);
+  }
 
-        this.isConfigFromFile = false;
-        OMElement element = AXIOMUtil.stringToOM(this.configurationElement);
-        Parameter parameter = new Parameter();
-        parameter.setParameterElement(element);
-        SAMLTokenIssuerConfig tokenIssuerConfig = CommonUtil.createTokenIssuerConfiguration(parameter);
-        Assert.assertNotNull(tokenIssuerConfig);
-        checkConfigurations(tokenIssuerConfig);
-    }
+  @Test
+  public void testTokenIssuerConfigurationsUsingParameter() throws XMLStreamException, TrustException {
 
-    public void testGetDecryptedBytes() throws Exception {
+    this.isConfigFromFile = false;
+    OMElement element = AXIOMUtil.stringToOM(this.configurationElement);
+    Parameter parameter = new Parameter();
+    parameter.setParameterElement(element);
+    SAMLTokenIssuerConfig tokenIssuerConfig = CommonUtil.createTokenIssuerConfiguration(parameter);
+    assertNotNull(tokenIssuerConfig);
+    checkConfigurations(tokenIssuerConfig);
+  }
 
-        RahasData rahasData = new RahasData();
-        byte[] ephemeralKey = TokenIssuerUtil.getSharedSecret(
-                rahasData, 1, 192);
+  @Test
+  public void testGetDecryptedBytes() throws Exception {
 
-        Document doc = TestUtil.getTestDocument();
+    RahasData rahasData = new RahasData();
+    byte[] ephemeralKey = TokenIssuerUtil.getSharedSecret(
+      rahasData, 1, 192);
 
-        WSSecEncrypt builder = new WSSecEncrypt();
-        builder.setUserInfo("apache");
-        builder.setKeyIdentifierType(WSConstants.BST_DIRECT_REFERENCE);
-        builder.setSymmetricEncAlgorithm(WSConstants.TRIPLE_DES);
-        builder.setEphemeralKey(ephemeralKey);
-        WSSecHeader secHeader = new WSSecHeader();
-        secHeader.insertSecurityHeader(doc);
+    Document doc = TestUtil.getTestDocument();
 
-        builder.prepare(doc, TestUtil.getCrypto());
+    WSSecEncrypt builder = new WSSecEncrypt();
+    builder.setUserInfo("apache");
+    builder.setKeyIdentifierType(WSConstants.BST_DIRECT_REFERENCE);
+    builder.setSymmetricEncAlgorithm(WSConstants.TRIPLE_DES);
+    builder.setEphemeralKey(ephemeralKey);
+    WSSecHeader secHeader = new WSSecHeader();
+    secHeader.insertSecurityHeader(doc);
 
-        List<WSEncryptionPart> parts = new ArrayList<WSEncryptionPart>();
-        WSEncryptionPart encP =
-            new WSEncryptionPart(
-                "add", "http://ws.apache.org/counter/counter_port_type", "Element"
-            );
-        parts.add(encP);
+    builder.prepare(doc, TestUtil.getCrypto());
 
-        Element refs = builder.encryptForRef(null, parts);
-        builder.addInternalRefElement(refs);
+    List<WSEncryptionPart> parts = new ArrayList<WSEncryptionPart>();
+    WSEncryptionPart encP =
+      new WSEncryptionPart(
+        "add", "http://ws.apache.org/counter/counter_port_type", "Element"
+      );
+    parts.add(encP);
 
-        builder.prependToHeader(secHeader);
+    Element refs = builder.encryptForRef(null, parts);
+    builder.addInternalRefElement(refs);
 
-        builder.prependBSTElementToHeader(secHeader);
+    builder.prependToHeader(secHeader);
 
-        Element element = builder.getEncryptedKeyElement();
+    builder.prependBSTElementToHeader(secHeader);
 
-        byte[] decryptedKey = CommonUtil.getDecryptedBytes(new TestCallbackHandler(), TestUtil.getCrypto(), element);
+    Element element = builder.getEncryptedKeyElement();
 
-        Assert.assertTrue(Arrays.equals(ephemeralKey, decryptedKey));
+    byte[] decryptedKey = CommonUtil.getDecryptedBytes(new TestCallbackHandler(), TestUtil.getCrypto(), element);
 
-    }
+    assertArrayEquals(ephemeralKey, decryptedKey);
 
-    public void testGetSymmetricKeyBasedKeyInfo() throws Exception {
+  }
 
-        RahasData rahasData = new RahasData();
+  @Test
+  public void testGetSymmetricKeyBasedKeyInfo() throws Exception {
 
-        Document doc = TestUtil.getTestDocument();
+    RahasData rahasData = new RahasData();
 
-        KeyInfo keyInfo = CommonUtil.getSymmetricKeyBasedKeyInfo(doc, rahasData,
-                TestUtil.getDefaultCertificate(), 256, TestUtil.getCrypto(), 2);
+    Document doc = TestUtil.getTestDocument();
 
-        Assert.assertNotNull(keyInfo);
+    KeyInfo keyInfo = CommonUtil.getSymmetricKeyBasedKeyInfo(doc, rahasData,
+                                                             TestUtil.getDefaultCertificate(), 256, TestUtil.getCrypto(), 2);
 
-        marshallerFactory.getMarshaller(keyInfo).marshall(keyInfo, doc.getDocumentElement());
+    assertNotNull(keyInfo);
 
-        printElement(keyInfo.getDOM());
+    marshallerFactory.getMarshaller(keyInfo).marshall(keyInfo, doc.getDocumentElement());
 
-        OMElement element = (OMElement)keyInfo.getDOM();
+    printElement(keyInfo.getDOM());
 
-        printElement(element);
+    OMElement element = (OMElement)keyInfo.getDOM();
 
-        Assert.assertNotNull(rahasData.getEphmeralKey());
+    printElement(element);
 
-        Assert.assertNotNull(element.getChildrenWithLocalName("EncryptedKey"));
-        Assert.assertNotNull(element.getChildrenWithLocalName("CipherData"));
-        Assert.assertNotNull(element.getChildrenWithLocalName("CipherValue"));
-    }
+    assertNotNull(rahasData.getEphmeralKey());
 
-    public void testGetCertificateBasedKeyInfo() throws Exception {
+    assertNotNull(element.getChildrenWithLocalName("EncryptedKey"));
+    assertNotNull(element.getChildrenWithLocalName("CipherData"));
+    assertNotNull(element.getChildrenWithLocalName("CipherValue"));
+  }
 
-        Document doc = TestUtil.getTestDocument();
+  @Test
+  public void testGetCertificateBasedKeyInfo() throws Exception {
 
-        KeyInfo keyInfo = CommonUtil.getCertificateBasedKeyInfo(TestUtil.getDefaultCertificate());
+    Document doc = TestUtil.getTestDocument();
 
-        Assert.assertNotNull(keyInfo);
+    KeyInfo keyInfo = CommonUtil.getCertificateBasedKeyInfo(TestUtil.getDefaultCertificate());
 
-        marshallerFactory.getMarshaller(keyInfo).marshall(keyInfo, doc.getDocumentElement());
+    assertNotNull(keyInfo);
 
-        printElement(keyInfo.getDOM());
+    marshallerFactory.getMarshaller(keyInfo).marshall(keyInfo, doc.getDocumentElement());
 
-        OMElement element = (OMElement)keyInfo.getDOM();
+    printElement(keyInfo.getDOM());
 
-        printElement(element);
+    OMElement element = (OMElement)keyInfo.getDOM();
 
-        Assert.assertNotNull(element.getChildrenWithLocalName("X509Data"));
-        Assert.assertNotNull(element.getChildrenWithLocalName("X509Certificate"));
+    printElement(element);
 
-    }
+    assertNotNull(element.getChildrenWithLocalName("X509Data"));
+    assertNotNull(element.getChildrenWithLocalName("X509Certificate"));
 
-    public void testGetSAMLCallbackHandlerWithObject() throws Exception {
+  }
 
-        RahasData rahasData = new RahasData();
+  @Test
+  public void testGetSAMLCallbackHandlerWithObject() throws Exception {
 
-        this.isConfigFromFile = true;
-        SAMLTokenIssuerConfig tokenIssuerConfig = CommonUtil.createTokenIssuerConfiguration(configurationFileName);
-        Assert.assertNotNull(tokenIssuerConfig);
-        checkConfigurations(tokenIssuerConfig);
+    RahasData rahasData = new RahasData();
 
-        tokenIssuerConfig.setCallbackHandler(new TestSAMLCallbackHandler());
+    this.isConfigFromFile = true;
+    SAMLTokenIssuerConfig tokenIssuerConfig = CommonUtil.createTokenIssuerConfiguration(configurationFileName);
+    assertNotNull(tokenIssuerConfig);
+    checkConfigurations(tokenIssuerConfig);
 
-        SAMLCallbackHandler cb = CommonUtil.getSAMLCallbackHandler(tokenIssuerConfig, rahasData);
+    tokenIssuerConfig.setCallbackHandler(new TestSAMLCallbackHandler());
 
-        Assert.assertTrue(cb instanceof TestSAMLCallbackHandler);
-    }
+    SAMLCallbackHandler cb = CommonUtil.getSAMLCallbackHandler(tokenIssuerConfig, rahasData);
 
-    public void testGetSAMLCallbackHandlerWithCallbackName() throws Exception {
+    assertTrue(cb instanceof TestSAMLCallbackHandler);
+  }
 
-        RahasData rahasData = new RahasData();
+  @Test
+  public void testGetSAMLCallbackHandlerWithCallbackName() throws Exception {
 
-        MessageContext messageContext = new MessageContext();
-        messageContext.setAxisService(new AxisService("My Service"));
+    RahasData rahasData = new RahasData();
 
-        rahasData.setInMessageContext(messageContext);
+    MessageContext messageContext = new MessageContext();
+    messageContext.setAxisService(new AxisService("My Service"));
 
-        this.isConfigFromFile = true;
-        SAMLTokenIssuerConfig tokenIssuerConfig = CommonUtil.createTokenIssuerConfiguration(configurationFileName);
-        Assert.assertNotNull(tokenIssuerConfig);
-        checkConfigurations(tokenIssuerConfig);
+    rahasData.setInMessageContext(messageContext);
 
-        tokenIssuerConfig.setCallbackHandlerName("org.apache.rahas.test.util.TestSAMLCallbackHandler");
+    this.isConfigFromFile = true;
+    SAMLTokenIssuerConfig tokenIssuerConfig = CommonUtil.createTokenIssuerConfiguration(configurationFileName);
+    assertNotNull(tokenIssuerConfig);
+    checkConfigurations(tokenIssuerConfig);
 
-        SAMLCallbackHandler cb = CommonUtil.getSAMLCallbackHandler(tokenIssuerConfig, rahasData);
+    tokenIssuerConfig.setCallbackHandlerName("org.apache.rahas.test.util.TestSAMLCallbackHandler");
 
-        Assert.assertTrue(cb instanceof TestSAMLCallbackHandler);
-    }
+    SAMLCallbackHandler cb = CommonUtil.getSAMLCallbackHandler(tokenIssuerConfig, rahasData);
+
+    assertTrue(cb instanceof TestSAMLCallbackHandler);
+
+  }
 
 }

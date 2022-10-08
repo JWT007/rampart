@@ -35,84 +35,84 @@ import java.util.Collection;
  */
 public class SignKeyHolder implements X509Credential {
 
-    private String signatureAlgorithm = null;
+  private String signatureAlgorithm = null;
 
-    private X509Certificate[] issuerCerts = null;
+  private X509Certificate[] issuerCerts = null;
 
-    private PrivateKey issuerPK = null;
-
-
-    public String getSignatureAlgorithm() {
-        return signatureAlgorithm;
-    }
-
-    public void setSignatureAlgorithm(String signatureAlgorithm) {
-        this.signatureAlgorithm = signatureAlgorithm;
-    }
-
- 
-    public X509Certificate[] getIssuerCerts() {
-        return issuerCerts;
-    }
-
-    public void setIssuerCerts(X509Certificate[] issuerCerts) {
-        this.issuerCerts = issuerCerts;
-    }
-
-    public PrivateKey getIssuerPK() {
-        return issuerPK;
-    }
-
-    public void setIssuerPK(PrivateKey issuerPK) {
-        this.issuerPK = issuerPK;
-    }
-
-    public SignKeyHolder(){
-    }
+  private PrivateKey issuerPK = null;
 
 
-    public X509Certificate getEntityCertificate() {
-        return issuerCerts[0];
-    }
+  public String getSignatureAlgorithm() {
+    return signatureAlgorithm;
+  }
+
+  public void setSignatureAlgorithm(String signatureAlgorithm) {
+    this.signatureAlgorithm = signatureAlgorithm;
+  }
 
 
-    public Collection<X509Certificate> getEntityCertificateChain() {
-        return Arrays.asList(issuerCerts);
-    }
+  public X509Certificate[] getIssuerCerts() {
+    return issuerCerts;
+  }
 
-    public Collection<X509CRL> getCRLs() {
-        return null;
-    }
+  public void setIssuerCerts(X509Certificate[] issuerCerts) {
+    this.issuerCerts = issuerCerts;
+  }
 
-    public String getEntityId() {
-        return null;
-    }
+  public PrivateKey getIssuerPK() {
+    return issuerPK;
+  }
 
-    public UsageType getUsageType() {
-        return null;
-    }
+  public void setIssuerPK(PrivateKey issuerPK) {
+    this.issuerPK = issuerPK;
+  }
 
-    public Collection<String> getKeyNames() {
-        return null;
-    }
+  public SignKeyHolder(){
+    super();
+  }
 
-    public PublicKey getPublicKey() {
-        return null;
-    }
+  public X509Certificate getEntityCertificate() {
+    return issuerCerts[0];
+  }
 
-    public PrivateKey getPrivateKey() {
-        return issuerPK;
-    }
 
-    public SecretKey getSecretKey() {
-        return null;
-    }
+  public Collection<X509Certificate> getEntityCertificateChain() {
+    return Arrays.asList(issuerCerts);
+  }
 
-    public CredentialContextSet getCredentalContextSet() {
-        return null;
-    }
+  public Collection<X509CRL> getCRLs() {
+    return null;
+  }
 
-    public Class<? extends Credential> getCredentialType() {
-        return null;
-    }
+  public String getEntityId() {
+    return null;
+  }
+
+  public UsageType getUsageType() {
+    return null;
+  }
+
+  public Collection<String> getKeyNames() {
+    return null;
+  }
+
+  public PublicKey getPublicKey() {
+    return null;
+  }
+
+  public PrivateKey getPrivateKey() {
+    return issuerPK;
+  }
+
+  public SecretKey getSecretKey() {
+    return null;
+  }
+
+  public CredentialContextSet getCredentalContextSet() {
+    return null;
+  }
+
+  public Class<? extends Credential> getCredentialType() {
+    return null;
+  }
 }

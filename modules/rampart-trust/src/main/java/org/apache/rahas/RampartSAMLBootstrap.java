@@ -30,36 +30,36 @@ import org.opensaml.xml.parse.XMLParserException;
  * axiom specific one.
  */
 public class RampartSAMLBootstrap extends DefaultBootstrap {
-    protected RampartSAMLBootstrap() {
-        super();
+  protected RampartSAMLBootstrap() {
+    super();
+  }
+
+  public static synchronized void bootstrap() throws ConfigurationException {
+    initializeXMLSecurity();
+
+    initializeXMLTooling();
+
+    initializeArtifactBuilderFactories();
+
+    initializeGlobalSecurityConfiguration();
+
+    initializeParserPool();
+
+    initializeESAPI();
+
+    initializeHttpClient();
+  }
+
+  protected static void initializeParserPool() throws ConfigurationException {
+
+    AxiomParserPool pp = new AxiomParserPool();
+    pp.setMaxPoolSize(50);
+    try {
+      pp.initialize();
+    } catch (XMLParserException e) {
+      throw new ConfigurationException("Error initializing axiom based parser pool", e);
     }
+    Configuration.setParserPool(pp);
 
-    public static synchronized void bootstrap() throws ConfigurationException {
-        initializeXMLSecurity();
-
-        initializeXMLTooling();
-
-        initializeArtifactBuilderFactories();
-
-        initializeGlobalSecurityConfiguration();
-
-        initializeParserPool();
-
-        initializeESAPI();
-
-        initializeHttpClient();
-    }
-
-    protected static void initializeParserPool() throws ConfigurationException {
-
-        AxiomParserPool pp = new AxiomParserPool();
-        pp.setMaxPoolSize(50);
-        try {
-            pp.initialize();
-        } catch (XMLParserException e) {
-            throw new ConfigurationException("Error initializing axiom based parser pool", e);
-        }
-        Configuration.setParserPool(pp);
-
-    }
+  }
 }

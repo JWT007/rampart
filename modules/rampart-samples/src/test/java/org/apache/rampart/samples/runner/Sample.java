@@ -42,7 +42,7 @@ final class Sample {
         project.setUserProperty("server.port", String.valueOf(port));
         StringBuilder vmargs = new StringBuilder();
         vmargs.append("-Dlog4j.configuration=");
-        vmargs.append(new File("src/test/conf/log4j.properties").getAbsoluteFile().toURI().toString());
+        vmargs.append(new File("src/test/conf/log4j2.properties").getAbsoluteFile().toURI());
         String jacocoArgLineTemplate = System.getProperty("jacoco.argLineTemplate");
         if (jacocoArgLineTemplate != null) {
             vmargs.append(" ");

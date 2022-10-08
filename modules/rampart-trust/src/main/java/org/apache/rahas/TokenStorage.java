@@ -28,21 +28,21 @@ public interface TokenStorage {
     /**
      * Add the given token to the list.
      * @param token The token to be added
-     * @throws TrustException
+     * @throws TrustException on error
      */
     void add(Token token) throws TrustException;
     
     /**
      * Update an existing token.
-     * @param token
-     * @throws TrustException
+     * @param token the token
+     * @throws TrustException on error
      */
     void update(Token token) throws TrustException;
     
     /**
      * Return the list of all token identifiers.
      * @return As array of token identifiers
-     * @throws TrustException
+     * @throws TrustException on error
      */
     String[] getTokenIdentifiers() throws TrustException;
 
@@ -51,36 +51,36 @@ public interface TokenStorage {
      * If there are no <code>EXPIRED</code> tokens <code>null</code> will be 
      * returned
      * @return An array of expired <code>Tokens</code>
-     * @throws TrustException
+     * @throws TrustException on error
      */
     Token[] getExpiredTokens() throws TrustException;
     
     /**
      * Return the list of ISSUED and RENEWED tokens.
      * @return An array of ISSUED and RENEWED <code>Tokens</code>.
-     * @throws TrustException
+     * @throws TrustException on error
      */
     Token[] getValidTokens() throws TrustException;
     
     /**
      * Return the list of RENEWED tokens.
      * @return An array of RENEWED <code>Tokens</code>
-     * @throws TrustException
+     * @throws TrustException on error
      */
     Token[] getRenewedTokens() throws TrustException;
     
     /**
      * Return the list of CANCELLED tokens
      * @return An array of CANCELLED <code>Tokens</code>
-     * @throws TrustException
+     * @throws TrustException on error
      */
     Token[] getCancelledTokens() throws TrustException;
     
     /**
      * Returns the <code>Token</code> of the given id
-     * @param id
+     * @param id the token identifier
      * @return The requested <code>Token</code> identified by the give id
-     * @throws TrustException
+     * @throws TrustException on error
      */
     Token getToken(String id) throws TrustException;
 

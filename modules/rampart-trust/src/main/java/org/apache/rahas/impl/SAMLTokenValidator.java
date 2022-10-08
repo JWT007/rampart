@@ -9,8 +9,8 @@ import org.apache.axiom.om.OMElement;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.description.Parameter;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.rahas.RahasConstants;
 import org.apache.rahas.RahasData;
 import org.apache.rahas.Token;
@@ -33,208 +33,206 @@ import org.w3c.dom.Element;
 @SuppressWarnings({"UnusedDeclaration"})
 public class SAMLTokenValidator implements TokenValidator {
 
-    Log log = LogFactory.getLog(SAMLTokenValidator.class);
+  private static final Logger LOGGER = LogManager.getLogger(SAMLTokenValidator.class);
 
-    private String configFile;
-    private OMElement configElement;
-    private String configParamName;
+  private String configFile;
+  private OMElement configElement;
+  private String configParamName;
 
-    /**
-     * Returns a SOAPEnvelope with the result of the validation.
-     * 
-     * @param data
-     *                the RahasData object, containing information about the
-     *                request.
-     */
-    public SOAPEnvelope validate(RahasData data) throws TrustException {
-        // retrieve the message context
-        MessageContext inMsgCtx = data.getInMessageContext();
+  /**
+   * Returns a SOAPEnvelope with the result of the validation.
+   *
+   * @param data
+   *                the RahasData object, containing information about the
+   *                request.
+   */
+  public SOAPEnvelope validate(RahasData data) throws TrustException {
+    // retrieve the message context
+    MessageContext inMsgCtx = data.getInMessageContext();
 
-        // retrieve the list of tokens from the message context
-        TokenStorage tkStorage = TrustUtil.getTokenStore(inMsgCtx);
+    // retrieve the list of tokens from the message context
+    TokenStorage tkStorage = TrustUtil.getTokenStore(inMsgCtx);
 
-        // Create envelope
-        SOAPEnvelope env = TrustUtil.createSOAPEnvelope(inMsgCtx
-                .getEnvelope().getNamespace().getNamespaceURI());
+    // Create envelope
+    SOAPEnvelope env = TrustUtil.createSOAPEnvelope(inMsgCtx
+                                                      .getEnvelope().getNamespace().getNamespaceURI());
 
-        // Create RSTR element, with respective version
-        OMElement rstrElem;
-        int wstVersion = data.getVersion();
-        if (RahasConstants.VERSION_05_02 == wstVersion) {
-            rstrElem = TrustUtil.createRequestSecurityTokenResponseElement(
-                    wstVersion, env.getBody());
+    // Create RSTR element, with respective version
+    OMElement rstrElem;
+    int wstVersion = data.getVersion();
+    if (RahasConstants.VERSION_05_02 == wstVersion) {
+      rstrElem = TrustUtil.createRequestSecurityTokenResponseElement(
+        wstVersion, env.getBody());
+    } else {
+      OMElement rstrcElem = TrustUtil
+        .createRequestSecurityTokenResponseCollectionElement(
+          wstVersion, env.getBody());
+      rstrElem = TrustUtil.createRequestSecurityTokenResponseElement(
+        wstVersion, rstrcElem);
+    }
+
+    // Create TokenType element, set to RSTR/Status
+    TrustUtil.createTokenTypeElement(wstVersion, rstrElem).setText(
+      TrustUtil.getWSTNamespace(wstVersion)
+      + RahasConstants.TOK_TYPE_STATUS);
+
+    // Create Status element
+    OMElement statusElement = createMessageElement(wstVersion,
+                                                   rstrElem, RahasConstants.LocalNames.STATUS);
+
+    // Obtain the token
+    Token tk = tkStorage.getToken(data.getTokenId());
+
+    // create the crypto object
+    PublicKey issuerPBKey = getIssuerPublicKey(inMsgCtx);
+
+    boolean valid = isValid(tk, issuerPBKey);
+    String validityCode;
+
+    if (valid) {
+      validityCode = RahasConstants.STATUS_CODE_VALID;
+    } else {
+      validityCode = RahasConstants.STATUS_CODE_INVALID;
+    }
+
+    // Create Code element (inside Status) and set it to the
+    // correspondent value
+    createMessageElement(wstVersion, statusElement,
+                         RahasConstants.LocalNames.CODE).setText(
+      TrustUtil.getWSTNamespace(wstVersion) + validityCode);
+
+    return env;
+  }
+
+  /**
+   * Checks whether the token is valid or not, by verifying the issuer's own
+   * signature. If it has been signed by the token issuer, then it is a valid
+   * token.
+   *
+   * @param token
+   *                the token to validate.
+   * @param issuerPBKey Public key which should be used during validation.
+   * @return true if the token has been signed by the issuer.
+   */
+  private boolean isValid(Token token, PublicKey issuerPBKey) {
+    // extract SAMLAssertion object from token
+    OMElement assertionOMElement = token.getToken();
+    Assertion samlAssertion;
+
+    try {
+      samlAssertion = SAMLUtils.buildAssertion((Element) assertionOMElement);
+
+      LOGGER.info("Verifying token validity...");
+
+      // check if the token has been signed by the issuer.
+      SignatureValidator validator = new SignatureValidator(samlAssertion.getSignature().getSigningCredential());
+      validator.validate(samlAssertion.getSignature());
+
+    } catch (ValidationException e) {
+      LOGGER.error("Signature verification failed on SAML token.", e);
+      return false;
+    }
+
+    // if there was no exception, then the token is valid
+    return true;
+  }
+
+  //here we basically reuse the SAMLTokenIssuer config
+  // to create the crypto object, so we can load the issuer's certificates
+  private PublicKey getIssuerPublicKey(MessageContext inMsgCtx) {
+    PublicKey issuerPBKey = null;
+    SAMLTokenIssuerConfig config = null;
+
+    try {
+      if (configElement != null) {
+        config = new SAMLTokenIssuerConfig(
+          configElement
+            .getFirstChildWithName(SAMLTokenIssuerConfig.SAML_ISSUER_CONFIG));
+      }
+
+      // Look for the file
+      if ((config == null) && (configFile != null)) {
+        config = new SAMLTokenIssuerConfig(configFile);
+      }
+
+      // Look for the param
+      if ((config == null) && (configParamName != null)) {
+        Parameter param = inMsgCtx.getParameter(configParamName);
+        if ((param != null) && (param.getParameterElement() != null)) {
+          config = new SAMLTokenIssuerConfig(param
+                                               .getParameterElement().getFirstChildWithName(
+              SAMLTokenIssuerConfig.SAML_ISSUER_CONFIG));
         } else {
-            OMElement rstrcElem = TrustUtil
-                    .createRequestSecurityTokenResponseCollectionElement(
-                            wstVersion, env.getBody());
-            rstrElem = TrustUtil.createRequestSecurityTokenResponseElement(
-                    wstVersion, rstrcElem);
+          throw new TrustException("expectedParameterMissing",
+                                   new String[] { configParamName });
         }
+      }
 
-        // Create TokenType element, set to RSTR/Status
-        TrustUtil.createTokenTypeElement(wstVersion, rstrElem).setText(
-                TrustUtil.getWSTNamespace(wstVersion)
-                        + RahasConstants.TOK_TYPE_STATUS);
+      if (config == null) {
+        throw new TrustException("configurationIsNull");
+      }
 
-        // Create Status element
-        OMElement statusElement = createMessageElement(wstVersion,
-                rstrElem, RahasConstants.LocalNames.STATUS);
+      Crypto crypto;
+      if (config.cryptoElement != null) { // crypto props
+        // defined as
+        // elements
+        crypto = CryptoFactory.getInstance(TrustUtil
+                                             .toProperties(config.cryptoElement), inMsgCtx
+                                             .getAxisService().getClassLoader());
+      } else { // crypto props defined in a properties file
+        crypto = CryptoFactory.getInstance(config.cryptoPropertiesFile,
+                                           inMsgCtx.getAxisService().getClassLoader());
+      }
 
-        // Obtain the token
-        Token tk = tkStorage.getToken(data.getTokenId());
+      X509Certificate issuerCert = CommonUtil.getCertificateByAlias(crypto,config.getIssuerKeyAlias());
 
-        // create the crypto object
-        PublicKey issuerPBKey = getIssuerPublicKey(inMsgCtx);
+      issuerPBKey = issuerCert.getPublicKey();
 
-        boolean valid = isValid(tk, issuerPBKey);
-        String validityCode;
-
-        if (valid) {
-            validityCode = RahasConstants.STATUS_CODE_VALID;
-        } else {
-            validityCode = RahasConstants.STATUS_CODE_INVALID;
-        }
-
-        // Create Code element (inside Status) and set it to the
-        // correspondent value
-        createMessageElement(wstVersion, statusElement,
-                RahasConstants.LocalNames.CODE).setText(
-                TrustUtil.getWSTNamespace(wstVersion) + validityCode);
-
-        return env;
+    } catch (Exception e) {
+      LOGGER.error("Could not retrieve issuer public key", e);
     }
-
-    /**
-     * Checks whether the token is valid or not, by verifying the issuer's own
-     * signature. If it has been signed by the token issuer, then it is a valid
-     * token.
-     * 
-     * @param token
-     *                the token to validate.
-     * @param issuerPBKey Public key which should be used during validation.
-     * @return true if the token has been signed by the issuer.
-     */
-    private boolean isValid(Token token, PublicKey issuerPBKey) {
-        // extract SAMLAssertion object from token
-        OMElement assertionOMElement = token.getToken();
-        Assertion samlAssertion;
-
-        try {
-            samlAssertion = SAMLUtils.buildAssertion((Element) assertionOMElement);
-
-            log.info("Verifying token validity...");
-
-            // check if the token has been signed by the issuer.
-            SignatureValidator validator = new SignatureValidator(samlAssertion.getSignature().getSigningCredential());
-            validator.validate(samlAssertion.getSignature());
-
-        } catch (ValidationException e) {
-            log.error("Signature verification failed on SAML token.", e);
-            return false;
-        }
-
-        // if there was no exception, then the token is valid
-        return true;
-    }
-
-    //here we basically reuse the SAMLTokenIssuer config
-    // to create the crypto object, so we can load the issuer's certificates
-    private PublicKey getIssuerPublicKey(MessageContext inMsgCtx) {
-        PublicKey issuerPBKey = null;
-        SAMLTokenIssuerConfig config = null;
-
-        try {
-            if (configElement != null) {
-                config = new SAMLTokenIssuerConfig(
-                        configElement
-                                .getFirstChildWithName(SAMLTokenIssuerConfig.SAML_ISSUER_CONFIG));
-            }
-
-            // Look for the file
-            if ((config == null) && (configFile != null)) {
-                config = new SAMLTokenIssuerConfig(configFile);
-            }
-
-            // Look for the param
-            if ((config == null) && (configParamName != null)) {
-                Parameter param = inMsgCtx.getParameter(configParamName);
-                if ((param != null) && (param.getParameterElement() != null)) {
-                    config = new SAMLTokenIssuerConfig(param
-                            .getParameterElement().getFirstChildWithName(
-                                    SAMLTokenIssuerConfig.SAML_ISSUER_CONFIG));
-                } else {
-                    throw new TrustException("expectedParameterMissing",
-                            new String[] { configParamName });
-                }
-            }
-
-            if (config == null) {
-                throw new TrustException("configurationIsNull");
-            }
-
-            Crypto crypto;
-            if (config.cryptoElement != null) { // crypto props
-                // defined as
-                // elements
-                crypto = CryptoFactory.getInstance(TrustUtil
-                        .toProperties(config.cryptoElement), inMsgCtx
-                        .getAxisService().getClassLoader());
-            } else { // crypto props defined in a properties file
-                crypto = CryptoFactory.getInstance(config.cryptoPropertiesFile,
-                        inMsgCtx.getAxisService().getClassLoader());
-            }
-
-            X509Certificate issuerCert = CommonUtil.getCertificateByAlias(crypto,config.getIssuerKeyAlias());
-
-            issuerPBKey = issuerCert.getPublicKey();
-
-        } catch (Exception e) {
-            log.error("Could not retrieve issuer public key", e);
-        }
-        return issuerPBKey;
-    }
+    return issuerPBKey;
+  }
 
 
-    private static OMElement createMessageElement(int version,
-            OMElement parent, String elementName) throws TrustException {
-        return createOMElement(parent, TrustUtil.getWSTNamespace(version),
-                elementName, RahasConstants.WST_PREFIX);
-    }
+  private static OMElement createMessageElement(int version,
+                                                OMElement parent, String elementName) throws TrustException {
+    return createOMElement(parent, TrustUtil.getWSTNamespace(version),
+                           elementName, RahasConstants.WST_PREFIX);
+  }
 
-    private static OMElement createOMElement(OMElement parent, String ns,
-            String ln, String prefix) {
-        return parent.getOMFactory().createOMElement(new QName(ns, ln, prefix),
-                parent);
-    }
+  private static OMElement createOMElement(OMElement parent, String ns, String ln, String prefix) {
+    return parent.getOMFactory().createOMElement(new QName(ns, ln, prefix), parent);
+  }
 
-    // ========================================================================
+  // ========================================================================
 
-    /**
-     * Set the configuration file of this TokenValidator. <p> This is the text
-     * value of the &lt;configuration-file&gt; element of the
-     * token-dispatcher-configuration
-     * 
-     * @param configFile  configuration file to be used.
-     */
-    public void setConfigurationFile(String configFile) {
-        this.configFile = configFile;
-    }
+  /**
+   * Set the configuration file of this TokenValidator. <p> This is the text
+   * value of the &lt;configuration-file&gt; element of the
+   * token-dispatcher-configuration
+   *
+   * @param configFile  configuration file to be used.
+   */
+  public void setConfigurationFile(String configFile) {
+    this.configFile = configFile;
+  }
 
-    /**
-     * Set the name of the configuration parameter. <p> If this is used then
-     * there must be a <code>org.apache.axis2.description.Parameter</code>
-     * object available in the via the messageContext when the
-     * <code>TokenValidator</code> is called.
-     * 
-     * @param configParamName Parameter name.
-     * @see org.apache.axis2.description.Parameter
-     */
-    public void setConfigurationParamName(String configParamName) {
-        this.configParamName = configParamName;
-    }
+  /**
+   * Set the name of the configuration parameter. <p> If this is used then
+   * there must be a <code>org.apache.axis2.description.Parameter</code>
+   * object available in the via the messageContext when the
+   * <code>TokenValidator</code> is called.
+   *
+   * @param configParamName Parameter name.
+   * @see org.apache.axis2.description.Parameter
+   */
+  public void setConfigurationParamName(String configParamName) {
+    this.configParamName = configParamName;
+  }
 
-    public void setConfigurationElement(OMElement configElement) {
-        this.configElement = configElement;
-    }
+  public void setConfigurationElement(OMElement configElement) {
+    this.configElement = configElement;
+  }
 
 }

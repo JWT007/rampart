@@ -34,19 +34,19 @@ import org.opensaml.xml.parse.StaticBasicParserPool;
  * instead of requesting a {@link DocumentBuilderFactory} using JAXP.
  */
 public class AxiomParserPool extends StaticBasicParserPool {
-    public AxiomParserPool() {
-        DOMMetaFactory metaFactory = (DOMMetaFactory)OMAbstractFactory.getMetaFactory(FEATURE_DOM);
-        DocumentBuilderFactory dbf = metaFactory.newDocumentBuilderFactory();
-        // Unfortunately, ParserPool doesn't allow to set the DocumentBuilderFactory, so that we
-        // have to use reflection here.
-        try {
-            Field dbfField = StaticBasicParserPool.class.getDeclaredField("builderFactory");
-            dbfField.setAccessible(true);
-            dbfField.set(this, dbf);
-        } catch (IllegalAccessException ex) {
-            throw new IllegalAccessError(ex.getMessage());
-        } catch (NoSuchFieldException ex) {
-            throw new NoSuchFieldError(ex.getMessage());
-        }
+  public AxiomParserPool() {
+    DOMMetaFactory metaFactory = (DOMMetaFactory)OMAbstractFactory.getMetaFactory(FEATURE_DOM);
+    DocumentBuilderFactory dbf = metaFactory.newDocumentBuilderFactory();
+    // Unfortunately, ParserPool doesn't allow to set the DocumentBuilderFactory, so that we
+    // have to use reflection here.
+    try {
+      Field dbfField = StaticBasicParserPool.class.getDeclaredField("builderFactory");
+      dbfField.setAccessible(true);
+      dbfField.set(this, dbf);
+    } catch (IllegalAccessException ex) {
+      throw new IllegalAccessError(ex.getMessage());
+    } catch (NoSuchFieldException ex) {
+      throw new NoSuchFieldError(ex.getMessage());
     }
+  }
 }

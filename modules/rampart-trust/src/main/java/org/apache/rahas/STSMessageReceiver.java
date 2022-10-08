@@ -22,46 +22,46 @@ import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.description.Parameter;
 import org.apache.axis2.receivers.AbstractInOutMessageReceiver;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.xml.namespace.QName;
 
 public class STSMessageReceiver extends AbstractInOutMessageReceiver {
-    
-    private static final Log log = LogFactory.getLog(STSMessageReceiver.class);
-    
-    public void invokeBusinessLogic(MessageContext inMessage,
-            MessageContext outMessage) throws AxisFault {
 
-        try {
-            Parameter param = inMessage
-                    .getParameter(TokenRequestDispatcherConfig.CONFIG_PARAM_KEY);
-            Parameter paramFile = inMessage
-                    .getParameter(TokenRequestDispatcherConfig.CONFIG_FILE_KEY);
-            TokenRequestDispatcher dispatcher;
-            if (param != null) {
-                dispatcher = new TokenRequestDispatcher(param
-                        .getParameterElement().getFirstChildWithName(
-                                new QName("token-dispatcher-configuration")));
-            } else if (paramFile != null) {
-                dispatcher = new TokenRequestDispatcher((String) paramFile
-                        .getValue());
-            } else {
-                dispatcher = new TokenRequestDispatcher(
-                        (OMElement) inMessage
-                                .getProperty(TokenRequestDispatcherConfig.CONFIG_PARAM_KEY));
-            }
-            
-            SOAPEnvelope responseEnv = dispatcher.handle(inMessage, outMessage);
-			outMessage.setEnvelope(responseEnv);
-        } catch (TrustException e) {
-            e.printStackTrace();
-            //Log the exception
-            log.error(e);
-            throw new AxisFault(e.getFaultString(), e.getFaultCode());
-        }
+  private static final Logger LOGGER = LogManager.getLogger(STSMessageReceiver.class);
+
+  public void invokeBusinessLogic(MessageContext inMessage,
+                                  MessageContext outMessage) throws AxisFault {
+
+    try {
+      Parameter param = inMessage
+        .getParameter(TokenRequestDispatcherConfig.CONFIG_PARAM_KEY);
+      Parameter paramFile = inMessage
+        .getParameter(TokenRequestDispatcherConfig.CONFIG_FILE_KEY);
+      TokenRequestDispatcher dispatcher;
+      if (param != null) {
+        dispatcher = new TokenRequestDispatcher(param
+                                                  .getParameterElement().getFirstChildWithName(
+            new QName("token-dispatcher-configuration")));
+      } else if (paramFile != null) {
+        dispatcher = new TokenRequestDispatcher((String) paramFile
+          .getValue());
+      } else {
+        dispatcher = new TokenRequestDispatcher(
+          (OMElement) inMessage
+            .getProperty(TokenRequestDispatcherConfig.CONFIG_PARAM_KEY));
+      }
+
+      SOAPEnvelope responseEnv = dispatcher.handle(inMessage, outMessage);
+      outMessage.setEnvelope(responseEnv);
+    } catch (TrustException e) {
+      e.printStackTrace();
+      LOGGER.error(e);
+      throw new AxisFault(e.getFaultString(), e.getFaultCode());
     }
+
+  }
 
 
 }
