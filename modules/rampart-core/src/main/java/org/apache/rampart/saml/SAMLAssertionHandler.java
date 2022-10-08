@@ -18,8 +18,6 @@ package org.apache.rampart.saml;
 
 
 import org.apache.axiom.om.OMElement;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.rahas.TrustException;
 import org.apache.rampart.TokenCallbackHandler;
 import org.apache.ws.security.WSSecurityException;
