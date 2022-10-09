@@ -18,33 +18,15 @@
  */
 package org.apache.rampart.samples.runner;
 
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
-public class SampleTest extends TestCase {
-    private final Sample sample;
-    
-    public SampleTest(String group, String id) {
-        super(group + "/" + id);
-        this.sample = new Sample(group, id);
-    }
+public class SampleTest {
 
-    @Override
-    protected void runTest() throws Throwable {
-        new Controller(sample).execute();
-    }
+  @ParameterizedTest
+  @ValueSource(strings = {"01", "02", "03", "04", "05", "06", "07", "08", "09"})
+  public void testSample(String id) throws Exception {
+    new Controller(new Sample("policy", id)).execute();
+  }
 
-    public static TestSuite suite() {
-        TestSuite suite = new TestSuite();
-        suite.addTest(new SampleTest("policy", "01"));
-        suite.addTest(new SampleTest("policy", "02"));
-        suite.addTest(new SampleTest("policy", "03"));
-        suite.addTest(new SampleTest("policy", "04"));
-        suite.addTest(new SampleTest("policy", "05"));
-        suite.addTest(new SampleTest("policy", "06"));
-        suite.addTest(new SampleTest("policy", "07"));
-        suite.addTest(new SampleTest("policy", "08"));
-        suite.addTest(new SampleTest("policy", "09"));
-        return suite;
-    }
 }
