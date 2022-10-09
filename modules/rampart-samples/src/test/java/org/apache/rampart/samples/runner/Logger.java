@@ -23,16 +23,16 @@ import java.io.PrintStream;
 import org.apache.tools.ant.DefaultLogger;
 
 final class Logger extends DefaultLogger {
-    private boolean shutdown;
+  private boolean shutdown;
 
-    @Override
-    protected synchronized void printMessage(String message, PrintStream stream, int priority) {
-        if (!shutdown) {
-            super.printMessage(message, stream, priority);
-        }
+  @Override
+  protected synchronized void printMessage(String message, PrintStream stream, int priority) {
+    if (!shutdown) {
+      super.printMessage(message, stream, priority);
     }
-    
-    void shutdown() {
-        this.shutdown = true;
-    }
+  }
+
+  void shutdown() {
+    this.shutdown = true;
+  }
 }

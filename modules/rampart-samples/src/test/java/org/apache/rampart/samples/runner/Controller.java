@@ -22,61 +22,61 @@ import org.apache.axis2.testutils.PortAllocator;
 import org.apache.tools.ant.Project;
 
 final class Controller {
-    private final Sample sample;
-    private boolean serverReady;
-    private boolean serverStopped;
-    private boolean serverStopDetected;
+  private final Sample sample;
+  private boolean serverReady;
+  private boolean serverStopped;
+  private boolean serverStopDetected;
 
-    Controller(Sample sample) {
-        this.sample = sample;
-    }
+  Controller(Sample sample) {
+    this.sample = sample;
+  }
 
-    void execute() throws InterruptedException {
-        int port = PortAllocator.allocatePort();
-        Logger logger = new Logger();
-        logger.setErrorPrintStream(System.err);
-        logger.setOutputPrintStream(System.out);
-        logger.setMessageOutputLevel(Project.MSG_INFO);
-        ServerWatcher serverWatcher = new ServerWatcher(this, port);
-        new Thread(serverWatcher).start();
-        try {
-            Thread serverRunnerThread = new Thread(new ServerRunner(this, sample, logger, port));
-            serverRunnerThread.start();
-            try {
-                synchronized (this) {
-                    if (!serverStopped && !serverReady) {
-                        wait();
-                    } else if (serverStopped) {
-                        return;
-                    }
-                }
-                sample.runClient(logger, port);
-            } finally {
-                logger.shutdown();
-                serverRunnerThread.interrupt();
-                synchronized (this) {
-                    while (!serverStopDetected) {
-                        wait();
-                    }
-                }
-            }
-        } finally {
-            serverWatcher.stop();
+  void execute() throws InterruptedException {
+    int port = PortAllocator.allocatePort();
+    Logger logger = new Logger();
+    logger.setErrorPrintStream(System.err);
+    logger.setOutputPrintStream(System.out);
+    logger.setMessageOutputLevel(Project.MSG_INFO);
+    ServerWatcher serverWatcher = new ServerWatcher(this, port);
+    new Thread(serverWatcher).start();
+    try {
+      Thread serverRunnerThread = new Thread(new ServerRunner(this, sample, logger, port));
+      serverRunnerThread.start();
+      try {
+        synchronized (this) {
+          if (!serverStopped && !serverReady) {
+            wait();
+          } else if (serverStopped) {
+            return;
+          }
         }
+        sample.runClient(logger, port);
+      } finally {
+        logger.shutdown();
+        serverRunnerThread.interrupt();
+        synchronized (this) {
+          while (!serverStopDetected) {
+            wait();
+          }
+        }
+      }
+    } finally {
+      serverWatcher.stop();
     }
-    
-    synchronized void serverStopped() {
-        serverStopped = true;
-        notifyAll();
-    }
+  }
 
-    synchronized void serverReady() {
-        serverReady = true;
-        notifyAll();
-    }
-    
-    synchronized void serverStopDetected() {
-        serverStopDetected = true;
-        notifyAll();
-    }
+  synchronized void serverStopped() {
+    serverStopped = true;
+    notifyAll();
+  }
+
+  synchronized void serverReady() {
+    serverReady = true;
+    notifyAll();
+  }
+
+  synchronized void serverStopDetected() {
+    serverStopDetected = true;
+    notifyAll();
+  }
 }

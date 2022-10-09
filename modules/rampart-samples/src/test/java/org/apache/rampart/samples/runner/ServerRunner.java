@@ -21,23 +21,23 @@ package org.apache.rampart.samples.runner;
 import org.apache.tools.ant.BuildLogger;
 
 final class ServerRunner implements Runnable {
-    private final Controller controller;
-    private final Sample sample;
-    private final BuildLogger logger;
-    private final int port;
+  private final Controller controller;
+  private final Sample sample;
+  private final BuildLogger logger;
+  private final int port;
 
-    ServerRunner(Controller controller, Sample sample, BuildLogger logger, int port) {
-        this.controller = controller;
-        this.sample = sample;
-        this.logger = logger;
-        this.port = port;
-    }
+  ServerRunner(Controller controller, Sample sample, BuildLogger logger, int port) {
+    this.controller = controller;
+    this.sample = sample;
+    this.logger = logger;
+    this.port = port;
+  }
 
-    public void run() {
-        try {
-            sample.runServer(logger, port);
-        } finally {
-            controller.serverStopped();
-        }
+  public void run() {
+    try {
+      sample.runServer(logger, port);
+    } finally {
+      controller.serverStopped();
     }
+  }
 }

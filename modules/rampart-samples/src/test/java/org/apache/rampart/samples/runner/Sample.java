@@ -25,41 +25,41 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.ProjectHelper;
 
 final class Sample {
-    private final String group;
-    private final String sampleId;
+  private final String group;
+  private final String sampleId;
 
-    Sample(String group, String sampleId) {
-        this.group = group;
-        this.sampleId = sampleId;
-    }
+  Sample(String group, String sampleId) {
+    this.group = group;
+    this.sampleId = sampleId;
+  }
 
-    private void run(BuildLogger logger, int port, String target) {
-        Project project = new Project();
-        File targetDir = new File("target");
-        project.setUserProperty("env.AXIS2_HOME", new File(targetDir, "axis2").getAbsolutePath());
-        project.setUserProperty("build.dir", new File(targetDir, "build").getAbsolutePath());
-        project.setUserProperty("client.port", String.valueOf(port));
-        project.setUserProperty("server.port", String.valueOf(port));
-        StringBuilder vmargs = new StringBuilder();
-        vmargs.append("-Dlog4j2.configurationFile=");
-        vmargs.append(new File("src/test/conf/log4j2.properties").getAbsoluteFile().toURI());
-        String jacocoArgLineTemplate = System.getProperty("jacoco.argLineTemplate");
-        if (jacocoArgLineTemplate != null) {
-            vmargs.append(" ");
-            vmargs.append(jacocoArgLineTemplate.replace("@id@", group + ":" + target));
-        }
-        project.setUserProperty("vmargs", vmargs.toString());
-        ProjectHelper.configureProject(project, new File(group + "/build.xml"));
-        project.addBuildListener(logger);
-        project.executeTarget(target);
+  private void run(BuildLogger logger, int port, String target) {
+    Project project = new Project();
+    File targetDir = new File("target");
+    project.setUserProperty("env.AXIS2_HOME", new File(targetDir, "axis2").getAbsolutePath());
+    project.setUserProperty("build.dir", new File(targetDir, "build").getAbsolutePath());
+    project.setUserProperty("client.port", String.valueOf(port));
+    project.setUserProperty("server.port", String.valueOf(port));
+    StringBuilder vmargs = new StringBuilder();
+    vmargs.append("-Dlog4j2.configurationFile=");
+    vmargs.append(new File("src/test/conf/log4j2.properties").getAbsoluteFile().toURI());
+    String jacocoArgLineTemplate = System.getProperty("jacoco.argLineTemplate");
+    if (jacocoArgLineTemplate != null) {
+      vmargs.append(" ");
+      vmargs.append(jacocoArgLineTemplate.replace("@id@", group + ":" + target));
     }
-    
-    void runServer(BuildLogger logger, int port) {
-        run(logger, port, "service." + sampleId);
-    }
-    
-    void runClient(BuildLogger logger, int port) {
-        run(logger, port, "client." + sampleId);
-    }
+    project.setUserProperty("vmargs", vmargs.toString());
+    ProjectHelper.configureProject(project, new File(group + "/build.xml"));
+    project.addBuildListener(logger);
+    project.executeTarget(target);
+  }
+
+  void runServer(BuildLogger logger, int port) {
+    run(logger, port, "service." + sampleId);
+  }
+
+  void runClient(BuildLogger logger, int port) {
+    run(logger, port, "client." + sampleId);
+  }
 
 }
