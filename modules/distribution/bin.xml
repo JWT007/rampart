@@ -25,8 +25,9 @@
                 <include>org.opensaml:xmltooling:jar</include>
                 <include>org.owasp.esapi:esapi:jar</include>
                 <include>joda-time:joda-time:jar</include>
-                <include>org.slf4j:slf4j-api:jar</include>
-                <include>org.slf4j:slf4j-jcl:jar</include>
+                <include>log4j-jcl:jar</include>
+                <include>log4j-slf4j-impl:jar</include>
+                <include>log4j-slf4j2-impl:jar</include>
                 <include>velocity:velocity:jar</include>
                 <include>commons-collections:commons-collections:jar</include>
                 <include>org.opensaml:openws:jar</include>
