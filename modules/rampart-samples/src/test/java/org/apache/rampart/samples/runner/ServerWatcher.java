@@ -26,61 +26,59 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 final class ServerWatcher implements Runnable {
-    private final Controller controller;
-    private final URL url;
-    private boolean serverWasReady;
-    private boolean stopped;
-    
-    ServerWatcher(Controller controller, int port) {
-        this.controller = controller;
-        try {
-            url = new URL("http", "localhost", port, "/axis2/services/");
-        } catch (MalformedURLException ex) {
-            throw new Error("Unexpected exception", ex);
-        }
-    }
-    
-    public synchronized void run() {
-        while (true) {
-            if (stopped) {
-                return;
-            }
-            try {
-                HttpURLConnection connection = (HttpURLConnection)url.openConnection();
-                int responseCode = connection.getResponseCode();
-                InputStream in = connection.getInputStream();
-                try {
-                    byte[] buffer = new byte[1024];
-                    while (in.read(buffer) != -1) {
-                        // Just loop;
-                    }
-                } finally {
-                    in.close();
-                }
-                if (responseCode == 200) {
-                    if (!serverWasReady) {
-                        serverWasReady = true;
-                        controller.serverReady();
-                    }
-                }
-            } catch (ConnectException ex) {
-                if (serverWasReady) {
-                    controller.serverStopDetected();
-                    return;
-                }
-            } catch (IOException ex) {
-                // Just continue trying
-            }
-            try {
-                wait(100);
-            } catch (InterruptedException ex) {
-                return;
-            }
-        }
-    }
+  private final Controller controller;
+  private final URL url;
+  private boolean serverWasReady;
+  private boolean stopped;
 
-    public synchronized void stop() {
-        stopped = true;
-        notifyAll();
+  ServerWatcher(Controller controller, int port) {
+    this.controller = controller;
+    try {
+      url = new URL("http", "localhost", port, "/axis2/services/");
+    } catch (MalformedURLException ex) {
+      throw new Error("Unexpected exception", ex);
     }
+  }
+
+  public synchronized void run() {
+    while (true) {
+      if (stopped) {
+        return;
+      }
+      try {
+        HttpURLConnection connection = (HttpURLConnection)url.openConnection();
+        int responseCode = connection.getResponseCode();
+        try (InputStream in = connection.getInputStream()) {
+          byte[] buffer = new byte[1024];
+          while (in.read(buffer) != -1) {
+            // Just loop;
+          }
+        }
+        if (responseCode == 200) {
+          if (!serverWasReady) {
+            serverWasReady = true;
+            controller.serverReady();
+          }
+        }
+      } catch (ConnectException ex) {
+        if (serverWasReady) {
+          controller.serverStopDetected();
+          return;
+        }
+      } catch (IOException ex) {
+        // Just continue trying
+      }
+      try {
+        wait(100);
+      } catch (InterruptedException ex) {
+        return;
+      }
+    }
+  }
+
+  public synchronized void stop() {
+    stopped = true;
+    notifyAll();
+  }
+
 }
