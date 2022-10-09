@@ -42,6 +42,7 @@ import org.apache.rampart.policy.RampartPolicyData;
 import org.apache.rampart.policy.model.KerberosConfig;
 import org.apache.rampart.policy.model.RampartConfig;
 import org.apache.ws.secpolicy.WSSPolicyException;
+import org.junit.jupiter.api.Test;
 
 public class KerberosConfigBuilderTest extends TestCase {
 
@@ -49,6 +50,7 @@ public class KerberosConfigBuilderTest extends TestCase {
 
     private static final Logger LOGGER = LogManager.getLogger(KerberosConfigBuilderTest.class);
 
+    @Test
     public void testBuildKerberosConfig() throws WSSPolicyException {
         Policy kerberosConfigPolicy = loadKerberosConfigPolicy();
         assertNotNull(String.format("Failed to parse policy file: %s", KERBEROS_CONFIG_POLICY_FILE), kerberosConfigPolicy);
@@ -73,6 +75,7 @@ public class KerberosConfigBuilderTest extends TestCase {
         assertTrue("Request for Kerberos credential delegation is expected to be enabled.", kerberosConfig.isRequstCredentialDelegation());
     }
 
+    @Test
     public void testSerializeKerberosConfig() throws Exception {
         Policy kerberosConfigPolicy = loadKerberosConfigPolicy();
         assertNotNull(String.format("Failed to parse policy file: %s", KERBEROS_CONFIG_POLICY_FILE), kerberosConfigPolicy);

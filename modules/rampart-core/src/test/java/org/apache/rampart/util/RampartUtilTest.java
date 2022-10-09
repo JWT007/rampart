@@ -22,20 +22,25 @@ import junit.framework.TestCase;
 
 import org.apache.axiom.om.OMXMLBuilderFactory;
 import org.apache.axiom.soap.SOAPEnvelope;
+import org.junit.jupiter.api.Test;
 
 public class RampartUtilTest extends TestCase {
+
+    @Test
     public void testIsSecurityFaultSOAP11() {
         SOAPEnvelope env = OMXMLBuilderFactory.createSOAPModelBuilder(
                 RampartUtilTest.class.getResourceAsStream("soap11-security-fault.xml"), null).getSOAPEnvelope();
         assertTrue(RampartUtil.isSecurityFault(env.getBody().getFault()));
     }
-    
+
+    @Test
     public void testIsSecurityFaultSOAP12() {
         SOAPEnvelope env = OMXMLBuilderFactory.createSOAPModelBuilder(
                 RampartUtilTest.class.getResourceAsStream("soap12-security-fault.xml"), null).getSOAPEnvelope();
         assertTrue(RampartUtil.isSecurityFault(env.getBody().getFault()));
     }
 
+    @Test
     public void testIsSecurityFaultSOAP11Invalid() {
         SOAPEnvelope env = OMXMLBuilderFactory.createSOAPModelBuilder(
                 RampartUtilTest.class.getResourceAsStream("soap11-invalid-fault.xml"), null).getSOAPEnvelope();
