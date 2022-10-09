@@ -2,7 +2,7 @@
 **************************** Apache Rampart Samples ****************************
 ********************************************************************************
 
-This directory contains three sub directories:
+This directory contains three sub-directories:
 
     - basic - A set of samples that uses basic rampart configuration using 
     	          parameters
@@ -14,7 +14,7 @@ This directory contains three sub directories:
 Please use Apache Ant with the build.xml file available in the top level directory
 to copy all jars and mars to required places.
 
-    - Please copy log4j.jar to AXIS2_HOME/lib directory before trying out samples.
+    - Please copy log4j-core.jar (log4j2) to AXIS2_HOME/lib directory before trying out samples.
 
     - Please follow the instructions on endorsing the default JAXP implementation
       available in README.txt of this distribution before invoking 
