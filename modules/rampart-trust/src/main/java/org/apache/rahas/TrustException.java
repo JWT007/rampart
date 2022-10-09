@@ -57,7 +57,8 @@ public class TrustException extends Exception {
   }
 
   /**
-   * Construct the fault properly code for the standard faults
+   * Construct the fault properly code for the standard faults.
+   *
    * @param code the code
    * @return the fault code
    */
@@ -94,8 +95,10 @@ public class TrustException extends Exception {
   }
 
   /**
-   * get the message from resource bundle.
+   * Get the message from resource bundle.
    *
+   * @param faultCode the fault-code
+   * @param args the fault-code arguments
    * @return the message translated from the property (message) file.
    */
   protected static String getMessage(String faultCode, Object[] args) {

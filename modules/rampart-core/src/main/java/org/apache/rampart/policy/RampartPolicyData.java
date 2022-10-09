@@ -833,10 +833,13 @@ public class RampartPolicyData {
 
   /**
    * Add the given token and id to the map.
+   *
    * @param token the token
    * @param id the token identifier
+   * @param type the type
+   * @throws RampartException on error
    */
-  public void setSupporttingtokenId(Token token, String id, int type) throws RampartException {
+  public void setSupportingTokenId(Token token, String id, int type) throws RampartException {
 
     HashMap<Token,String> tokenMap = null;
     switch (type) {

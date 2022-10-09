@@ -486,6 +486,7 @@ public class SAMLTokenIssuer implements TokenIssuer {
   /**
    * Create an ephemeral key
    *
+   * @param keySize the key-size
    * @return The generated key as a byte array
    * @throws TrustException on error
    */

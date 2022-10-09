@@ -42,8 +42,10 @@ public class TokenRequestDispatcher {
   }
 
   /**
-   * Processes the incoming request and returns a SOAPEnvelope
+   * Processes the incoming request and returns a SOAPEnvelope.
+   *
    * @param inMsgCtx the incoming message-context
+   * @param outMsgCtx the outgoing message-context
    * @return The response SOAPEnvelope
    * @throws TrustException on error
    */

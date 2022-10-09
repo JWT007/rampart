@@ -44,7 +44,8 @@ public class RampartException extends Exception {
     }
     
     /**
-     * Construct the fault properly code for the standard faults
+     * Construct the fault properly code for the standard faults.
+     *
      * @param code code as definfed in property file under
      * @return the fault code
      */
@@ -68,8 +69,10 @@ public class RampartException extends Exception {
     }
 
     /**
-     * get the message from resource bundle.
+     * Get the message from resource bundle.
      *
+     * @param faultCode the fault-code
+     * @param args the message-arguments
      * @return the message translated from the property (message) file.
      */
     protected static String getMessage(String faultCode, Object[] args) {
@@ -83,6 +86,7 @@ public class RampartException extends Exception {
     }
 
     /**
+     * Returns the fault-code.
      * @return Returns the faultCode.
      */
     protected String getFaultCode() {
@@ -90,11 +94,11 @@ public class RampartException extends Exception {
     }
 
     /**
+     * Returns the fault-string.
      * @return Returns the faultString.
      */
     protected String getFaultString() {
         return faultString;
     }
     
-
 }

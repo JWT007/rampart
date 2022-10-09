@@ -81,7 +81,9 @@ public class Axis2Util {
    * Creates a DOM Document using the SOAP Envelope.
    *
    * @param env An org.apache.axiom.soap.SOAPEnvelope instance
-   * @return Returns the DOM Document of the given SOAP Envelope.
+   * @param useDoom {@code true} to use DOOM
+   * @return the DOM Document of the given SOAP Envelope.
+   * @throws WSSecurityException on error
    */
   public static Document getDocumentFromSOAPEnvelope(SOAPEnvelope env, boolean useDoom)
     throws WSSecurityException {

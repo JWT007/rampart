@@ -619,7 +619,10 @@ public class RampartMessageData {
 
 
     /**
-     * @return Returns the tokenStorage.
+     * Returns the token-storage.
+     *
+     * @return the tokenStorage.
+     * @throws RampartException on error
      */
     public TokenStorage getTokenStorage() throws RampartException {
 

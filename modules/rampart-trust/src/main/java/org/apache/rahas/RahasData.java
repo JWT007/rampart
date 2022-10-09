@@ -95,6 +95,7 @@ public class RahasData {
    * Create a new RahasData instance and populate it with the information from
    * the request.
    *
+   * @param inMessageContext the input message-context
    * @throws TrustException <code>RequestSecurityToken</code> element is invalid.
    */
   public RahasData(MessageContext inMessageContext) throws TrustException {

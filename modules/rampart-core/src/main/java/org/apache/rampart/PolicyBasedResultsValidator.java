@@ -214,8 +214,13 @@ public class PolicyBasedResultsValidator implements ExtendedPolicyValidatorCallb
   }
 
   /**
+   * Validate the encrypted signature.
+   *
+   * @param data the validator-data
    * @param encryptedParts the encrypted parts
    * @param signatureParts the signature parts
+   * @param results the security-engine results
+   * @throws RampartException on error
    */
   protected void validateEncrSig(ValidatorData data,List<WSEncryptionPart> encryptedParts,
                                  List<WSEncryptionPart> signatureParts, List<WSSecurityEngineResult> results)
@@ -274,8 +279,11 @@ public class PolicyBasedResultsValidator implements ExtendedPolicyValidatorCallb
   }
 
   /**
+   * Validates the supporting tokens.
+   *
    * @param data the validator data
    * @param results the security-engine results
+   * @throws RampartException on error
    */
   protected void validateSupportingTokens(ValidatorData data, List<WSSecurityEngineResult> results)
     throws RampartException {
@@ -295,6 +303,8 @@ public class PolicyBasedResultsValidator implements ExtendedPolicyValidatorCallb
   }
 
   /**
+   * Handles the supporting tokens.
+   *
    * @param results the security-engine results
    * @param suppTok the supporting token
    * @throws RampartException on error
@@ -356,8 +366,11 @@ public class PolicyBasedResultsValidator implements ExtendedPolicyValidatorCallb
 
 
   /**
+   * Validates the protection order.
+   *
    * @param data the validation-data
    * @param results the security-engine results
+   * @throws RampartException on error
    */
   protected void validateProtectionOrder(ValidatorData data, List<WSSecurityEngineResult> results)
     throws RampartException {
@@ -661,13 +674,19 @@ public class PolicyBasedResultsValidator implements ExtendedPolicyValidatorCallb
   }
 
 
-  /*
+  /**
    * Verify whether timestamp of the message is valid.
    * If timeStampStrict is enabled in rampartConfig; testing of timestamp has not expired
-   * ('now' is before ts->Expires) is also handled earlier by WSS4J without timeskew.
-   * TODO must write unit tests
+   * ('now' is before ts-&gt;Expires) is also handled earlier by WSS4J without time-skew.
+   *
+   * @param timestamp the timestamp to verify
+   * @param rmd the rampart message-data
+   * @return {@code true} if the timestamp is valid; otherwise, {@code false}
+   * @throws RampartException on error
    */
   protected boolean verifyTimestamp(Timestamp timestamp, RampartMessageData rmd) throws RampartException {
+
+    // TODO must write unit tests
 
     long maxSkew = RampartUtil.getTimestampMaxSkew(rmd);
 

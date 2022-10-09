@@ -305,6 +305,12 @@ public class RampartUtil {
    * The called back function gets an indication why to provide a password:
    * to produce a UsernameToken, Signature, or a password (key) for a given
    * name.
+   *
+   * @param cbHandler the callback-handler
+   * @param username the username
+   * @param doAction the action identifier
+   * @return the password callback
+   * @throws RampartException on error
    */
   public static WSPasswordCallback performCallback(CallbackHandler cbHandler,
                                                    String username,
@@ -345,6 +351,7 @@ public class RampartUtil {
    * from the rampart configuration assertion
    *
    * @param config the rampart configuration
+   * @param loader the classloader
    * @return The <code>Crypto</code> instance to be used for encryption
    * @throws RampartException on error
    */
@@ -411,6 +418,7 @@ public class RampartUtil {
    * from the rampart configuration assertion
    *
    * @param config the rampart configuration
+   * @param loader the classloader
    * @return The <code>Crypto</code> instance to be used for signature
    * @throws RampartException on error
    */
@@ -514,6 +522,7 @@ public class RampartUtil {
    * &lt;/wsa:Metadata&gt;</pre>
    * @param mex Metadata element
    * @return Policy from the mex service
+   * @throws RampartException on error
    */
   public static Policy getPolicyFromMetadataRef(OMElement mex) throws RampartException {
 
@@ -1309,6 +1318,8 @@ public class RampartUtil {
   /**
    * Creates the unique (reproducible) id for to hold the context identifier
    * of the message exchange.
+   *
+   * @param msgContext the message-context
    * @return Id to hold the context identifier in the message context
    */
   public static String getContextIdentifierKey(MessageContext msgContext) {
@@ -1317,7 +1328,9 @@ public class RampartUtil {
 
 
   /**
-   * Returns the map of security context token identifiers
+   * Returns the map of security context token identifiers.
+   *
+   * @param msgContext the message-context
    * @return the map of security context token identifiers
    */
   public static Map<String, String> getContextMap(MessageContext msgContext) {
@@ -1388,9 +1401,12 @@ public class RampartUtil {
    * Sets the keyIdentifierType of <code>WSSecSignature</code> or <code>WSSecEncryptedKey</code>
    * according to the given <code>Token</code> and <code>RampartPolicyData</code>
    * First check the requirements specified under Token Assertion and if not found check
-   * the WSS11 and WSS10 assertions
+   * the WSS11 and WSS10 assertions.
+   *
+   * @param rmd the rampart message-data
+   * @param secBase the security-base
+   * @param token the token
    */
-
   public static void setKeyIdentifierType(RampartMessageData rmd, WSSecBase secBase,org.apache.ws.secpolicy.model.Token token) {
 
     // Use a reference rather than the binary security token if: the policy never allows the token to be
@@ -1605,15 +1621,18 @@ public class RampartUtil {
   }
 
   /**
-   * Method to check whether security header is required in incoming message
+   * Method to check whether security header is required in incoming message.
+   *
    * @param rpd the rampart policy-data
+   * @param initiator {@code true} if initiator
+   * @param inflow {@code true} if in-flow
    * @return true if a security header is required in the incoming message
    */
   public static boolean isSecHeaderRequired(RampartPolicyData rpd, boolean initiator,
                                             boolean inflow ) {
 
     // Checking for time stamp
-    if ( rpd.isIncludeTimestamp() ) {
+    if (rpd.isIncludeTimestamp()) {
       return true;
     }
 

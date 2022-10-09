@@ -141,6 +141,8 @@ public class KerberosConfig implements Assertion {
    * {@link RampartConfig#getPwCbClass() password callback}. Note that any
    * principal password configured here will be ignored if the JAAS configuration
    * configures usage of a keytab file.
+   *
+   * @param principalPassword the principal-password
    */
   public void setPrincipalPassword(String principalPassword) {
     this.principalPassword = principalPassword;
@@ -163,6 +165,8 @@ public class KerberosConfig implements Assertion {
    * {@link #HOST_BASED_NAME_FORM} unless the
    * {@link #setServicePrincipalNameForm(String)
    * service principal name form} is explicitly configured.
+   *
+   * @param servicePrincipalName the service-principal name
    */
   public void setServicePrincipalName(String servicePrincipalName) {
     this.servicePrincipalName = servicePrincipalName;

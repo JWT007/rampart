@@ -87,6 +87,8 @@ public abstract class BindingBuilder {
 
 
   /**
+   * Adds a timestamp to the given rampart message-data.
+   *
    * @param rmd the rampart message-data
    */
   protected void addTimestamp(RampartMessageData rmd) {
@@ -112,8 +114,10 @@ public abstract class BindingBuilder {
   }
 
   /**
-   * Add a UsernameToken to the security header
+   * Add a UsernameToken to the security header.
+   *
    * @param rmd the rampart message-data
+   * @param token the username-token
    * @return The <code>WSSecUsernameToken</code> instance
    * @throws RampartException on error
    */
@@ -208,6 +212,8 @@ public abstract class BindingBuilder {
 
 
   /**
+   * Returns an encrypted-key.
+   *
    * @param rmd the rampart message-data
    * @param token the token
    * @return the encrypted key
@@ -334,9 +340,11 @@ public abstract class BindingBuilder {
   }
 
   /**
+   * Handles supporting tokens.
+   *
    * @param rmd the rampart message data
    * @param suppTokens the supporting tokens
-   * @return map
+   * @return map the token-map
    * @throws RampartException on error
    */
   protected Map<Token,Object> handleSupportingTokens(RampartMessageData rmd, SupportingToken suppTokens)
@@ -434,6 +442,8 @@ public abstract class BindingBuilder {
   }
 
   /**
+   * Adds signature parts.
+   *
    * @param tokenMap the token map
    * @param sigParts the sig parts
    * @return list of encryption parts
@@ -759,7 +769,8 @@ public abstract class BindingBuilder {
 
 
   /**
-   * Get hold of the token from the token storage
+   * Get hold of the token from the token storage.
+   *
    * @param rmd the rampart message-data
    * @param tokenId the token identifier
    * @return token from the token storage

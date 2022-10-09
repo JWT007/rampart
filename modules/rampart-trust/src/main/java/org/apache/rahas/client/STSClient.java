@@ -162,6 +162,7 @@ public class STSClient {
    *
    * @param issuerAddress the issuer address
    * @param tokenId the token identifier
+   * @param action the client action
    * @return true is the Token was successfully canceled. False otherwise.
    * @throws TrustException on error
    */

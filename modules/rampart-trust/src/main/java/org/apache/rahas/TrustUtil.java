@@ -52,7 +52,7 @@ public class TrustUtil {
    * @param doc the document
    * @param refUri the reference URI
    * @param refValueType the reference value-type
-   * @return Element
+   * @return Element the created element
    */
   public static Element createSecurityTokenReference(Document doc,
                                                      String refUri, String refValueType) {
@@ -245,6 +245,7 @@ public class TrustUtil {
    *
    * @param rstrElem wst:RequestSecurityToken element
    * @param id Token identifier
+   * @param version the version
    * @throws TrustException on error
    */
   public static void createRequestedAttachedRef(OMElement rstrElem, String id, int version)
@@ -268,6 +269,7 @@ public class TrustUtil {
    *
    * @param rstrElem  wst:RequestSecurityToken element
    * @param id Token identifier
+   * @param version the version
    * @throws TrustException on error
    */
   public static void createRequestedUnattachedRef(OMElement rstrElem, String id, int version)
@@ -405,7 +407,7 @@ public class TrustUtil {
    * SOAPEnvelope in the given <code>MessageContext</code>
    *
    * @param nsUri the namespace URI
-   * @return SOAPEnvelope
+   * @return SOAPEnvelope the created SOAP envelope
    */
   public static SOAPEnvelope createSOAPEnvelope(String nsUri) {
     OMMetaFactory domFac = OMAbstractFactory.getMetaFactory(OMAbstractFactory.FEATURE_DOM);
@@ -482,6 +484,7 @@ public class TrustUtil {
   /**
    * Create an ephemeral key
    *
+   * @param keySize the key-size
    * @return The generated ephemeral key
    * @throws TrustException on error
    */
@@ -499,6 +502,10 @@ public class TrustUtil {
   /**
    * Create an ephemeral key
    *
+   * @param reqEnt the request entropy
+   * @param respEnt the response entropy
+   * @param algo the algorithm
+   * @param keySize the key-size
    * @return The generated ephemeral key
    * @throws TrustException on error
    * @deprecated use {@link #generateEphemeralKey(int)}
