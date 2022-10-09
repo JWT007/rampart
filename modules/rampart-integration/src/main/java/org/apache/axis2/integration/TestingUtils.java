@@ -23,34 +23,34 @@ import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.OMNamespace;
 
 public class TestingUtils {
-    public static OMElement createDummyOMElement() {
-        OMFactory fac = OMAbstractFactory.getOMFactory();
-        OMNamespace omNs = fac.createOMNamespace("http://org.apache.axis2/xsd", "ns1");
-        OMElement method = fac.createOMElement("echoOM", omNs);
-        OMElement value = fac.createOMElement("myValue", omNs);
-        value.addChild(
-                fac.createOMText(value, "Isaac Asimov, The Foundation Trilogy"));
-        method.addChild(value);
-        return method;
-    }
+  public static OMElement createDummyOMElement() {
+    OMFactory fac = OMAbstractFactory.getOMFactory();
+    OMNamespace omNs = fac.createOMNamespace("http://org.apache.axis2/xsd", "ns1");
+    OMElement method = fac.createOMElement("echoOM", omNs);
+    OMElement value = fac.createOMElement("myValue", omNs);
+    value.addChild(
+      fac.createOMText(value, "Isaac Asimov, The Foundation Trilogy"));
+    method.addChild(value);
+    return method;
+  }
 
-    public static OMElement createDummyOMElement(String nameSpace) {
-        OMFactory fac = OMAbstractFactory.getOMFactory();
-        OMNamespace omNs = fac.createOMNamespace(nameSpace, "ns1");
-        OMElement method = fac.createOMElement("echoOM", omNs);
-        OMElement value = fac.createOMElement("myValue", omNs);
-        value.addChild(
-                fac.createOMText(value, "Isaac Asimov, The Foundation Trilogy"));
-        method.addChild(value);
-        return method;
-    }
+  public static OMElement createDummyOMElement(String nameSpace) {
+    OMFactory fac = OMAbstractFactory.getOMFactory();
+    OMNamespace omNs = fac.createOMNamespace(nameSpace, "ns1");
+    OMElement method = fac.createOMElement("echoOM", omNs);
+    OMElement value = fac.createOMElement("myValue", omNs);
+    value.addChild(
+      fac.createOMText(value, "Isaac Asimov, The Foundation Trilogy"));
+    method.addChild(value);
+    return method;
+  }
 
 
-    public static void campareWithCreatedOMElement(OMElement element) {
-        OMElement firstChild = element.getFirstElement();
-        TestCase.assertNotNull(firstChild);
-        String textValue = firstChild.getText();
-        TestCase.assertEquals(textValue, "Isaac Asimov, The Foundation Trilogy");
-    }
+  public static void compareWithCreatedOMElement(OMElement element) {
+    OMElement firstChild = element.getFirstElement();
+    TestCase.assertNotNull(firstChild);
+    String textValue = firstChild.getText();
+    TestCase.assertEquals(textValue, "Isaac Asimov, The Foundation Trilogy");
+  }
 
 }

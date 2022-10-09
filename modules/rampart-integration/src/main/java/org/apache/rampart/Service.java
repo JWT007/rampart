@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.rampart;
+
 import org.apache.axiom.om.OMElement;
 
 public class Service {
@@ -22,17 +22,17 @@ public class Service {
 	public OMElement echo(OMElement elem) {
 		elem.build();
 		elem.detach();
-        return elem;
-    }
+    return elem;
+  }
 
-    /**
-     * New service method for testing negative scenario where service throws an exception
-     * @param element
-     * @return
-     * @throws Exception
-     */
-    public OMElement returnError(OMElement element) throws Exception {
-        throw new Exception("Testing negative scenarios with Apache Rampart. Intentional Exception");
-    }
+  /**
+   * New service method for testing negative scenario where service throws an exception
+   * @param element the element
+   * @return the error
+   * @throws Exception always thrown
+   */
+  public OMElement returnError(OMElement element) throws Exception {
+      throw new Exception("Testing negative scenarios with Apache Rampart. Intentional Exception");
+  }
 
 }

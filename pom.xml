@@ -486,8 +486,13 @@
       </dependency>
       <dependency>
         <groupId>org.bouncycastle</groupId>
-        <artifactId>bcprov-jdk15on</artifactId>
-        <version>${bcprov.jdk15.version}</version>
+        <artifactId>bcprov-jdk18on</artifactId>
+        <version>${bcprov.jdk18.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.bouncycastle</groupId>
+        <artifactId>bcpkix-jdk18on</artifactId>
+        <version>${bcprov.jdk18.version}</version>
       </dependency>
       <dependency>
         <groupId>xalan</groupId>
@@ -695,13 +700,12 @@
     <axis2.version>1.8.2</axis2.version>
     <axiom.version>1.4.0</axiom.version>
     <aspectj.version>1.9.9.1</aspectj.version>
+    <bcprov.jdk18.version>1.72</bcprov.jdk18.version>
     <jacoco.version>0.8.8</jacoco.version>
     <log4j2.version>2.19.0</log4j2.version>
     <opensaml.version>2.6.4</opensaml.version>
     <wss4j.version>1.6.19</wss4j.version>
     <xmlsec.version>3.0.1</xmlsec.version>
-
-    <bcprov.jdk15.version>1.70</bcprov.jdk15.version>
 
     <failIfNoTests>false</failIfNoTests>
 

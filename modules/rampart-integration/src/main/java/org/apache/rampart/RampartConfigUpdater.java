@@ -20,9 +20,9 @@ import org.apache.rampart.policy.model.RampartConfig;
 
 public class RampartConfigUpdater implements RampartConfigCallbackHandler{
 
-    public void update(RampartConfig rampartConfig) {
-        rampartConfig.setUser("alice");
-        
-    }
+  public void update(RampartConfig rampartConfig) {
+    rampartConfig.setUser("alice");
+
+  }
 
 }
